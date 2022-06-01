@@ -177,7 +177,8 @@ int main()
   Shader shader("cubemaps.vs", "cubemaps.fs");
   Shader skyboxShader("skybox.vs", "skybox.fs");
 
-  Shader modelShader("model_loading.vs", "model_loading.fs");
+  Shader slenderShader("model_loading.vs", "model_loading.fs");
+  Shader torciaShader("model_loading.vs", "model_loading.fs");
 
   // load models
   // -----------
@@ -214,11 +215,6 @@ int main()
 
   // shader configuration
   // --------------------
-  shader.use();
-  shader.setInt("texture1", 0);
-
-  skyboxShader.use();
-  skyboxShader.setInt("skybox", 0);
 
 
   // render loop
@@ -242,18 +238,32 @@ int main()
 
 
     // Model loading
-    modelShader.use();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, slenderTexture);
+    slenderShader.use();
     glm::mat4 view = camera.GetViewMatrix();
     glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-    modelShader.setMat4("view", view);
-    modelShader.setMat4("projection", projection);
+    slenderShader.setMat4("view", view);
+    slenderShader.setMat4("projection", projection);
     glm::mat4 modelMesh = glm::mat4(1.0f);
-    modelMesh = glm::translate(modelMesh, glm::vec3(1.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-    //modelMesh = glm::scale(modelMesh, glm::vec3(0.01f, 0.01f, 0.01f));	
-    modelMesh = glm::scale(modelMesh, glm::vec3(10.0f, 10.0f, 10.0f));	// it's a bit too big for our scene, so scale it down
-    modelShader.setMat4("model", modelMesh);
-    //slenderModel.Draw(modelShader);
-    torciaModel.Draw(modelShader);
+    modelMesh = glm::translate(modelMesh, glm::vec3(1.0f, 0.0f, -8.0f)); // translate it down so it's at the center of the scene
+    modelMesh = glm::scale(modelMesh, glm::vec3(0.01f, 0.01f, 0.01f));	
+    //modelMesh = glm::scale(modelMesh, glm::vec3(10.0f, 10.0f, 10.0f));	// it's a bit too big for our scene, so scale it down
+    slenderShader.setMat4("model", modelMesh);
+    slenderModel.Draw(slenderShader);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, torciaTexture);
+
+    torciaShader.use();
+
+    torciaShader.setMat4("view", view);
+    torciaShader.setMat4("projection", projection);
+    modelMesh = glm::mat4(1.0f);
+    modelMesh = glm::scale(modelMesh, glm::vec3(1.0f, 1.0f, 1.0f));
+    modelMesh = glm::translate(modelMesh, glm::vec3(-3.0f, 0.0f, -8.0f));
+    torciaShader.setMat4("model", modelMesh);
+    torciaModel.Draw(torciaShader);
 
 
     // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
