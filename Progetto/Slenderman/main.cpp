@@ -256,12 +256,17 @@ int main()
     glBindTexture(GL_TEXTURE_2D, torciaTexture);
 
     torciaShader.use();
-
+    view = glm::mat4(1.0f);
     torciaShader.setMat4("view", view);
     torciaShader.setMat4("projection", projection);
     modelMesh = glm::mat4(1.0f);
-    modelMesh = glm::scale(modelMesh, glm::vec3(1.0f, 1.0f, 1.0f));
-    modelMesh = glm::translate(modelMesh, glm::vec3(-3.0f, 0.0f, -8.0f));
+
+    modelMesh = glm::scale(modelMesh, glm::vec3(0.1f, 0.1f, 0.1f));
+    modelMesh = glm::translate(modelMesh, glm::vec3(-1.2f, -0.6f, -2.0f));
+    modelMesh = glm::rotate(modelMesh, (float)glm::radians(30.0), glm::vec3(0.0f, 0.0f, 1.0f));
+    modelMesh = glm::rotate(modelMesh, (float)glm::radians(70.0), glm::vec3(0.0f, 1.0f, 0.0f));
+    modelMesh = glm::rotate(modelMesh, (float)glm::radians(50.0), glm::vec3(1.0f, 0.0f, 0.0f));
+    //modelMesh = glm::rotate(modelMesh, (float)glm::radians(30.0), glm::vec3(0.0f, 0.0f, 1.0f));
     torciaShader.setMat4("model", modelMesh);
     torciaModel.Draw(torciaShader);
 
