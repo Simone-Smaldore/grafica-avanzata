@@ -1,16 +1,16 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(513,5): warning MSB8028: The intermediate directory (Release\) contains files shared from another project (Cubemap.vcxproj).  This can lead to incorrect clean and rebuild behavior.
   main.cpp
 C:\Users\simon\Desktop\Progetto grafica\Progetto\Slenderman\shader_m.h(56,36): warning C4101: 'e': unreferenced local variable
-C:\Users\simon\Desktop\Progetto grafica\Progetto\Slenderman\main.cpp(227,24): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\simon\Desktop\Progetto grafica\Progetto\Slenderman\main.cpp(321,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\simon\Desktop\Progetto grafica\Progetto\Slenderman\main.cpp(322,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\simon\Desktop\Progetto grafica\Progetto\Slenderman\main.cpp(326,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\simon\Desktop\Progetto grafica\Progetto\Slenderman\main.cpp(327,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\simon\Desktop\Progetto grafica\Progetto\Slenderman\main.cpp(329,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\simon\Desktop\Progetto grafica\Progetto\Slenderman\main.cpp(330,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\simon\Desktop\Progetto grafica\Progetto\Slenderman\main.cpp(339,29): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\simon\Desktop\Progetto grafica\Progetto\Slenderman\main.cpp(230,24): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\simon\Desktop\Progetto grafica\Progetto\Slenderman\main.cpp(308,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\simon\Desktop\Progetto grafica\Progetto\Slenderman\main.cpp(309,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\simon\Desktop\Progetto grafica\Progetto\Slenderman\main.cpp(313,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\simon\Desktop\Progetto grafica\Progetto\Slenderman\main.cpp(314,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\simon\Desktop\Progetto grafica\Progetto\Slenderman\main.cpp(316,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\simon\Desktop\Progetto grafica\Progetto\Slenderman\main.cpp(317,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\simon\Desktop\Progetto grafica\Progetto\Slenderman\main.cpp(326,29): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   Generating code
-  1 of 503 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+  1 of 800 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     8 functions had inline decision re-evaluated but remain unchanged
   Finished generating code

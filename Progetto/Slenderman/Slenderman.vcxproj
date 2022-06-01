@@ -171,6 +171,8 @@
     <None Include="skybox.vs" />
     <None Include="text.fs" />
     <None Include="text.vs" />
+    <None Include="model_loading.fs" />
+    <None Include="model_loading.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />

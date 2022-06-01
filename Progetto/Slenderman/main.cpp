@@ -165,6 +165,9 @@ int main()
     return -1;
   }
 
+  // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
+  //stbi_set_flip_vertically_on_load(true);
+
   // configure global opengl state
   // -----------------------------
   glEnable(GL_DEPTH_TEST);
@@ -173,6 +176,14 @@ int main()
   // -------------------------
   Shader shader("cubemaps.vs", "cubemaps.fs");
   Shader skyboxShader("skybox.vs", "skybox.fs");
+
+  Shader modelShader("model_loading.vs", "model_loading.fs");
+
+  // load models
+  // -----------
+  //Model testModel("resources/backpack/backpack.obj");
+  Model slenderModel("resources/models/Slenderman/Slenderman.obj");
+  Model torciaModel("resources/models/Torcia/torcia.dae");
 
    // cube VAO
   unsigned int cubeVAO, cubeVBO;
@@ -197,18 +208,9 @@ int main()
 
   // load textures
   // -------------
-  unsigned int cubeTexture = loadTexture("resources/textures/container.jpg");
 
-  vector<std::string> faces
-  {
-      "resources/textures/skybox/right.jpg",
-      "resources/textures/skybox/left.jpg",
-      "resources/textures/skybox/top.jpg",
-      "resources/textures/skybox/bottom.jpg",
-      "resources/textures/skybox/front.jpg",
-      "resources/textures/skybox/back.jpg"
-  };
-  unsigned int cubemapTexture = loadCubemap(faces);
+  unsigned int slenderTexture = loadTexture("resources/models/Slenderman/diffuse.png");
+  unsigned int torciaTexture = loadTexture("resources/models/Torcia/DefaultMaterial_albedo.jpg");
 
   // shader configuration
   // --------------------
@@ -217,6 +219,7 @@ int main()
 
   skyboxShader.use();
   skyboxShader.setInt("skybox", 0);
+
 
   // render loop
   // -----------
@@ -237,37 +240,21 @@ int main()
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    
-    // 1° pass - draw first skybox with depth write disabled
-    skyboxShader.use();
-    glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
-    //glm::mat4 view = glm::mat4(camera.GetViewMatrix()); // remove translation from the view matrix
-    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-    skyboxShader.setMat4("view", view);
-    skyboxShader.setMat4("projection", projection);
-    // skybox cube
-    glBindVertexArray(skyboxVAO);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-    glDepthMask(GL_FALSE);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glDepthMask(GL_TRUE);
-    glBindVertexArray(0);
 
-    // 2° pass - draw scene as normal
-    shader.use();
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::scale(model, glm::vec3(2.0, 2.0, 2.0));
-    view = camera.GetViewMatrix();
-    shader.setMat4("model", model);
-    shader.setMat4("view", view);
-    shader.setMat4("projection", projection);
-    // cube
-    glBindVertexArray(cubeVAO);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, cubeTexture);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glBindVertexArray(0);
+    // Model loading
+    modelShader.use();
+    glm::mat4 view = camera.GetViewMatrix();
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    modelShader.setMat4("view", view);
+    modelShader.setMat4("projection", projection);
+    glm::mat4 modelMesh = glm::mat4(1.0f);
+    modelMesh = glm::translate(modelMesh, glm::vec3(1.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+    //modelMesh = glm::scale(modelMesh, glm::vec3(0.01f, 0.01f, 0.01f));	
+    modelMesh = glm::scale(modelMesh, glm::vec3(10.0f, 10.0f, 10.0f));	// it's a bit too big for our scene, so scale it down
+    modelShader.setMat4("model", modelMesh);
+    //slenderModel.Draw(modelShader);
+    torciaModel.Draw(modelShader);
+
 
     // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
     // -------------------------------------------------------------------------------
@@ -374,45 +361,6 @@ unsigned int loadTexture(char const* path)
     std::cout << "Texture failed to load at path: " << path << std::endl;
     stbi_image_free(data);
   }
-
-  return textureID;
-}
-
-// loads a cubemap texture from 6 individual texture faces
-// order:
-// +X (right)
-// -X (left)
-// +Y (top)
-// -Y (bottom)
-// +Z (front) 
-// -Z (back)
-// -------------------------------------------------------
-unsigned int loadCubemap(vector<std::string> faces)
-{
-  unsigned int textureID;
-  glGenTextures(1, &textureID);
-  glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-
-  int width, height, nrChannels;
-  for (unsigned int i = 0; i < faces.size(); i++)
-  {
-    unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
-    if (data)
-    {
-      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-      stbi_image_free(data);
-    }
-    else
-    {
-      std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
-      stbi_image_free(data);
-    }
-  }
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
   return textureID;
 }
