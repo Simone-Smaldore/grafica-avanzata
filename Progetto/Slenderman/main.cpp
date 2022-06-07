@@ -62,7 +62,7 @@ int main()
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
   glfwSetCursorPosCallback(window, mouse_callback);
   glfwSetScrollCallback(window, scroll_callback);
-  glfwSetWindowPos(window, 400, 100);
+  glfwSetWindowPos(window, 200, 50);
 
   // tell GLFW to capture our mouse
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -131,7 +131,7 @@ int main()
     glBindTexture(GL_TEXTURE_2D, slenderTexture);
     slenderShader.use();
     glm::mat4 view = camera.GetViewMatrix();
-    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
     slenderShader.setMat4("view", view);
     slenderShader.setMat4("projection", projection);
     glm::mat4 modelMesh = glm::mat4(1.0f);
@@ -142,13 +142,30 @@ int main()
     slenderModel.Draw(slenderShader);
 
     // TREE
+    float translateOffset = 40.0f;
+
     treeShader.use();
     treeShader.setMat4("view", view);
     treeShader.setMat4("projection", projection);
     glm::mat4 treeMesh = glm::mat4(1.0f);
-    treeMesh = glm::translate(treeMesh, glm::vec3(0.0f, -4.0f, 0.0f)); // translate it down so it's at the center of the scene
+    treeMesh = glm::translate(treeMesh, glm::vec3(translateOffset, -4.0f, 0.0f)); // translate it down so it's at the center of the scene
     treeMesh = glm::scale(treeMesh, glm::vec3(0.08f, 0.08f, 0.08f));
     treeShader.setMat4("model", treeMesh);
+    treeModel.Draw(treeShader);
+
+    
+    glm::mat4 treeMesh1 = glm::mat4(1.0f);
+    treeMesh1 = glm::translate(treeMesh1, glm::vec3(0.0, -4.0f, 0.0f)); // translate it down so it's at the center of the scene
+    treeMesh1 = glm::scale(treeMesh1, glm::vec3(0.08f, 0.08f, 0.08f));
+    treeMesh1 = glm::rotate(treeMesh1, (float)glm::radians(70.0), glm::vec3(0.0f, 1.0f, 0.0f));
+    treeShader.setMat4("model", treeMesh1);
+    treeModel.Draw(treeShader);
+
+    glm::mat4 treeMesh2 = glm::mat4(1.0f);
+    treeMesh2 = glm::translate(treeMesh2, glm::vec3(-translateOffset, -4.0f, 0.0f));
+    treeMesh2 = glm::scale(treeMesh2, glm::vec3(0.08f, 0.08f, 0.08f));
+    treeMesh2 = glm::rotate(treeMesh2, (float)glm::radians(70.0), glm::vec3(0.0f, 1.0f, 0.0f));
+    treeShader.setMat4("model", treeMesh2);
     treeModel.Draw(treeShader);
 
     glActiveTexture(GL_TEXTURE0);
