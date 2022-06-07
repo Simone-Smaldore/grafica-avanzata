@@ -28,6 +28,12 @@
     <None Include="model_loading.fs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="forest.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="forest.fs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

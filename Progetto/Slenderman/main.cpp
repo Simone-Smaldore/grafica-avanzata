@@ -88,6 +88,7 @@ int main()
   Shader slenderShader("model_loading.vs", "model_loading.fs");
   Shader torciaShader("model_loading.vs", "model_loading.fs");
   Shader treeShader("model_tree.vs", "model_tree.fs");
+  Shader forestShader("forest.vs", "forest.fs");
 
   // load models
   // -----------
@@ -104,6 +105,60 @@ int main()
 
   // shader configuration
   // --------------------
+
+
+  // model configuration
+  // --------------------
+  unsigned int amount = 3;
+  glm::mat4* modelMatrices;
+  modelMatrices = new glm::mat4[amount];
+  srand(glfwGetTime()); // initialize random seed	
+  float offset = 40.0f;
+  for (unsigned int i = 0; i < amount; i++) {
+      glm::mat4 model = glm::mat4(1.0f);
+      // 1. translation: displace along circle with 'radius' in range [-offset, offset]
+      float x = i * offset;
+      float y = -4.0f; 
+      float z = 0.0f;
+      model = glm::translate(model, glm::vec3(x, y, z));
+
+      // 2. scale: Scale between 0.05 and 0.25f
+      float scale = (rand() % 20) / 100.0f + 0.05;
+      model = glm::scale(model, glm::vec3(0.08f, 0.08f, 0.08f));
+
+      // 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
+      float rotAngle = (rand() % 360);
+      model = glm::rotate(model, rotAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+
+      // 4. now add to list of matrices
+      modelMatrices[i] = model;
+  }
+
+  unsigned int buffer;
+  glGenBuffers(1, &buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, buffer);
+  glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+
+  for (unsigned int i = 0; i < treeModel.meshes.size(); i++) {
+      unsigned int VAO = treeModel.meshes[i].VAO;
+      glBindVertexArray(VAO);
+      // set attribute pointers for matrix (4 times vec4)
+      glEnableVertexAttribArray(3);
+      glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+      glEnableVertexAttribArray(4);
+      glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+      glEnableVertexAttribArray(5);
+      glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+      glEnableVertexAttribArray(6);
+      glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+
+      glVertexAttribDivisor(3, 1);
+      glVertexAttribDivisor(4, 1);
+      glVertexAttribDivisor(5, 1);
+      glVertexAttribDivisor(6, 1);
+
+      glBindVertexArray(0);
+  }
 
 
   // render loop
@@ -141,32 +196,34 @@ int main()
     slenderShader.setMat4("model", modelMesh);
     slenderModel.Draw(slenderShader);
 
-    // TREE
-    float translateOffset = 40.0f;
 
-    treeShader.use();
-    treeShader.setMat4("view", view);
-    treeShader.setMat4("projection", projection);
-    glm::mat4 treeMesh = glm::mat4(1.0f);
-    treeMesh = glm::translate(treeMesh, glm::vec3(translateOffset, -4.0f, 0.0f)); // translate it down so it's at the center of the scene
-    treeMesh = glm::scale(treeMesh, glm::vec3(0.08f, 0.08f, 0.08f));
-    treeShader.setMat4("model", treeMesh);
-    treeModel.Draw(treeShader);
+    //TREE INSTANCE
 
+    forestShader.use();
+    forestShader.setMat4("projection", projection);
+    forestShader.setMat4("view", view);
+    forestShader.setInt("texture_diffuse1", 0);
+    forestShader.setInt("texture_diffuse2", 1);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, treeModel.textures_loaded[0].id);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, treeModel.textures_loaded[1].id);
     
-    glm::mat4 treeMesh1 = glm::mat4(1.0f);
-    treeMesh1 = glm::translate(treeMesh1, glm::vec3(0.0, -4.0f, 0.0f)); // translate it down so it's at the center of the scene
-    treeMesh1 = glm::scale(treeMesh1, glm::vec3(0.08f, 0.08f, 0.08f));
-    treeMesh1 = glm::rotate(treeMesh1, (float)glm::radians(70.0), glm::vec3(0.0f, 1.0f, 0.0f));
-    treeShader.setMat4("model", treeMesh1);
-    treeModel.Draw(treeShader);
+    // NON TOCCARE
+    for (unsigned int i = 0; i < treeModel.meshes.size(); i++) {
+        for (unsigned int j = 0; j < treeModel.meshes[i].textures.size(); j++) {
+            glActiveTexture(GL_TEXTURE0 + j); 
+            string name = treeModel.meshes[i].textures[j].type;
+            glUniform1i(glGetUniformLocation(treeShader.ID, (name + std::to_string(j + 1)).c_str()), j);
+            glBindTexture(GL_TEXTURE_2D, treeModel.meshes[i].textures[j].id);
+        }
+        glBindVertexArray(treeModel.meshes[i].VAO);
+        glDrawElementsInstanced(GL_TRIANGLES, treeModel.meshes[i].indices.size(), GL_UNSIGNED_INT, 0, amount);
+        glBindVertexArray(0);
+    }
 
-    glm::mat4 treeMesh2 = glm::mat4(1.0f);
-    treeMesh2 = glm::translate(treeMesh2, glm::vec3(-translateOffset, -4.0f, 0.0f));
-    treeMesh2 = glm::scale(treeMesh2, glm::vec3(0.08f, 0.08f, 0.08f));
-    treeMesh2 = glm::rotate(treeMesh2, (float)glm::radians(70.0), glm::vec3(0.0f, 1.0f, 0.0f));
-    treeShader.setMat4("model", treeMesh2);
-    treeModel.Draw(treeShader);
+
+
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, torciaTexture);
