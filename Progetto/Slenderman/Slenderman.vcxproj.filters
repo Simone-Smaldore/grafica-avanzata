@@ -16,22 +16,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="text.vs">
+    <None Include="model_tree.vs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="text.fs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="cubemaps.fs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="cubemaps.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="skybox.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="skybox.fs">
+    <None Include="model_tree.fs">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="model_loading.vs">

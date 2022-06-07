@@ -164,13 +164,9 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="cubemaps.fs" />
-    <None Include="cubemaps.vs" />
     <None Include="packages.config" />
-    <None Include="skybox.fs" />
-    <None Include="skybox.vs" />
-    <None Include="text.fs" />
-    <None Include="text.vs" />
+    <None Include="model_tree.fs" />
+    <None Include="model_tree.vs" />
     <None Include="model_loading.fs" />
     <None Include="model_loading.vs" />
   </ItemGroup>

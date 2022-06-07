@@ -35,96 +35,6 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-// set up vertex data (and buffer(s)) and configure vertex attributes
-  // ------------------------------------------------------------------
-float cubeVertices[] = {
-  // positions          // texture Coords
-  -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-   0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-   0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-   0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-  -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-  -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-  -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-   0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-   0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-   0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-  -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-  -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-  -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-  -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-  -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-  -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-  -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-  -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-   0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-   0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-   0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-   0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-   0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-   0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-  -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-   0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-   0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-   0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-  -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-  -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-  -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-   0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-   0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-   0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-  -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-  -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-};
-float skyboxVertices[] = {
-  // positions          
-  -1.0f,  1.0f, -1.0f,
-  -1.0f, -1.0f, -1.0f,
-   1.0f, -1.0f, -1.0f,
-   1.0f, -1.0f, -1.0f,
-   1.0f,  1.0f, -1.0f,
-  -1.0f,  1.0f, -1.0f,
-
-  -1.0f, -1.0f,  1.0f,
-  -1.0f, -1.0f, -1.0f,
-  -1.0f,  1.0f, -1.0f,
-  -1.0f,  1.0f, -1.0f,
-  -1.0f,  1.0f,  1.0f,
-  -1.0f, -1.0f,  1.0f,
-
-   1.0f, -1.0f, -1.0f,
-   1.0f, -1.0f,  1.0f,
-   1.0f,  1.0f,  1.0f,
-   1.0f,  1.0f,  1.0f,
-   1.0f,  1.0f, -1.0f,
-   1.0f, -1.0f, -1.0f,
-
-  -1.0f, -1.0f,  1.0f,
-  -1.0f,  1.0f,  1.0f,
-   1.0f,  1.0f,  1.0f,
-   1.0f,  1.0f,  1.0f,
-   1.0f, -1.0f,  1.0f,
-  -1.0f, -1.0f,  1.0f,
-
-  -1.0f,  1.0f, -1.0f,
-   1.0f,  1.0f, -1.0f,
-   1.0f,  1.0f,  1.0f,
-   1.0f,  1.0f,  1.0f,
-  -1.0f,  1.0f,  1.0f,
-  -1.0f,  1.0f, -1.0f,
-
-  -1.0f, -1.0f, -1.0f,
-  -1.0f, -1.0f,  1.0f,
-   1.0f, -1.0f, -1.0f,
-   1.0f, -1.0f, -1.0f,
-  -1.0f, -1.0f,  1.0f,
-   1.0f, -1.0f,  1.0f
-};
 
 int main()
 {
@@ -174,38 +84,17 @@ int main()
 
   // build and compile shaders
   // -------------------------
-  Shader shader("cubemaps.vs", "cubemaps.fs");
-  Shader skyboxShader("skybox.vs", "skybox.fs");
 
   Shader slenderShader("model_loading.vs", "model_loading.fs");
   Shader torciaShader("model_loading.vs", "model_loading.fs");
+  Shader treeShader("model_tree.vs", "model_tree.fs");
 
   // load models
   // -----------
-  //Model testModel("resources/backpack/backpack.obj");
   Model slenderModel("resources/models/Slenderman/Slenderman.obj");
   Model torciaModel("resources/models/Torcia/torcia.dae");
+  Model treeModel("resources/models/Tree/oaktrees.obj");
 
-   // cube VAO
-  unsigned int cubeVAO, cubeVBO;
-  glGenVertexArrays(1, &cubeVAO);
-  glGenBuffers(1, &cubeVBO);
-  glBindVertexArray(cubeVAO);
-  glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-  // skybox VAO
-  unsigned int skyboxVAO, skyboxVBO;
-  glGenVertexArrays(1, &skyboxVAO);
-  glGenBuffers(1, &skyboxVBO);
-  glBindVertexArray(skyboxVAO);
-  glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
   // load textures
   // -------------
@@ -246,15 +135,26 @@ int main()
     slenderShader.setMat4("view", view);
     slenderShader.setMat4("projection", projection);
     glm::mat4 modelMesh = glm::mat4(1.0f);
-    modelMesh = glm::translate(modelMesh, glm::vec3(1.0f, 0.0f, -8.0f)); // translate it down so it's at the center of the scene
+    //modelMesh = glm::translate(modelMesh, glm::vec3(1.0f, 0.0f, -8.0f)); // translate it down so it's at the center of the scene
+    modelMesh = glm::translate(modelMesh, glm::vec3(1.0f, 0.0f, 8.0f));
     modelMesh = glm::scale(modelMesh, glm::vec3(0.01f, 0.01f, 0.01f));	
-    //modelMesh = glm::scale(modelMesh, glm::vec3(10.0f, 10.0f, 10.0f));	// it's a bit too big for our scene, so scale it down
     slenderShader.setMat4("model", modelMesh);
     slenderModel.Draw(slenderShader);
+
+    // TREE
+    treeShader.use();
+    treeShader.setMat4("view", view);
+    treeShader.setMat4("projection", projection);
+    glm::mat4 treeMesh = glm::mat4(1.0f);
+    treeMesh = glm::translate(treeMesh, glm::vec3(0.0f, -4.0f, 0.0f)); // translate it down so it's at the center of the scene
+    treeMesh = glm::scale(treeMesh, glm::vec3(0.08f, 0.08f, 0.08f));
+    treeShader.setMat4("model", treeMesh);
+    treeModel.Draw(treeShader);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, torciaTexture);
 
+    //TORCIA
     torciaShader.use();
     view = glm::mat4(1.0f);
     torciaShader.setMat4("view", view);
@@ -266,9 +166,10 @@ int main()
     modelMesh = glm::rotate(modelMesh, (float)glm::radians(30.0), glm::vec3(0.0f, 0.0f, 1.0f));
     modelMesh = glm::rotate(modelMesh, (float)glm::radians(70.0), glm::vec3(0.0f, 1.0f, 0.0f));
     modelMesh = glm::rotate(modelMesh, (float)glm::radians(50.0), glm::vec3(1.0f, 0.0f, 0.0f));
-    //modelMesh = glm::rotate(modelMesh, (float)glm::radians(30.0), glm::vec3(0.0f, 0.0f, 1.0f));
     torciaShader.setMat4("model", modelMesh);
     torciaModel.Draw(torciaShader);
+
+
 
 
     // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -279,10 +180,6 @@ int main()
 
   // optional: de-allocate all resources once they've outlived their purpose:
   // ------------------------------------------------------------------------
-  glDeleteVertexArrays(1, &cubeVAO);
-  glDeleteVertexArrays(1, &skyboxVAO);
-  glDeleteBuffers(1, &cubeVBO);
-  glDeleteBuffers(1, &skyboxVAO);
 
   glfwTerminate();
   return 0;
