@@ -167,8 +167,6 @@
     <None Include="forest.fs" />
     <None Include="forest.vs" />
     <None Include="packages.config" />
-    <None Include="model_tree.fs" />
-    <None Include="model_tree.vs" />
     <None Include="model_loading.fs" />
     <None Include="model_loading.vs" />
   </ItemGroup>

@@ -16,12 +16,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="model_tree.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="model_tree.fs">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="model_loading.vs">
       <Filter>Resource Files</Filter>
     </None>
