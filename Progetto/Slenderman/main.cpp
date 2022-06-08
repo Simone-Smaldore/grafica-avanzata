@@ -130,7 +130,8 @@ int main()
 
   unsigned int slenderTexture = loadTexture("resources/models/Slenderman/diffuse.png");
   unsigned int torciaTexture = loadTexture("resources/models/Torcia/DefaultMaterial_albedo.jpg");
-  unsigned int floorTexture = loadTexture("resources/textures/floor/Ground_Forest_003_baseColor.jpg");
+  unsigned int floorTexture = loadTexture("resources/textures/floor/floor.jpg");
+
 
 
 
@@ -225,7 +226,7 @@ int main()
     glBindTexture(GL_TEXTURE_2D, slenderTexture);
     slenderShader.use();
     glm::mat4 view = camera.GetViewMatrix();
-    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 400.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     slenderShader.setMat4("view", view);
     slenderShader.setMat4("projection", projection);
     glm::mat4 modelMesh = glm::mat4(1.0f);
