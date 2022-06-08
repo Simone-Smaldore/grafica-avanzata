@@ -19,7 +19,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 unsigned int loadTexture(const char* path);
-unsigned int loadCubemap(vector<std::string> faces);
 
 // settings
 const unsigned int SCR_WIDTH = 1600;
@@ -35,6 +34,8 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
+// meshes
+unsigned int planeVAO;
 
 int main()
 {
@@ -88,6 +89,7 @@ int main()
   Shader slenderShader("model_loading.vs", "model_loading.fs");
   Shader torciaShader("model_loading.vs", "model_loading.fs");
   Shader forestShader("forest.vs", "forest.fs");
+  Shader floorShader("model_loading.vs", "model_loading.fs");
 
   // load models
   // -----------
@@ -96,11 +98,42 @@ int main()
   Model treeModel("resources/models/Tree/oaktrees.obj");
 
 
+  float planeVertices[] = {
+      // positions            // normals         // texcoords
+       500.0f, 0.0f,  500.0f,  0.0f, 1.0f, 0.0f,  500.0f,  0.0f,
+      -500.0f, 0.0f,  500.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
+      -500.0f, 0.0f, -500.0f,  0.0f, 1.0f, 0.0f,   0.0f, 500.0f,
+
+       500.0f, 0.0f,  500.0f,  0.0f, 1.0f, 0.0f,  500.0f,  0.0f,
+      -500.0f, 0.0f, -500.0f,  0.0f, 1.0f, 0.0f,   0.0f, 500.0f,
+       500.0f, 0.0f, -500.0f,  0.0f, 1.0f, 0.0f,  500.0f, 500.0f
+  };
+  // plane VAO
+  unsigned int planeVBO;
+  glGenVertexArrays(1, &planeVAO);
+  glGenBuffers(1, &planeVBO);
+  glBindVertexArray(planeVAO);
+  glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+  glBindVertexArray(0);
+
+
+  
   // load textures
   // -------------
 
   unsigned int slenderTexture = loadTexture("resources/models/Slenderman/diffuse.png");
   unsigned int torciaTexture = loadTexture("resources/models/Torcia/DefaultMaterial_albedo.jpg");
+  unsigned int floorTexture = loadTexture("resources/textures/floor/Ground_Forest_003_baseColor.jpg");
+
+
+
 
   // shader configuration
   // --------------------
@@ -208,13 +241,7 @@ int main()
     forestShader.use();
     forestShader.setMat4("projection", projection);
     forestShader.setMat4("view", view);
-    forestShader.setInt("texture_diffuse1", 0);
-    forestShader.setInt("texture_diffuse2", 1);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, treeModel.textures_loaded[0].id);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, treeModel.textures_loaded[1].id);
-    
+
     // NON TOCCARE
     for (unsigned int i = 0; i < treeModel.meshes.size(); i++) {
         for (unsigned int j = 0; j < treeModel.meshes[i].textures.size(); j++) {
@@ -228,8 +255,18 @@ int main()
         glBindVertexArray(0);
     }
 
+    //PAVIMENTO
+    floorShader.use();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, floorTexture);
 
-
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, -4.0f, 0.0f));
+    floorShader.setMat4("model", model);
+    floorShader.setMat4("view", view);
+    floorShader.setMat4("projection", projection);
+    glBindVertexArray(planeVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, torciaTexture);
@@ -252,6 +289,8 @@ int main()
 
 
 
+
+
     // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
     // -------------------------------------------------------------------------------
     glfwSwapBuffers(window);
@@ -264,6 +303,7 @@ int main()
   glfwTerminate();
   return 0;
 }
+
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
