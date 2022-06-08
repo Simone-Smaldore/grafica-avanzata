@@ -90,6 +90,7 @@ int main()
   Shader torciaShader("model_loading.vs", "model_loading.fs");
   Shader forestShader("forest.vs", "forest.fs");
   Shader floorShader("model_loading.vs", "model_loading.fs");
+  Shader grassShader("grass.vs", "grass.fs");
 
   // load models
   // -----------
@@ -124,6 +125,30 @@ int main()
   glBindVertexArray(0);
 
 
+  float transparentVertices[] = {
+      // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
+      0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+      0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
+      1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+
+      0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+      1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+      1.0f,  0.5f,  0.0f,  1.0f,  0.0f
+  };
+
+  unsigned int transparentVAO, transparentVBO;
+  glGenVertexArrays(1, &transparentVAO);
+  glGenBuffers(1, &transparentVBO);
+  glBindVertexArray(transparentVAO);
+  glBindBuffer(GL_ARRAY_BUFFER, transparentVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(transparentVertices), transparentVertices, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+  glBindVertexArray(0);
+
+
   
   // load textures
   // -------------
@@ -131,8 +156,16 @@ int main()
   unsigned int slenderTexture = loadTexture("resources/models/Slenderman/diffuse.png");
   unsigned int torciaTexture = loadTexture("resources/models/Torcia/DefaultMaterial_albedo.jpg");
   unsigned int floorTexture = loadTexture("resources/textures/floor/floor.jpg");
+  unsigned int transparentTexture = loadTexture("resources/textures/grass.png");
 
+  vector<glm::vec3> vegetation
+  {
+      glm::vec3(-5.5f, -2.0f, -5.48f),
+      glm::vec3(-5.0f, -2.0f, -5.48f)
+  };
 
+  grassShader.use();
+  grassShader.setInt("texture1", 0);
 
 
 
@@ -269,10 +302,40 @@ int main()
     glBindVertexArray(planeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, torciaTexture);
+
+
+    //ERBA REFACTORRRRRRR
+    grassShader.use();
+    glBindVertexArray(transparentVAO);
+    glBindTexture(GL_TEXTURE_2D, transparentTexture);
+    grassShader.setMat4("view", view);
+    grassShader.setMat4("projection", projection);
+
+    for (unsigned int i = 0; i < vegetation.size(); i++)
+    {
+        glm::mat4 grassModel = glm::mat4(1.0f);
+        grassModel = glm::translate(grassModel, vegetation[i]);
+    
+        grassShader.setMat4("model", grassModel);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
+
+    for (unsigned int i = 0; i < vegetation.size(); i++)
+    {
+        glm::mat4 grassModel = glm::mat4(1.0f);
+        glm::vec3 offset = vegetation[i];
+        offset.x = offset.x + 0.5f;
+        offset.z = offset.z + 0.5f;
+        grassModel = glm::translate(grassModel, offset);
+        grassModel = glm::rotate(grassModel, (float)glm::radians(90.0), glm::vec3(0.0f, 1.0f, 0.0f));
+        grassShader.setMat4("model", grassModel);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
 
     //TORCIA
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, torciaTexture);
     torciaShader.use();
     view = glm::mat4(1.0f);
     torciaShader.setMat4("view", view);

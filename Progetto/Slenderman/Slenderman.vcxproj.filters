@@ -28,6 +28,12 @@
     <None Include="forest.fs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="grass.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="grass.vs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

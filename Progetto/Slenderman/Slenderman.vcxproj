@@ -166,6 +166,8 @@
   <ItemGroup>
     <None Include="forest.fs" />
     <None Include="forest.vs" />
+    <None Include="grass.fs" />
+    <None Include="grass.vs" />
     <None Include="packages.config" />
     <None Include="model_loading.fs" />
     <None Include="model_loading.vs" />
