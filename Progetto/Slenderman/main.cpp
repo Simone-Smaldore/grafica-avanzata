@@ -87,7 +87,6 @@ int main()
 
   Shader slenderShader("model_loading.vs", "model_loading.fs");
   Shader torciaShader("model_loading.vs", "model_loading.fs");
-  Shader treeShader("model_tree.vs", "model_tree.fs");
   Shader forestShader("forest.vs", "forest.fs");
 
   // load models
@@ -109,29 +108,35 @@ int main()
 
   // model configuration
   // --------------------
-  unsigned int amount = 3;
+  unsigned int side = 20;
+  unsigned int amount = side * side;
   glm::mat4* modelMatrices;
   modelMatrices = new glm::mat4[amount];
   srand(glfwGetTime()); // initialize random seed	
   float offset = 40.0f;
-  for (unsigned int i = 0; i < amount; i++) {
-      glm::mat4 model = glm::mat4(1.0f);
-      // 1. translation: displace along circle with 'radius' in range [-offset, offset]
-      float x = i * offset;
-      float y = -4.0f; 
-      float z = 0.0f;
-      model = glm::translate(model, glm::vec3(x, y, z));
+  for (unsigned int i = 0; i < side; i++) {
 
-      // 2. scale: Scale between 0.05 and 0.25f
-      float scale = (rand() % 20) / 100.0f + 0.05;
-      model = glm::scale(model, glm::vec3(0.08f, 0.08f, 0.08f));
+      for (unsigned int j = 0; j < side; j++) {
+          int index = (i * side) + j;
+          glm::mat4 model = glm::mat4(1.0f);
+          // 1. translation: displace along circle with 'radius' in range [-offset, offset]
+          float x = i * offset;
+          float y = -4.0f;
+          float z = j * offset;
+          model = glm::translate(model, glm::vec3(x, y, z));
 
-      // 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
-      float rotAngle = (rand() % 360);
-      model = glm::rotate(model, rotAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+          // 2. scale: Scale between 0.05 and 0.25f
+          float scale = (rand() % 20) / 100.0f + 0.05;
+          model = glm::scale(model, glm::vec3(0.08f, 0.08f, 0.08f));
 
-      // 4. now add to list of matrices
-      modelMatrices[i] = model;
+          // 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
+          float rotAngle = (rand() % 360);
+          model = glm::rotate(model, rotAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+
+          // 4. now add to list of matrices
+          modelMatrices[index] = model;
+      }
+
   }
 
   unsigned int buffer;
@@ -186,7 +191,7 @@ int main()
     glBindTexture(GL_TEXTURE_2D, slenderTexture);
     slenderShader.use();
     glm::mat4 view = camera.GetViewMatrix();
-    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 400.0f);
     slenderShader.setMat4("view", view);
     slenderShader.setMat4("projection", projection);
     glm::mat4 modelMesh = glm::mat4(1.0f);
@@ -214,7 +219,7 @@ int main()
         for (unsigned int j = 0; j < treeModel.meshes[i].textures.size(); j++) {
             glActiveTexture(GL_TEXTURE0 + j); 
             string name = treeModel.meshes[i].textures[j].type;
-            glUniform1i(glGetUniformLocation(treeShader.ID, (name + std::to_string(j + 1)).c_str()), j);
+            glUniform1i(glGetUniformLocation(forestShader.ID, (name + std::to_string(j + 1)).c_str()), j);
             glBindTexture(GL_TEXTURE_2D, treeModel.meshes[i].textures[j].id);
         }
         glBindVertexArray(treeModel.meshes[i].VAO);
