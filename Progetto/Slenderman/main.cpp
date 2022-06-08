@@ -108,21 +108,21 @@ int main()
 
   // model configuration
   // --------------------
-  unsigned int side = 20;
+  int side = 20;
   unsigned int amount = side * side;
   glm::mat4* modelMatrices;
   modelMatrices = new glm::mat4[amount];
   srand(glfwGetTime()); // initialize random seed	
   float offset = 40.0f;
-  for (unsigned int i = 0; i < side; i++) {
+  for (int i = 0; i < side; i++) {
 
-      for (unsigned int j = 0; j < side; j++) {
+      for (int j = 0; j < side; j++) {
           int index = (i * side) + j;
           glm::mat4 model = glm::mat4(1.0f);
           // 1. translation: displace along circle with 'radius' in range [-offset, offset]
-          float x = i * offset;
+          float x = (i - side/2) * offset;
           float y = -4.0f;
-          float z = j * offset;
+          float z = (j - side/2) * offset;
           model = glm::translate(model, glm::vec3(x, y, z));
 
           // 2. scale: Scale between 0.05 and 0.25f
@@ -135,6 +135,7 @@ int main()
 
           // 4. now add to list of matrices
           modelMatrices[index] = model;
+          
       }
 
   }
