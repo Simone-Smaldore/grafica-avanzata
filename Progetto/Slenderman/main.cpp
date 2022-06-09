@@ -160,8 +160,8 @@ int main()
 
   vector<glm::vec3> vegetation
   {
-      glm::vec3(-5.5f, -2.0f, -5.48f),
-      glm::vec3(-5.0f, -2.0f, -5.48f)
+      glm::vec3(-5.5f, -3.5f, -5.48f),
+      glm::vec3(-5.0f, -3.5f, -5.48f)
   };
 
   grassShader.use();

@@ -8,7 +8,7 @@ uniform sampler2D texture_diffuse1;
 void main()
 {
     vec4 textColor = texture(texture_diffuse1, TexCoords);
-    if(textColor.a < 0.3) 
+    if(textColor.a < 0.7) 
         discard;
     FragColor = textColor;
 }
