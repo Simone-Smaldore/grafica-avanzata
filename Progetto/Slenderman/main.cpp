@@ -125,28 +125,7 @@ int main()
   glBindVertexArray(0);
 
 
-  float transparentVertices[] = {
-      // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
-      0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
-      0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
-      1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
 
-      0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
-      1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
-      1.0f,  0.5f,  0.0f,  1.0f,  0.0f
-  };
-
-  unsigned int transparentVAO, transparentVBO;
-  glGenVertexArrays(1, &transparentVAO);
-  glGenBuffers(1, &transparentVBO);
-  glBindVertexArray(transparentVAO);
-  glBindBuffer(GL_ARRAY_BUFFER, transparentVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(transparentVertices), transparentVertices, GL_STATIC_DRAW);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-  glBindVertexArray(0);
 
 
   
@@ -156,7 +135,7 @@ int main()
   unsigned int slenderTexture = loadTexture("resources/models/Slenderman/diffuse.png");
   unsigned int torciaTexture = loadTexture("resources/models/Torcia/DefaultMaterial_albedo.jpg");
   unsigned int floorTexture = loadTexture("resources/textures/floor/floor.jpg");
-  unsigned int transparentTexture = loadTexture("resources/textures/grass.png");
+  unsigned int transparentTexture = loadTexture("resources/textures/grass2.png");
 
   vector<glm::vec3> vegetation
   {
@@ -166,8 +145,6 @@ int main()
 
   grassShader.use();
   grassShader.setInt("texture1", 0);
-
-
 
   // shader configuration
   // --------------------
@@ -232,6 +209,80 @@ int main()
 
       glBindVertexArray(0);
   }
+
+  //
+
+
+  int grassSide = 640;
+  unsigned int grassAmount =  grassSide * grassSide;
+  glm::mat4* grassModelMatrices;
+  grassModelMatrices = new glm::mat4[2*grassAmount];
+  srand(glfwGetTime()); // initialize random seed	
+  float grassOffset = 1.5f;
+  for (int i = 0; i < grassSide; i++) {
+
+      for (int j = 0; j < grassSide; j++) {
+          int index = (i * grassSide) + j;
+          glm::mat4 model = glm::mat4(1.0f);
+          // 1. translation: displace along circle with 'radius' in range [-offset, offset]
+          float rx = static_cast <float> (rand()) / static_cast <float> (RAND_MAX) * 1.5;
+          float rz = static_cast <float> (rand()) / static_cast <float> (RAND_MAX) * 1.5;
+          float x = (i - grassSide / 2) * grassOffset + rx;
+          float y = -3.5f;
+          float z = (j - grassSide / 2) * grassOffset + rz;
+          model = glm::translate(model, glm::vec3(x, y, z));
+          grassModelMatrices[index] = model;
+          model = glm::mat4(1.0f);
+          model = glm::translate(model, glm::vec3(x + 0.5f, y, z + 0.5f));
+          model = glm::rotate(model, (float)glm::radians(90.0), glm::vec3(0.0f, 1.0f, 0.0f));
+          grassModelMatrices[grassAmount + index] = model;
+      }
+
+  }
+
+
+  float transparentVertices[] = {
+      // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
+      0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+      0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
+      1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+
+      0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+      1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+      1.0f,  0.5f,  0.0f,  1.0f,  0.0f
+  };
+
+  unsigned int transparentVAO, transparentVBO;
+  glGenVertexArrays(1, &transparentVAO);
+  glGenBuffers(1, &transparentVBO);
+  glBindVertexArray(transparentVAO);
+  glBindBuffer(GL_ARRAY_BUFFER, transparentVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(transparentVertices), transparentVertices, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+ 
+  unsigned int instanceVBO;
+  glGenBuffers(1, &instanceVBO);
+  glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+  glBufferData(GL_ARRAY_BUFFER, 2* grassAmount * sizeof(glm::mat4), &grassModelMatrices[0], GL_STATIC_DRAW);
+  // also set instance data
+  glEnableVertexAttribArray(3);
+  glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+  glEnableVertexAttribArray(4);
+  glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+  glEnableVertexAttribArray(5);
+  glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+  glEnableVertexAttribArray(6);
+  glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+
+  glVertexAttribDivisor(3, 1);
+  glVertexAttribDivisor(4, 1);
+  glVertexAttribDivisor(5, 1);
+  glVertexAttribDivisor(6, 1);
+
+  glBindVertexArray(0);
 
 
   // render loop
@@ -306,32 +357,15 @@ int main()
 
     //ERBA REFACTORRRRRRR
     grassShader.use();
-    glBindVertexArray(transparentVAO);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, transparentTexture);
     grassShader.setMat4("view", view);
     grassShader.setMat4("projection", projection);
-
-    for (unsigned int i = 0; i < vegetation.size(); i++)
-    {
-        glm::mat4 grassModel = glm::mat4(1.0f);
-        grassModel = glm::translate(grassModel, vegetation[i]);
-    
-        grassShader.setMat4("model", grassModel);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-    }
+    glBindVertexArray(transparentVAO);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 2*grassAmount); // 100 triangles of 6 vertices each
+    glBindVertexArray(0);
 
 
-    for (unsigned int i = 0; i < vegetation.size(); i++)
-    {
-        glm::mat4 grassModel = glm::mat4(1.0f);
-        glm::vec3 offset = vegetation[i];
-        offset.x = offset.x + 0.5f;
-        offset.z = offset.z + 0.5f;
-        grassModel = glm::translate(grassModel, offset);
-        grassModel = glm::rotate(grassModel, (float)glm::radians(90.0), glm::vec3(0.0f, 1.0f, 0.0f));
-        grassShader.setMat4("model", grassModel);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-    }
 
     //TORCIA
     glActiveTexture(GL_TEXTURE0);
