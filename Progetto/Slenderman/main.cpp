@@ -74,7 +74,7 @@ int main() {
     glm::vec3 slendermanTranslationMatrix = glm::vec3(0.0f, -0.5f, -10.0f);
     
     renderFloor(floorShader, floorTexture, floorVAO, view, projection);
-    renderForest(forestShader, treeModel, view, projection);
+    renderForest(forestShader, treeModel, view, projection, camera);
     renderGrass(grassShader, grassTexture, grassVAO, view, projection);
     renderSlenderman(slenderShader, slenderTexture, slenderModel, slendermanTranslationMatrix, view, projection);
     renderFlashlight(flashlightShader, flashlightTexture, flashlightModel, flashlightView, projection);
