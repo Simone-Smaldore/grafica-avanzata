@@ -37,6 +37,7 @@ void renderForest(
     forestShader.setMat4("projection", projection);
     forestShader.setMat4("view", view);
 
+    //TODO: Implementare strategia per scartare alcuni k in modo da non intersecare le fence ?
     vector<int> VAO_indexes = getVaoIndexesFromCamera(camera);
 
     unsigned int num_VAO = (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST) * (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST);
