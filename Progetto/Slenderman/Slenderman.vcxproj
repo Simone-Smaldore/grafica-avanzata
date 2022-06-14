@@ -164,6 +164,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="fence.fs" />
+    <None Include="fence.vs" />
     <None Include="forest.fs" />
     <None Include="forest.vs" />
     <None Include="grass.fs" />

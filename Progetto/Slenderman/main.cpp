@@ -32,22 +32,25 @@ int main() {
   Shader forestShader("forest.vs", "forest.fs");
   Shader floorShader("model_loading.vs", "model_loading.fs");
   Shader grassShader("grass.vs", "grass.fs");
+  Shader fenceShader("fence.vs", "fence.fs");
 
   // Caricamento texture
   unsigned int slenderTexture = loadTexture("resources/models/Slenderman/diffuse.png");
   unsigned int flashlightTexture = loadTexture("resources/models/Torcia/DefaultMaterial_albedo.jpg");
   unsigned int floorTexture = loadTexture("resources/textures/floor/floor.jpg");
   unsigned int grassTexture = loadTexture("resources/textures/grass2.png");
+  unsigned int fenceTexture = loadTexture("resources/models/Fence/wood-fence/textura_cerca_de_madeira_COLOR.png");
 
   // Caricamento modelli
   Model slenderModel("resources/models/Slenderman/Slenderman.obj");
   Model flashlightModel("resources/models/Torcia/torcia.dae");
   Model treeModel("resources/models/Tree/oaktrees.obj");
+  Model fenceModel("resources/models/Fence/wood-fence/wood-fence.obj");
 
   // Inizializzazione One-Time Scena
   unsigned int floorVAO;
   unsigned int grassVAO;
-  initScene(floorVAO, treeModel, grassVAO);
+  initScene(floorVAO, treeModel, fenceModel, grassVAO);
   float deltaTime = 0.0f;
   float lastFrame = 0.0f;
 
@@ -71,13 +74,16 @@ int main() {
     glm::mat4 flashlightView = glm::mat4(1.0f);
     glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
-    glm::vec3 slendermanTranslationMatrix = glm::vec3(0.0f, -0.5f, -10.0f);
+    glm::vec3 slendermanTranslationMatrix = glm::vec3(0.0f, -0.8f, -10.0f);
     
+    //TODO: Aggiungere il render della posizione per debug
     renderFloor(floorShader, floorTexture, floorVAO, view, projection);
     renderForest(forestShader, treeModel, view, projection, camera);
+    renderFence(fenceShader, fenceTexture, fenceModel, view, projection);
     renderGrass(grassShader, grassTexture, grassVAO, view, projection);
     renderSlenderman(slenderShader, slenderTexture, slenderModel, slendermanTranslationMatrix, view, projection);
     renderFlashlight(flashlightShader, flashlightTexture, flashlightModel, flashlightView, projection);
+    
 
     // Swap dei buffer e processamento degli eventi in coda
     glfwSwapBuffers(window);

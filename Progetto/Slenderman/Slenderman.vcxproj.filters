@@ -34,6 +34,12 @@
     <None Include="grass.vs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="fence.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="fence.vs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

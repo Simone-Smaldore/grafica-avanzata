@@ -50,12 +50,36 @@ void renderForest(
                 glUniform1i(glGetUniformLocation(forestShader.ID, (name + std::to_string(j + 1)).c_str()), j);
                 glBindTexture(GL_TEXTURE_2D, treeModel.meshes[i].textures[j].id);
             }
-            glBindVertexArray(treeModel.meshes[i].VAOs[VAO_indexes[k]]);
+            int vao_index = max(VAO_indexes[k], 0);
+            glBindVertexArray(treeModel.meshes[i].VAOs[vao_index]);
             glDrawElementsInstanced(GL_TRIANGLES, treeModel.meshes[i].indices.size(), GL_UNSIGNED_INT, 0, num_element_for_VAO);
             glBindVertexArray(0);
         }
     }
 
+}
+
+void renderFence(
+    Shader& fenceShader,
+    unsigned int& fenceTexture,
+    Model& fenceModel,
+    glm::mat4& view,
+    glm::mat4& projection
+) {
+    fenceShader.use();
+    fenceShader.setMat4("projection", projection);
+    fenceShader.setMat4("view", view);
+    int num_VAO = NUM_FENCES_FOR_SIDE * 4;
+    //TODO: Renderizzare solo un sottoinsieme delle fence come per la foresta
+    for (int k = 0; k < num_VAO; k++) {
+        for (int i = 0; i < fenceModel.meshes.size(); i++) {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, fenceTexture);
+            glBindVertexArray(fenceModel.meshes[i].VAOs[k]);
+            glDrawElements(GL_TRIANGLES, fenceModel.meshes[i].indices.size(), GL_UNSIGNED_INT, 0);
+            glBindVertexArray(0);
+        }
+    }
 }
 
 void renderGrass(
