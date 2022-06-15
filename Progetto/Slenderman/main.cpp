@@ -15,6 +15,7 @@
 #include "glfw_utils.h"
 #include "scene.h"
 #include "renderer.h"
+#include "render_text.h"
 
 int main() {
   // Inizializza Glfw
@@ -22,6 +23,8 @@ int main() {
   if (window == nullptr) {
       return -1;
   }
+
+  initRenderText(SCR_WIDTH, SCR_HEIGHT);
 
   // Configura lo stato globale di opengl
   glEnable(GL_DEPTH_TEST);
@@ -76,7 +79,6 @@ int main() {
 
     glm::vec3 slendermanTranslationMatrix = glm::vec3(0.0f, -0.8f, -10.0f);
     
-    //TODO: Aggiungere il render della posizione per debug
     //TODO: Aggiungere i punti di interesse
     //TODO: Illuminazione di phong
     renderFloor(floorShader, floorTexture, floorVAO, view, projection);
@@ -86,7 +88,7 @@ int main() {
     renderGrass(grassShader, grassTexture, grassVAO, view, projection);
     renderSlenderman(slenderShader, slenderTexture, slenderModel, slendermanTranslationMatrix, view, projection);
     renderFlashlight(flashlightShader, flashlightTexture, flashlightModel, flashlightView, projection);
-    
+    if (DEBUG) renderInfo(camera);
 
     // Swap dei buffer e processamento degli eventi in coda
     glfwSwapBuffers(window);

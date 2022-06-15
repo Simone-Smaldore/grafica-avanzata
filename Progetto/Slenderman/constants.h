@@ -10,3 +10,4 @@ const float TREE_OFFSET = 40.0f;
 const int NUM_FENCES_FOR_SIDE = 160;
 //NON CAMBIARE IL FENCE OFFSET
 const float FENCE_OFFSET = 16.8f;
+const bool DEBUG = true;

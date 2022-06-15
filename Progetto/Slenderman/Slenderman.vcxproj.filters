@@ -40,6 +40,12 @@
     <None Include="fence.vs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="text.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="text.fs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

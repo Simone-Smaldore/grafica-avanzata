@@ -2,6 +2,10 @@
 #include "shader_m.h"
 #include "constants.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include "render_text.h"
+#include <sstream>
+#include <string>
+
 
 //TODO Transformare in oggetto renderer
 
@@ -142,6 +146,17 @@ void renderFlashlight(
     model = glm::rotate(model, (float)glm::radians(50.0), glm::vec3(1.0f, 0.0f, 0.0f));
     flashlightShader.setMat4("model", model);
     flashlightModel.Draw(flashlightShader);
+}
+
+void renderInfo(Camera& camera) {
+    std::stringstream ssx; 
+    ssx << "x: " << camera.Position.x;
+    std::string x = ssx.str();
+    RenderText(x, 1100.0f, 250.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+    std::stringstream ssz;
+    ssz << "z: " << camera.Position.z;
+    std::string z = ssz.str();
+    RenderText(z, 1100.0f, 200.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 vector<int> getVaoIndexesFromCamera(Camera& camera) {
