@@ -41,7 +41,6 @@ int main() {
   unsigned int slenderTexture = loadTexture("resources/models/Slenderman/diffuse.png");
   unsigned int flashlightTexture = loadTexture("resources/models/Torcia/DefaultMaterial_albedo.jpg");
   unsigned int floorTexture = loadTexture("resources/textures/floor/floor.jpg");
-  unsigned int grassTexture = loadTexture("resources/textures/grass2.png");
   unsigned int fenceTexture = loadTexture("resources/models/Fence/wood-fence/textura_cerca_de_madeira_COLOR.png");
 
   // Caricamento modelli
@@ -49,11 +48,12 @@ int main() {
   Model flashlightModel("resources/models/Torcia/torcia.dae");
   Model treeModel("resources/models/Tree/oaktrees.obj");
   Model fenceModel("resources/models/Fence/wood-fence/wood-fence.obj");
+  Model grassModel("resources/models/Grass/scene.gltf");
 
   // Inizializzazione One-Time Scena
   unsigned int floorVAO;
   unsigned int grassVAO;
-  initScene(floorVAO, treeModel, fenceModel, grassVAO);
+  initScene(floorVAO, treeModel, fenceModel, grassModel);
   float deltaTime = 0.0f;
   float lastFrame = 0.0f;
 
@@ -84,8 +84,8 @@ int main() {
     renderFloor(floorShader, floorTexture, floorVAO, view, projection);
     renderForest(forestShader, treeModel, view, projection, camera);
     renderFence(fenceShader, fenceTexture, fenceModel, view, projection);
-    //TODO: Aggiungere il render dell'object grass imitando la foresta
-    renderGrass(grassShader, grassTexture, grassVAO, view, projection);
+    //TODO generalizzare strategia per scene e renderer
+    renderGrass(grassShader, grassModel, view, projection, camera);
     renderSlenderman(slenderShader, slenderTexture, slenderModel, slendermanTranslationMatrix, view, projection);
     renderFlashlight(flashlightShader, flashlightTexture, flashlightModel, flashlightView, projection);
     if (DEBUG) renderInfo(camera);

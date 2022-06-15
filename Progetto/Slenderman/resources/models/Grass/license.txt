@@ -1,0 +1,11 @@
+Model Information:
+* title:	Grass patches
+* source:	https://sketchfab.com/3d-models/grass-patches-6952780b80594a31aab2dedf7249a47a
+* author:	DJMaesen (https://sketchfab.com/bumstrum)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Grass patches" (https://sketchfab.com/3d-models/grass-patches-6952780b80594a31aab2dedf7249a47a) by DJMaesen (https://sketchfab.com/bumstrum) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

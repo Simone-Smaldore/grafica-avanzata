@@ -9,7 +9,7 @@
 
 //TODO Transformare in oggetto renderer
 
-vector<int> getVaoIndexesFromCamera(Camera& camera);
+vector<int> getVaoIndexesFromCamera(Camera& camera, float offset, int quadSide, int vaoObjectSide);
 
 void renderFloor(
     Shader& floorShader,
@@ -42,7 +42,7 @@ void renderForest(
     forestShader.setMat4("view", view);
 
     //TODO: Implementare strategia per scartare alcuni k in modo da non intersecare le fence ?
-    vector<int> VAO_indexes = getVaoIndexesFromCamera(camera);
+    vector<int> VAO_indexes = getVaoIndexesFromCamera(camera, TREE_OFFSET, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_FOREST);
 
     unsigned int num_VAO = (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST) * (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST);
     unsigned int num_element_for_VAO = (TREE_QUAD_SIDE * TREE_QUAD_SIDE) / num_VAO;
@@ -89,21 +89,37 @@ void renderFence(
 
 void renderGrass(
     Shader& grassShader,
-    unsigned int& grassTexture,
-    unsigned int& grassVAO,
+    Model& grassModel,
     glm::mat4& view,
-    glm::mat4& projection
+    glm::mat4& projection,
+    Camera& camera
 ) {
-    unsigned int grassAmount = GRASS_QUAD_SIDE * GRASS_QUAD_SIDE;
     grassShader.use();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, grassTexture);
-    grassShader.setMat4("view", view);
     grassShader.setMat4("projection", projection);
-    glBindVertexArray(grassVAO);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 2 * grassAmount);
-    glBindVertexArray(0);
+    grassShader.setMat4("view", view);
+
+    vector<int> VAO_indexes = getVaoIndexesFromCamera(camera, GRASS_OFFSET, GRASS_QUAD_SIDE, VAO_OBJECTS_SIDE_GRASS);
+
+    unsigned int num_VAO = (GRASS_QUAD_SIDE / VAO_OBJECTS_SIDE_GRASS) * (GRASS_QUAD_SIDE / VAO_OBJECTS_SIDE_GRASS);
+    unsigned int num_element_for_VAO = (GRASS_QUAD_SIDE * GRASS_QUAD_SIDE) / num_VAO;
+
+    for (unsigned int k = 0; k < VAO_indexes.size(); k++) {
+        for (unsigned int i = 0; i < grassModel.meshes.size(); i++) {
+            for (unsigned int j = 0; j < grassModel.meshes[i].textures.size(); j++) {
+                glActiveTexture(GL_TEXTURE0 + j);
+                string name = grassModel.meshes[i].textures[j].type;
+                glUniform1i(glGetUniformLocation(grassShader.ID, (name + std::to_string(j + 1)).c_str()), j);
+                glBindTexture(GL_TEXTURE_2D, grassModel.meshes[i].textures[j].id);
+            }
+            int vao_index = max(VAO_indexes[k], 0);
+            glBindVertexArray(grassModel.meshes[i].VAOs[vao_index]);
+            glDrawElementsInstanced(GL_TRIANGLES, grassModel.meshes[i].indices.size(), GL_UNSIGNED_INT, 0, num_element_for_VAO);
+            glBindVertexArray(0);
+        }
+    }
+
 }
+
 
 void renderSlenderman(
     Shader& slenderShader,
@@ -159,60 +175,60 @@ void renderInfo(Camera& camera) {
     RenderText(z, 1100.0f, 200.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
-vector<int> getVaoIndexesFromCamera(Camera& camera) {
+vector<int> getVaoIndexesFromCamera(Camera& camera, float offset, int quadSide, int vaoObjectSide) {
     vector<int> result;
 
-    float x_camera = camera.Position.x + (TREE_OFFSET * TREE_QUAD_SIDE / 2) + TREE_OFFSET / 2;
+    float x_camera = camera.Position.x + (offset * quadSide / 2) + offset / 2;
     if (x_camera < 0.0f) {
         x_camera = 0.0f;
     }
-    if (x_camera >= TREE_OFFSET * TREE_QUAD_SIDE) {
-        x_camera = TREE_OFFSET * TREE_QUAD_SIDE - 0.1f;
+    if (x_camera >= offset * quadSide) {
+        x_camera = offset * quadSide - 0.1f;
     }
 
-    float z_camera = camera.Position.z + (TREE_OFFSET * TREE_QUAD_SIDE / 2) + TREE_OFFSET / 2;
+    float z_camera = camera.Position.z + (offset * quadSide / 2) + offset / 2;
     if (z_camera < 0.0f) {
         z_camera = 0.0f;
     }
-    if (z_camera >= TREE_OFFSET * TREE_QUAD_SIDE) {
-        z_camera = TREE_OFFSET * TREE_QUAD_SIDE - 0.1f;
+    if (z_camera >= offset * quadSide) {
+        z_camera = offset * quadSide - 0.1f;
     }
 
-    int x_index = floor(x_camera / (VAO_OBJECTS_SIDE_FOREST * TREE_OFFSET));
-    int z_index = floor(z_camera / (VAO_OBJECTS_SIDE_FOREST * TREE_OFFSET));
-    int vao_index = (x_index * (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST)) + z_index;
+    int x_index = floor(x_camera / (vaoObjectSide * offset));
+    int z_index = floor(z_camera / (vaoObjectSide * offset));
+    int vao_index = (x_index * (quadSide / vaoObjectSide)) + z_index;
     result.push_back(vao_index);
 
     x_index++;
-    vao_index = (x_index * (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST)) + z_index;
+    vao_index = (x_index * (quadSide / vaoObjectSide)) + z_index;
     result.push_back(vao_index);
 
     z_index++;
-    vao_index = (x_index * (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST)) + z_index;
+    vao_index = (x_index * (quadSide / vaoObjectSide)) + z_index;
     result.push_back(vao_index);
 
     x_index--;
-    vao_index = (x_index * (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST)) + z_index;
+    vao_index = (x_index * (quadSide / vaoObjectSide)) + z_index;
     result.push_back(vao_index);
 
     x_index--;
-    vao_index = (x_index * (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST)) + z_index;
+    vao_index = (x_index * (quadSide / vaoObjectSide)) + z_index;
     result.push_back(vao_index);
 
     z_index--;
-    vao_index = (x_index * (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST)) + z_index;
+    vao_index = (x_index * (quadSide / vaoObjectSide)) + z_index;
     result.push_back(vao_index);
 
     z_index--;
-    vao_index = (x_index * (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST)) + z_index;
+    vao_index = (x_index * (quadSide / vaoObjectSide)) + z_index;
     result.push_back(vao_index);
 
     x_index++;
-    vao_index = (x_index * (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST)) + z_index;
+    vao_index = (x_index * (quadSide / vaoObjectSide)) + z_index;
     result.push_back(vao_index);
 
     x_index++;
-    vao_index = (x_index * (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST)) + z_index;
+    vao_index = (x_index * (quadSide / vaoObjectSide)) + z_index;
     result.push_back(vao_index);
 
     return result;
