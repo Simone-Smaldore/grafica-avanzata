@@ -91,7 +91,6 @@ int main() {
     renderFloor(floorShader, floorTexture, floorVAO, view, projection);
     renderForest(forestShader, treeModel, view, projection, camera, positionsPointOfinterest);
     renderFence(fenceShader, fenceTexture, fenceModel, view, projection);
-    //TODO generalizzare strategia per scene e renderer
     renderGrass(grassShader, grassModel, view, projection, camera);
     renderSlenderman(slenderShader, slenderTexture, slenderModel, slendermanTranslationMatrix, view, projection);
     renderFlashlight(flashlightShader, flashlightTexture, flashlightModel, flashlightView, projection);
