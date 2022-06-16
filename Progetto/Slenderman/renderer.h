@@ -6,8 +6,9 @@
 #include <sstream>
 #include <string>
 
-//TODO Transformare in oggetto renderer
+//TODO Transformare in oggetto renderer con metodi privati
 
+//Privati
 void renderDynamicMap(Shader& shader, Model& modelObj, vector<int>& VAO_indexes, int quadSide, int vaoObjectSide);
 vector<int> getVaoIndexesFromCamera(Camera& camera, float offset, int quadSide, int vaoObjectSide);
 
@@ -35,13 +36,24 @@ void renderForest(
     Model& treeModel,
     glm::mat4& view,
     glm::mat4& projection,
-    Camera& camera
+    Camera& camera,
+    vector<int>& positionsPointOfinterest
 ) {
     forestShader.use();
     forestShader.setMat4("projection", projection);
     forestShader.setMat4("view", view);
     //TODO: Implementare strategia per scartare alcuni k in modo da non renderizzare pezzi di foresta ?
+
     vector<int> VAO_indexes = getVaoIndexesFromCamera(camera, TREE_OFFSET, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_FOREST);
+    for (int i = 0; i < positionsPointOfinterest.size(); i++) {
+        int val = positionsPointOfinterest[i];
+        auto it = find(VAO_indexes.begin(), VAO_indexes.end(), val);
+        if (it != VAO_indexes.end()){
+            int deleteIndex = it - VAO_indexes.begin();
+            VAO_indexes.erase(VAO_indexes.begin() + deleteIndex);
+        }
+    }
+
     renderDynamicMap(forestShader, treeModel, VAO_indexes, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_FOREST);
 }
 
@@ -219,6 +231,7 @@ vector<int> getVaoIndexesFromCamera(Camera& camera, float offset, int quadSide, 
     x_index++;
     vao_index = (x_index * (quadSide / vaoObjectSide)) + z_index;
     result.push_back(vao_index);
+
 
     return result;
 }

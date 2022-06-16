@@ -13,4 +13,5 @@ const float FENCE_OFFSET = 16.8f;
 const bool DEBUG = true;
 const int VAO_OBJECTS_SIDE_GRASS = 20;
 const float GRASS_OFFSET = 6.0f;
+const int POINTS_OF_INTEREST_NUMBER = 10;
 

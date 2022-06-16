@@ -1,23 +1,30 @@
 #pragma once
 #include "constants.h"
+#include <time.h>
 
+//TODO Transformare in oggetto scene con metodi privati
 
 void initFloor(unsigned int& floorVAO);
 void initTreeForest(Model& treeModel);
 void initFence(Model& fenceModel);
 void initGrass(Model& grassModel);
+void initPointsOfInterest(vector<int>& positionsPointOfinterest);
+//Privati
 void initDynamicMapForModel(Model& model, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset);
+bool isGoodPointOfInterest(int k, vector<int>& positionsPointOfinterest, int kMax, int numVAOForSide);
 
 void initScene(
 	unsigned int& floorVAO,
 	Model& treeModel,
     Model& fenceModel,
-    Model& grassModel
+    Model& grassModel,
+    vector<int>& positionsPointOfinterest
 ) {
 	initFloor(floorVAO);
 	initTreeForest(treeModel);
     initFence(fenceModel);
     initGrass(grassModel);
+    initPointsOfInterest(positionsPointOfinterest);
 }
 
 void initFloor(unsigned int& floorVAO) {
@@ -138,6 +145,20 @@ void initGrass(Model& grassModel) {
     initDynamicMapForModel(grassModel, GRASS_QUAD_SIDE, VAO_OBJECTS_SIDE_GRASS, GRASS_OFFSET, scaleMatrix, useOffset);
 }
 
+void initPointsOfInterest(vector<int>& positionsPointOfinterest) {
+    srand(time(NULL));
+    int numVAOForSide = TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST;
+    int kMax = (numVAOForSide * numVAOForSide) - 1;
+    for (int i = 0; i < POINTS_OF_INTEREST_NUMBER; i++) {
+        int k = static_cast <float> (rand()) / static_cast <float> (RAND_MAX) * kMax;
+        while (!isGoodPointOfInterest(k, positionsPointOfinterest, kMax, numVAOForSide)) {
+            k = static_cast <float> (rand()) / static_cast <float> (RAND_MAX) * kMax;
+        }
+        positionsPointOfinterest.push_back(k);
+    }
+    
+}
+
 void initDynamicMapForModel(Model& modelObj, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset) {
     int num_VAO = (quadSide / vaoObjectSide) * (quadSide / vaoObjectSide);
 
@@ -211,4 +232,26 @@ void initDynamicMapForModel(Model& modelObj, int quadSide, int vaoObjectSide, fl
     for (unsigned int i = 0; i < modelObj.meshes.size(); i++) {
         modelObj.meshes[i].setupVAOs();
     }
+}
+
+bool isGoodPointOfInterest(int k, vector<int>& positionsPointOfinterest, int kMax, int numVAOForSide) {
+    if (k < numVAOForSide || k >(kMax - numVAOForSide)) {
+        return false;
+    }
+    if (k % numVAOForSide == 0 || (k + 1) % numVAOForSide == 0) {
+        return false;
+    }
+    for (int i = 0; i < positionsPointOfinterest.size(); i++) {
+        int val = positionsPointOfinterest[i];
+        if (k + 1 == val || k - 1 == val) {
+            return false;
+        }
+        if (k + numVAOForSide == val || k + numVAOForSide + 1 == val || k + numVAOForSide - 1 == val) {
+            return false;
+        }
+        if (k - numVAOForSide == val || k - numVAOForSide + 1 == val || k - numVAOForSide - 1 == val) {
+            return false;
+        }
+    }
+    return true;
 }

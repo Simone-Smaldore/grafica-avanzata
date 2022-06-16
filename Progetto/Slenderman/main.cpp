@@ -17,6 +17,8 @@
 #include "renderer.h"
 #include "render_text.h"
 
+
+
 int main() {
   // Inizializza Glfw
   GLFWwindow* window = initGlfw();
@@ -53,9 +55,14 @@ int main() {
   // Inizializzazione One-Time Scena
   unsigned int floorVAO;
   unsigned int grassVAO;
-  initScene(floorVAO, treeModel, fenceModel, grassModel);
+  vector<int> positionsPointOfinterest;
+  initScene(floorVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest);
   float deltaTime = 0.0f;
   float lastFrame = 0.0f;
+
+  for (int i = 0; i < positionsPointOfinterest.size(); i++) {
+      cout << "K " << i << ": " << positionsPointOfinterest[i] << endl;
+  }
 
   // Loop di rendering
   // -----------
@@ -82,7 +89,7 @@ int main() {
     //TODO: Aggiungere i punti di interesse
     //TODO: Illuminazione di phong
     renderFloor(floorShader, floorTexture, floorVAO, view, projection);
-    renderForest(forestShader, treeModel, view, projection, camera);
+    renderForest(forestShader, treeModel, view, projection, camera, positionsPointOfinterest);
     renderFence(fenceShader, fenceTexture, fenceModel, view, projection);
     //TODO generalizzare strategia per scene e renderer
     renderGrass(grassShader, grassModel, view, projection, camera);
