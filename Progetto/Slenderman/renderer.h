@@ -6,9 +6,9 @@
 #include <sstream>
 #include <string>
 
-
 //TODO Transformare in oggetto renderer
 
+void renderDynamicMap(Shader& shader, Model& modelObj, vector<int>& VAO_indexes, int quadSide, int vaoObjectSide);
 vector<int> getVaoIndexesFromCamera(Camera& camera, float offset, int quadSide, int vaoObjectSide);
 
 void renderFloor(
@@ -40,28 +40,9 @@ void renderForest(
     forestShader.use();
     forestShader.setMat4("projection", projection);
     forestShader.setMat4("view", view);
-
-    //TODO: Implementare strategia per scartare alcuni k in modo da non intersecare le fence ?
+    //TODO: Implementare strategia per scartare alcuni k in modo da non renderizzare pezzi di foresta ?
     vector<int> VAO_indexes = getVaoIndexesFromCamera(camera, TREE_OFFSET, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_FOREST);
-
-    unsigned int num_VAO = (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST) * (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST);
-    unsigned int num_element_for_VAO = (TREE_QUAD_SIDE * TREE_QUAD_SIDE) / num_VAO;
-
-    for (unsigned int k = 0; k < VAO_indexes.size(); k++) {
-        for (unsigned int i = 0; i < treeModel.meshes.size(); i++) {
-            for (unsigned int j = 0; j < treeModel.meshes[i].textures.size(); j++) {
-                glActiveTexture(GL_TEXTURE0 + j);
-                string name = treeModel.meshes[i].textures[j].type;
-                glUniform1i(glGetUniformLocation(forestShader.ID, (name + std::to_string(j + 1)).c_str()), j);
-                glBindTexture(GL_TEXTURE_2D, treeModel.meshes[i].textures[j].id);
-            }
-            int vao_index = max(VAO_indexes[k], 0);
-            glBindVertexArray(treeModel.meshes[i].VAOs[vao_index]);
-            glDrawElementsInstanced(GL_TRIANGLES, treeModel.meshes[i].indices.size(), GL_UNSIGNED_INT, 0, num_element_for_VAO);
-            glBindVertexArray(0);
-        }
-    }
-
+    renderDynamicMap(forestShader, treeModel, VAO_indexes, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_FOREST);
 }
 
 void renderFence(
@@ -99,25 +80,7 @@ void renderGrass(
     grassShader.setMat4("view", view);
 
     vector<int> VAO_indexes = getVaoIndexesFromCamera(camera, GRASS_OFFSET, GRASS_QUAD_SIDE, VAO_OBJECTS_SIDE_GRASS);
-
-    unsigned int num_VAO = (GRASS_QUAD_SIDE / VAO_OBJECTS_SIDE_GRASS) * (GRASS_QUAD_SIDE / VAO_OBJECTS_SIDE_GRASS);
-    unsigned int num_element_for_VAO = (GRASS_QUAD_SIDE * GRASS_QUAD_SIDE) / num_VAO;
-
-    for (unsigned int k = 0; k < VAO_indexes.size(); k++) {
-        for (unsigned int i = 0; i < grassModel.meshes.size(); i++) {
-            for (unsigned int j = 0; j < grassModel.meshes[i].textures.size(); j++) {
-                glActiveTexture(GL_TEXTURE0 + j);
-                string name = grassModel.meshes[i].textures[j].type;
-                glUniform1i(glGetUniformLocation(grassShader.ID, (name + std::to_string(j + 1)).c_str()), j);
-                glBindTexture(GL_TEXTURE_2D, grassModel.meshes[i].textures[j].id);
-            }
-            int vao_index = max(VAO_indexes[k], 0);
-            glBindVertexArray(grassModel.meshes[i].VAOs[vao_index]);
-            glDrawElementsInstanced(GL_TRIANGLES, grassModel.meshes[i].indices.size(), GL_UNSIGNED_INT, 0, num_element_for_VAO);
-            glBindVertexArray(0);
-        }
-    }
-
+    renderDynamicMap(grassShader, grassModel, VAO_indexes, GRASS_QUAD_SIDE, VAO_OBJECTS_SIDE_GRASS);
 }
 
 
@@ -173,6 +136,32 @@ void renderInfo(Camera& camera) {
     ssz << "z: " << camera.Position.z;
     std::string z = ssz.str();
     RenderText(z, 1100.0f, 200.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+    int k_index = getVaoIndexesFromCamera(camera, TREE_OFFSET, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_FOREST)[0];
+    std::stringstream ssk;
+    ssk << "k_index: " << k_index;
+    std::string k = ssk.str();
+    RenderText(k, 1100.0f, 150.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+}
+
+void renderDynamicMap(Shader& shader, Model& modelObj, vector<int>& VAO_indexes, int quadSide, int vaoObjectSide)  {
+    unsigned int num_VAO = (quadSide / vaoObjectSide) * (quadSide / vaoObjectSide);
+    unsigned int num_element_for_VAO = (quadSide * quadSide) / num_VAO;
+
+    for (unsigned int k = 0; k < VAO_indexes.size(); k++) {
+        for (unsigned int i = 0; i < modelObj.meshes.size(); i++) {
+            for (unsigned int j = 0; j < modelObj.meshes[i].textures.size(); j++) {
+                glActiveTexture(GL_TEXTURE0 + j);
+                string name = modelObj.meshes[i].textures[j].type;
+                glUniform1i(glGetUniformLocation(shader.ID, (name + std::to_string(j + 1)).c_str()), j);
+                glBindTexture(GL_TEXTURE_2D, modelObj.meshes[i].textures[j].id);
+            }
+            int vao_index = max(VAO_indexes[k], 0);
+            glBindVertexArray(modelObj.meshes[i].VAOs[vao_index]);
+            glDrawElementsInstanced(GL_TRIANGLES, modelObj.meshes[i].indices.size(), GL_UNSIGNED_INT, 0, num_element_for_VAO);
+            glBindVertexArray(0);
+        }
+    }
 }
 
 vector<int> getVaoIndexesFromCamera(Camera& camera, float offset, int quadSide, int vaoObjectSide) {

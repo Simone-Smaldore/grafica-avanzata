@@ -6,6 +6,7 @@ void initFloor(unsigned int& floorVAO);
 void initTreeForest(Model& treeModel);
 void initFence(Model& fenceModel);
 void initGrass(Model& grassModel);
+void initDynamicMapForModel(Model& model, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset);
 
 void initScene(
 	unsigned int& floorVAO,
@@ -47,73 +48,9 @@ void initFloor(unsigned int& floorVAO) {
 }
 
 void initTreeForest(Model& treeModel) {
-    int num_VAO = (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST) * (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST);
-
-    unsigned int amount = TREE_QUAD_SIDE * TREE_QUAD_SIDE;
-    vector<glm::mat4*> modelMatrices;
-    for (int k = 0; k < num_VAO; k++) {
-        modelMatrices.push_back(new glm::mat4[(amount / num_VAO)]);
-    }
-    srand(glfwGetTime()); // initialize random seed	
-    float offset = TREE_OFFSET;
-    for (int i = 0; i < TREE_QUAD_SIDE; i++) {
-        for (int j = 0; j < TREE_QUAD_SIDE; j++) {
-            glm::mat4 model = glm::mat4(1.0f);
-            // 1. Traslazione degli alberi in base all'indice della griglia
-            float x = (i - TREE_QUAD_SIDE / 2) * offset;
-            float y = -4.0f;
-            float z = (j - TREE_QUAD_SIDE / 2) * offset;
-            model = glm::translate(model, glm::vec3(x, y, z));
-            // 2. Scala gli alberi
-            model = glm::scale(model, glm::vec3(0.08f, 0.08f, 0.08f));
-            // 3. Rotazione randomica
-            float rotAngle = (rand() % 360);
-            model = glm::rotate(model, rotAngle, glm::vec3(0.0f, 1.0f, 0.0f));
-            // 4. Aggiunge al matrice al modello
-            unsigned int vao_i = floor(i / VAO_OBJECTS_SIDE_FOREST);
-            unsigned int vao_j = floor(j / VAO_OBJECTS_SIDE_FOREST);
-            unsigned int vao_index = (vao_i * (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST)) + vao_j;
-            unsigned int matrix_index = ((i% VAO_OBJECTS_SIDE_FOREST) * VAO_OBJECTS_SIDE_FOREST) +  (j % VAO_OBJECTS_SIDE_FOREST);
-            //cout <<"vao i: " << vao_i << " vao_j: " << vao_j << " vao_index: " << vao_index << "matrix_index:" << matrix_index << endl;
-            modelMatrices[vao_index][matrix_index] = model;
-        }
-    }
-
-    for (int k = 0; k < num_VAO; k++) {
-        unsigned int buffer;
-        glGenBuffers(1, &buffer);
-        glBindBuffer(GL_ARRAY_BUFFER, buffer);
-        glm::mat4* model = modelMatrices[k];
-        glBufferData(GL_ARRAY_BUFFER, (amount/num_VAO) * sizeof(glm::mat4), &model[0], GL_STATIC_DRAW);
-        for (unsigned int i = 0; i < treeModel.meshes.size(); i++) {
-            unsigned int VAO;
-            glGenVertexArrays(1, &VAO);
-            glBindVertexArray(VAO);
-            // set attribute pointers for matrix (4 times vec4)
-            glEnableVertexAttribArray(3);
-            glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
-            glEnableVertexAttribArray(4);
-            glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
-            glEnableVertexAttribArray(5);
-            glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
-            glEnableVertexAttribArray(6);
-            glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
-
-            glVertexAttribDivisor(3, 1);
-            glVertexAttribDivisor(4, 1);
-            glVertexAttribDivisor(5, 1);
-            glVertexAttribDivisor(6, 1);
-
-            treeModel.meshes[i].VAOs.push_back(VAO);
-            glBindVertexArray(0);
-            
-        }
-    }
-    
-    for (unsigned int i = 0; i < treeModel.meshes.size(); i++) {
-        treeModel.meshes[i].setupVAOs();
-    }
-   
+    bool useOffset = false;
+    glm::vec3 scaleMatrix = glm::vec3(0.08f, 0.08f, 0.08f);
+    initDynamicMapForModel(treeModel, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_FOREST, TREE_OFFSET, scaleMatrix, useOffset);   
 }
 
 void initFence(Model& fenceModel) {
@@ -196,37 +133,46 @@ void initFence(Model& fenceModel) {
 }
 
 void initGrass(Model& grassModel) {
-    int num_VAO = (GRASS_QUAD_SIDE / VAO_OBJECTS_SIDE_GRASS) * (GRASS_QUAD_SIDE / VAO_OBJECTS_SIDE_GRASS);
+    bool useOffset = true;
+    glm::vec3 scaleMatrix = glm::vec3(0.015f, 0.01f, 0.015f);
+    initDynamicMapForModel(grassModel, GRASS_QUAD_SIDE, VAO_OBJECTS_SIDE_GRASS, GRASS_OFFSET, scaleMatrix, useOffset);
+}
 
-    unsigned int amount = GRASS_QUAD_SIDE * GRASS_QUAD_SIDE;
+void initDynamicMapForModel(Model& modelObj, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset) {
+    int num_VAO = (quadSide / vaoObjectSide) * (quadSide / vaoObjectSide);
+
+    unsigned int amount = quadSide * quadSide;
     vector<glm::mat4*> modelMatrices;
     for (int k = 0; k < num_VAO; k++) {
         modelMatrices.push_back(new glm::mat4[(amount / num_VAO)]);
     }
     srand(glfwGetTime()); // initialize random seed	
-    float offset = GRASS_OFFSET;
-    for (int i = 0; i < GRASS_QUAD_SIDE; i++) {
-        for (int j = 0; j < GRASS_QUAD_SIDE; j++) {
+    for (int i = 0; i < quadSide; i++) {
+        for (int j = 0; j < quadSide; j++) {
             glm::mat4 model = glm::mat4(1.0f);
-            float rx = static_cast <float> (rand()) / static_cast <float> (RAND_MAX) * GRASS_OFFSET/2;
-            float rz = static_cast <float> (rand()) / static_cast <float> (RAND_MAX) * GRASS_OFFSET/2;
+            float rx = 0.0f;
+            float rz = 0.0f;
+            if (useRandomOffset) {
+                rx = static_cast <float> (rand()) / static_cast <float> (RAND_MAX) * offset / 2;
+                rz = static_cast <float> (rand()) / static_cast <float> (RAND_MAX) * offset / 2;
+            }
+
             // 1. Traslazione degli alberi in base all'indice della griglia
-            float x = (i - GRASS_QUAD_SIDE / 2) * offset + rx;
+            float x = (i - quadSide / 2) * offset + rx;
             float y = -4.0f;
-            float z = (j - GRASS_QUAD_SIDE / 2) * offset + rz;
+            float z = (j - quadSide / 2) * offset + rz;
             model = glm::translate(model, glm::vec3(x, y, z));
             // 2. Scala gli alberi
-            model = glm::scale(model, glm::vec3(0.015f, 0.01f, 0.015f));
+            model = glm::scale(model, scaleMatrix);
             // 3. Rotazione randomica
             float rotAngle = (rand() % 360);
             model = glm::rotate(model, rotAngle, glm::vec3(0.0f, 1.0f, 0.0f));
-            
+
             // 4. Aggiunge al matrice al modello
-            unsigned int vao_i = floor(i / VAO_OBJECTS_SIDE_GRASS);
-            unsigned int vao_j = floor(j / VAO_OBJECTS_SIDE_GRASS);
-            unsigned int vao_index = (vao_i * (GRASS_QUAD_SIDE / VAO_OBJECTS_SIDE_GRASS)) + vao_j;
-            unsigned int matrix_index = ((i % VAO_OBJECTS_SIDE_GRASS) * VAO_OBJECTS_SIDE_GRASS) + (j % VAO_OBJECTS_SIDE_GRASS);
-            //cout <<"vao i: " << vao_i << " vao_j: " << vao_j << " vao_index: " << vao_index << "matrix_index:" << matrix_index << endl;
+            unsigned int vao_i = floor(i / vaoObjectSide);
+            unsigned int vao_j = floor(j / vaoObjectSide);
+            unsigned int vao_index = (vao_i * (quadSide / vaoObjectSide)) + vao_j;
+            unsigned int matrix_index = ((i % vaoObjectSide) * vaoObjectSide) + (j % vaoObjectSide);   
             modelMatrices[vao_index][matrix_index] = model;
         }
     }
@@ -237,7 +183,7 @@ void initGrass(Model& grassModel) {
         glBindBuffer(GL_ARRAY_BUFFER, buffer);
         glm::mat4* model = modelMatrices[k];
         glBufferData(GL_ARRAY_BUFFER, (amount / num_VAO) * sizeof(glm::mat4), &model[0], GL_STATIC_DRAW);
-        for (unsigned int i = 0; i < grassModel.meshes.size(); i++) {
+        for (unsigned int i = 0; i < modelObj.meshes.size(); i++) {
             unsigned int VAO;
             glGenVertexArrays(1, &VAO);
             glBindVertexArray(VAO);
@@ -256,14 +202,13 @@ void initGrass(Model& grassModel) {
             glVertexAttribDivisor(5, 1);
             glVertexAttribDivisor(6, 1);
 
-            grassModel.meshes[i].VAOs.push_back(VAO);
+            modelObj.meshes[i].VAOs.push_back(VAO);
             glBindVertexArray(0);
 
         }
     }
 
-    for (unsigned int i = 0; i < grassModel.meshes.size(); i++) {
-        grassModel.meshes[i].setupVAOs();
+    for (unsigned int i = 0; i < modelObj.meshes.size(); i++) {
+        modelObj.meshes[i].setupVAOs();
     }
-
 }
