@@ -149,7 +149,8 @@ void renderInfo(Camera& camera) {
     std::string z = ssz.str();
     RenderText(z, 1100.0f, 200.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 
-    int k_index = getVaoIndexesFromCamera(camera, TREE_OFFSET, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_FOREST)[0];
+    vector<int> indexes = getVaoIndexesFromCamera(camera, TREE_OFFSET, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_FOREST);
+    int k_index = indexes[(indexes.size() - 1) /2];
     std::stringstream ssk;
     ssk << "k_index: " << k_index;
     std::string k = ssk.str();
@@ -197,41 +198,16 @@ vector<int> getVaoIndexesFromCamera(Camera& camera, float offset, int quadSide, 
 
     int x_index = floor(x_camera / (vaoObjectSide * offset));
     int z_index = floor(z_camera / (vaoObjectSide * offset));
-    int vao_index = (x_index * (quadSide / vaoObjectSide)) + z_index;
-    result.push_back(vao_index);
 
-    x_index++;
-    vao_index = (x_index * (quadSide / vaoObjectSide)) + z_index;
-    result.push_back(vao_index);
 
-    z_index++;
-    vao_index = (x_index * (quadSide / vaoObjectSide)) + z_index;
-    result.push_back(vao_index);
+    for (int i = (x_index - INT_OFFSET_VAO_INDEXES); i <= (x_index + INT_OFFSET_VAO_INDEXES); i++) {
+        for (int j = (z_index - INT_OFFSET_VAO_INDEXES); j <= (z_index + INT_OFFSET_VAO_INDEXES); j++) {
+            int vao_index = (i * (quadSide / vaoObjectSide)) + j;
+            result.push_back(vao_index);
+        }
+    }
 
-    x_index--;
-    vao_index = (x_index * (quadSide / vaoObjectSide)) + z_index;
-    result.push_back(vao_index);
-
-    x_index--;
-    vao_index = (x_index * (quadSide / vaoObjectSide)) + z_index;
-    result.push_back(vao_index);
-
-    z_index--;
-    vao_index = (x_index * (quadSide / vaoObjectSide)) + z_index;
-    result.push_back(vao_index);
-
-    z_index--;
-    vao_index = (x_index * (quadSide / vaoObjectSide)) + z_index;
-    result.push_back(vao_index);
-
-    x_index++;
-    vao_index = (x_index * (quadSide / vaoObjectSide)) + z_index;
-    result.push_back(vao_index);
-
-    x_index++;
-    vao_index = (x_index * (quadSide / vaoObjectSide)) + z_index;
-    result.push_back(vao_index);
-
+    //cout << "Len List: " << result.size() << endl;
 
     return result;
 }

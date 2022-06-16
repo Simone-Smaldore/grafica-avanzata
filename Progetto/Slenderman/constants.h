@@ -14,4 +14,5 @@ const bool DEBUG = true;
 const int VAO_OBJECTS_SIDE_GRASS = 20;
 const float GRASS_OFFSET = 6.0f;
 const int POINTS_OF_INTEREST_NUMBER = 10;
+const int INT_OFFSET_VAO_INDEXES = 1;
 
