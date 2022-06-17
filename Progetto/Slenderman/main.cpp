@@ -38,10 +38,12 @@ int main() {
   // Build e compilazione degli shader (TODO: Refactor finale shader)
   Shader slenderShader("model_loading.vs", "model_loading.fs");
   Shader flashlightShader("model_loading.vs", "model_loading.fs");
-  Shader forestShader("forest.vs", "forest.fs");
   Shader floorShader("model_loading.vs", "model_loading.fs");
-  Shader grassShader("grass.vs", "grass.fs");
-  Shader fenceShader("fence.vs", "fence.fs");
+  Shader forestShader("light_shader.vs", "light_shader.fs");
+  Shader grassShader("light_shader.vs", "light_shader.fs");
+  Shader fenceShader("light_shader.vs", "light_shader.fs");
+
+  
 
   // Caricamento texture
   unsigned int slenderTexture = loadTexture("resources/models/Slenderman/diffuse.png");
@@ -83,7 +85,7 @@ int main() {
     processInput(window, camera, deltaTime);
 
     // Pulizia dei buffer
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Rendering della scena

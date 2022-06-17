@@ -11,6 +11,7 @@
 //Privati
 void renderDynamicMap(Shader& shader, Model& modelObj, vector<int>& VAO_indexes, int quadSide, int vaoObjectSide);
 vector<int> getVaoIndexesFromCamera(Camera& camera, float offset, int quadSide, int vaoObjectSide);
+void initLightShader(Shader& shader);
 
 void renderFloor(
     Shader& floorShader,
@@ -39,9 +40,12 @@ void renderForest(
     Camera& camera,
     vector<int>& positionsPointOfinterest
 ) {
+
+    initLightShader(forestShader);
     forestShader.use();
     forestShader.setMat4("projection", projection);
     forestShader.setMat4("view", view);
+    forestShader.setFloat("alphaValue", 0.7f);
     //TODO: Implementare strategia per scartare alcuni k in modo da non renderizzare pezzi di foresta ?
 
     vector<int> VAO_indexes = getVaoIndexesFromCamera(camera, TREE_OFFSET, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_FOREST);
@@ -64,9 +68,11 @@ void renderFence(
     glm::mat4& view,
     glm::mat4& projection
 ) {
+    initLightShader(fenceShader);
     fenceShader.use();
     fenceShader.setMat4("projection", projection);
     fenceShader.setMat4("view", view);
+    fenceShader.setFloat("alphaValue", 0.7f);
     int num_VAO = NUM_FENCES_FOR_SIDE * 4;
     //TODO: Renderizzare solo un sottoinsieme delle fence come per la foresta
     for (int k = 0; k < num_VAO; k++) {
@@ -87,9 +93,11 @@ void renderGrass(
     glm::mat4& projection,
     Camera& camera
 ) {
+    initLightShader(grassShader);
     grassShader.use();
     grassShader.setMat4("projection", projection);
     grassShader.setMat4("view", view);
+    grassShader.setFloat("alphaValue", 0.1f);
 
     vector<int> VAO_indexes = getVaoIndexesFromCamera(camera, GRASS_OFFSET, GRASS_QUAD_SIDE, VAO_OBJECTS_SIDE_GRASS);
     renderDynamicMap(grassShader, grassModel, VAO_indexes, GRASS_QUAD_SIDE, VAO_OBJECTS_SIDE_GRASS);
@@ -106,6 +114,7 @@ void renderSlenderman(
 ) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, slenderTexture);
+    initLightShader(slenderShader);
     slenderShader.use();
     slenderShader.setMat4("view", view);
     slenderShader.setMat4("projection", projection);
@@ -125,6 +134,7 @@ void renderFlashlight(
 ) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, flashlightTexture);
+    initLightShader(flashlightShader);
     flashlightShader.use();
     view = glm::mat4(1.0f);
     flashlightShader.setMat4("view", view);
@@ -215,6 +225,28 @@ vector<int> getVaoIndexesFromCamera(Camera& camera, float offset, int quadSide, 
     //cout << "Len List: " << result.size() << endl;
 
     return result;
+}
+
+void initLightShader(Shader& shader) {
+    shader.use();
+    shader.setVec3("light.position", camera.Position);
+    shader.setVec3("light.direction", camera.Front);
+    shader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
+    shader.setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
+    shader.setVec3("viewPos", camera.Position);
+
+    // light properties
+    shader.setVec3("light.ambient", 0.1f, 0.1f, 0.1f);
+    // we configure the diffuse intensity slightly higher; the right lighting conditions differ with each lighting method and environment.
+    // each environment and lighting type requires some tweaking to get the best out of your environment.
+    shader.setVec3("light.diffuse", 0.8f, 0.8f, 0.8f);
+    shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+    shader.setFloat("light.constant", 1.0f);
+    shader.setFloat("light.linear", 0.09f);
+    shader.setFloat("light.quadratic", 0.032f);
+
+    // material properties
+    shader.setFloat("material.shininess", 32.0f);
 }
     
 

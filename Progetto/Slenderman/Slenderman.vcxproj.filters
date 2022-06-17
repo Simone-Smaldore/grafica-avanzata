@@ -46,6 +46,12 @@
     <None Include="text.fs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="light_shader.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="light_shader.vs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
