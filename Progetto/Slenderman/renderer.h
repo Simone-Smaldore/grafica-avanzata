@@ -257,7 +257,8 @@ void initLightShader(Shader& shader, bool lightOn) {
     shader.setFloat("light.linear", 0.09f);
     shader.setFloat("light.quadratic", 0.0032f);
 
-    if (ILLUMINATE_SCENE) {
+    // TODO eliminare la possibilita di illuminare la scena in produzione
+    if (ILLUMINATE_SCENE && !lightOn) {
         shader.setVec3("light.ambient", 1.0f, 1.0f, 1.0f);
         shader.setFloat("light.linear", 0.0f);
         shader.setFloat("light.quadratic", 0.0f);
