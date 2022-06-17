@@ -11,15 +11,17 @@
 //Privati
 void renderDynamicMap(Shader& shader, Model& modelObj, vector<int>& VAO_indexes, int quadSide, int vaoObjectSide);
 vector<int> getVaoIndexesFromCamera(Camera& camera, float offset, int quadSide, int vaoObjectSide);
-void initLightShader(Shader& shader);
+void initLightShader(Shader& shader, bool lightOn);
 
 void renderFloor(
     Shader& floorShader,
     unsigned int& floorTexture,
     unsigned int& floorVAO,
     glm::mat4& view,
-    glm::mat4& projection
+    glm::mat4& projection,
+    bool lightOn
 ) {
+    initLightShader(floorShader, lightOn);
     floorShader.use();
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, floorTexture);
@@ -38,17 +40,18 @@ void renderForest(
     glm::mat4& view,
     glm::mat4& projection,
     Camera& camera,
-    vector<int>& positionsPointOfinterest
+    vector<int>& positionsPointOfinterest,
+    bool lightOn
 ) {
 
-    initLightShader(forestShader);
+    initLightShader(forestShader, lightOn);
     forestShader.use();
     forestShader.setMat4("projection", projection);
     forestShader.setMat4("view", view);
     forestShader.setFloat("alphaValue", 0.7f);
     //TODO: Implementare strategia per scartare alcuni k in modo da non renderizzare pezzi di foresta ?
 
-    vector<int> VAO_indexes = getVaoIndexesFromCamera(camera, TREE_OFFSET, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_FOREST);
+    vector<int> VAO_indexes = getVaoIndexesFromCamera(camera, TREE_OFFSET, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_TREE);
     for (int i = 0; i < positionsPointOfinterest.size(); i++) {
         int val = positionsPointOfinterest[i];
         auto it = find(VAO_indexes.begin(), VAO_indexes.end(), val);
@@ -58,7 +61,7 @@ void renderForest(
         }
     }
 
-    renderDynamicMap(forestShader, treeModel, VAO_indexes, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_FOREST);
+    renderDynamicMap(forestShader, treeModel, VAO_indexes, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_TREE);
 }
 
 void renderFence(
@@ -66,9 +69,10 @@ void renderFence(
     unsigned int& fenceTexture,
     Model& fenceModel,
     glm::mat4& view,
-    glm::mat4& projection
+    glm::mat4& projection,
+    bool lightOn
 ) {
-    initLightShader(fenceShader);
+    initLightShader(fenceShader, lightOn);
     fenceShader.use();
     fenceShader.setMat4("projection", projection);
     fenceShader.setMat4("view", view);
@@ -91,13 +95,14 @@ void renderGrass(
     Model& grassModel,
     glm::mat4& view,
     glm::mat4& projection,
-    Camera& camera
+    Camera& camera,
+    bool lightOn
 ) {
-    initLightShader(grassShader);
+    initLightShader(grassShader, lightOn);
     grassShader.use();
     grassShader.setMat4("projection", projection);
     grassShader.setMat4("view", view);
-    grassShader.setFloat("alphaValue", 0.1f);
+    grassShader.setFloat("alphaValue", 0.4f);
 
     vector<int> VAO_indexes = getVaoIndexesFromCamera(camera, GRASS_OFFSET, GRASS_QUAD_SIDE, VAO_OBJECTS_SIDE_GRASS);
     renderDynamicMap(grassShader, grassModel, VAO_indexes, GRASS_QUAD_SIDE, VAO_OBJECTS_SIDE_GRASS);
@@ -110,11 +115,12 @@ void renderSlenderman(
     Model& slenderModel,
     glm::vec3& translationMatrix,
     glm::mat4& view,
-    glm::mat4& projection
+    glm::mat4& projection,
+    bool lightOn
 ) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, slenderTexture);
-    initLightShader(slenderShader);
+    initLightShader(slenderShader, lightOn);
     slenderShader.use();
     slenderShader.setMat4("view", view);
     slenderShader.setMat4("projection", projection);
@@ -130,11 +136,12 @@ void renderFlashlight(
     unsigned int& flashlightTexture,
     Model& flashlightModel,
     glm::mat4& view,
-    glm::mat4& projection
+    glm::mat4& projection,
+    bool lightOn
 ) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, flashlightTexture);
-    initLightShader(flashlightShader);
+    initLightShader(flashlightShader, lightOn);
     flashlightShader.use();
     view = glm::mat4(1.0f);
     flashlightShader.setMat4("view", view);
@@ -159,7 +166,7 @@ void renderInfo(Camera& camera, int fps) {
     std::string z = ssz.str();
     RenderText(z, 1100.0f, 200.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 
-    vector<int> indexes = getVaoIndexesFromCamera(camera, TREE_OFFSET, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_FOREST);
+    vector<int> indexes = getVaoIndexesFromCamera(camera, TREE_OFFSET, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_TREE);
     int k_index = indexes[(indexes.size() - 1) /2];
     std::stringstream ssk;
     ssk << "k_index: " << k_index;
@@ -222,12 +229,10 @@ vector<int> getVaoIndexesFromCamera(Camera& camera, float offset, int quadSide, 
         }
     }
 
-    //cout << "Len List: " << result.size() << endl;
-
     return result;
 }
 
-void initLightShader(Shader& shader) {
+void initLightShader(Shader& shader, bool lightOn) {
     shader.use();
     shader.setVec3("light.position", camera.Position);
     shader.setVec3("light.direction", camera.Front);
@@ -241,9 +246,22 @@ void initLightShader(Shader& shader) {
     // each environment and lighting type requires some tweaking to get the best out of your environment.
     shader.setVec3("light.diffuse", 0.8f, 0.8f, 0.8f);
     shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+
+    if (!lightOn) {
+        shader.setVec3("light.ambient", 0.01f, 0.01f, 0.01f);
+        shader.setVec3("light.diffuse", 0.0f, 0.0f, 0.0f);
+        shader.setVec3("light.specular", 0.0f, 0.0f, 0.0f);
+    }
+
     shader.setFloat("light.constant", 1.0f);
     shader.setFloat("light.linear", 0.09f);
-    shader.setFloat("light.quadratic", 0.032f);
+    shader.setFloat("light.quadratic", 0.0032f);
+
+    if (ILLUMINATE_SCENE) {
+        shader.setVec3("light.ambient", 1.0f, 1.0f, 1.0f);
+        shader.setFloat("light.linear", 0.0f);
+        shader.setFloat("light.quadratic", 0.0f);
+    }
 
     // material properties
     shader.setFloat("material.shininess", 32.0f);

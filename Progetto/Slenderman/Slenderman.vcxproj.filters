@@ -22,24 +22,6 @@
     <None Include="model_loading.fs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="forest.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="forest.fs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="grass.fs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="grass.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="fence.fs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="fence.vs">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="text.vs">
       <Filter>Resource Files</Filter>
     </None>

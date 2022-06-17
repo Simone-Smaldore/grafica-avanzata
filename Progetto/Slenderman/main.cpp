@@ -66,7 +66,9 @@ int main() {
   float deltaTime = 0.0f;
   float lastFrame = 0.0f;
   int fps = 0;
+  bool lightOn = true;
 
+  cout << "Punti di interesse: " << endl;
   for (int i = 0; i < positionsPointOfinterest.size(); i++) {
       cout << "K " << i << ": " << positionsPointOfinterest[i] << endl;
   }
@@ -82,7 +84,7 @@ int main() {
     fps = fpsManager->getFps();
 
     // Gestione dell'input
-    processInput(window, camera, deltaTime);
+    processInput(window, camera, deltaTime, lightOn);
 
     // Pulizia dei buffer
     glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
@@ -96,13 +98,13 @@ int main() {
     glm::vec3 slendermanTranslationMatrix = glm::vec3(0.0f, -0.8f, -10.0f);
     
     //TODO: Aggiungere i punti di interesse
-    //TODO: Illuminazione di phong
-    renderFloor(floorShader, floorTexture, floorVAO, view, projection);
-    renderForest(forestShader, treeModel, view, projection, camera, positionsPointOfinterest);
-    renderFence(fenceShader, fenceTexture, fenceModel, view, projection);
-    renderGrass(grassShader, grassModel, view, projection, camera);
-    renderSlenderman(slenderShader, slenderTexture, slenderModel, slendermanTranslationMatrix, view, projection);
-    renderFlashlight(flashlightShader, flashlightTexture, flashlightModel, flashlightView, projection);
+    //TODO: Aggiungere mappa?
+    renderFloor(floorShader, floorTexture, floorVAO, view, projection, lightOn);
+    renderForest(forestShader, treeModel, view, projection, camera, positionsPointOfinterest, lightOn);
+    renderFence(fenceShader, fenceTexture, fenceModel, view, projection, lightOn);
+    renderGrass(grassShader, grassModel, view, projection, camera, lightOn);
+    renderSlenderman(slenderShader, slenderTexture, slenderModel, slendermanTranslationMatrix, view, projection, lightOn);
+    renderFlashlight(flashlightShader, flashlightTexture, flashlightModel, flashlightView, projection, lightOn);
     if (DEBUG) renderInfo(camera, fps);
 
     // Swap dei buffer e processamento degli eventi in coda

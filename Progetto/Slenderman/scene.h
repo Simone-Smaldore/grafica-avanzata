@@ -57,7 +57,7 @@ void initFloor(unsigned int& floorVAO) {
 void initTreeForest(Model& treeModel) {
     bool useOffset = false;
     glm::vec3 scaleMatrix = glm::vec3(0.08f, 0.08f, 0.08f);
-    initDynamicMapForModel(treeModel, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_FOREST, TREE_OFFSET, scaleMatrix, useOffset);   
+    initDynamicMapForModel(treeModel, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_TREE, TREE_OFFSET, scaleMatrix, useOffset);   
 }
 
 void initFence(Model& fenceModel) {
@@ -147,9 +147,9 @@ void initGrass(Model& grassModel) {
 
 void initPointsOfInterest(vector<int>& positionsPointOfinterest) {
     srand(time(NULL));
-    int numVAOForSide = TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_FOREST;
+    int numVAOForSide = TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_TREE;
     int kMax = (numVAOForSide * numVAOForSide) - 1;
-    for (int i = 0; i < POINTS_OF_INTEREST_NUMBER; i++) {
+    for (int i = 0; i < NUMBER_POINTS_OF_INTEREST; i++) {
         int k = static_cast <float> (rand()) / static_cast <float> (RAND_MAX) * kMax;
         while (!isGoodPointOfInterest(k, positionsPointOfinterest, kMax, numVAOForSide)) {
             k = static_cast <float> (rand()) / static_cast <float> (RAND_MAX) * kMax;
