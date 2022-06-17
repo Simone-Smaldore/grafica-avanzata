@@ -183,6 +183,7 @@
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="constants.h" />
+    <ClInclude Include="fps_manager.h" />
     <ClInclude Include="input_utils.h" />
     <ClInclude Include="glfw_utils.h" />
     <ClInclude Include="mesh.h" />

@@ -139,7 +139,7 @@ void renderFlashlight(
     flashlightModel.Draw(flashlightShader);
 }
 
-void renderInfo(Camera& camera) {
+void renderInfo(Camera& camera, int fps) {
     std::stringstream ssx; 
     ssx << "x: " << camera.Position.x;
     std::string x = ssx.str();
@@ -155,6 +155,11 @@ void renderInfo(Camera& camera) {
     ssk << "k_index: " << k_index;
     std::string k = ssk.str();
     RenderText(k, 1100.0f, 150.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+    std::stringstream ssfps;
+    ssfps << "fps: " << fps;
+    std::string fps_str = ssfps.str();
+    RenderText(fps_str, 1100.0f, 1000.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void renderDynamicMap(Shader& shader, Model& modelObj, vector<int>& VAO_indexes, int quadSide, int vaoObjectSide)  {

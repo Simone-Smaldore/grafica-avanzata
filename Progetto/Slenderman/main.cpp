@@ -16,6 +16,8 @@
 #include "scene.h"
 #include "renderer.h"
 #include "render_text.h"
+#include "fps_manager.h"
+
 
 
 
@@ -25,6 +27,8 @@ int main() {
   if (window == nullptr) {
       return -1;
   }
+
+  FpsManager* fpsManager = new FpsManager();
 
   initRenderText(SCR_WIDTH, SCR_HEIGHT);
 
@@ -59,6 +63,7 @@ int main() {
   initScene(floorVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest);
   float deltaTime = 0.0f;
   float lastFrame = 0.0f;
+  int fps = 0;
 
   for (int i = 0; i < positionsPointOfinterest.size(); i++) {
       cout << "K " << i << ": " << positionsPointOfinterest[i] << endl;
@@ -72,6 +77,8 @@ int main() {
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
 
+    fps = fpsManager->getFps();
+
     // Gestione dell'input
     processInput(window, camera, deltaTime);
 
@@ -82,7 +89,7 @@ int main() {
     // Rendering della scena
     glm::mat4 view = camera.GetViewMatrix();
     glm::mat4 flashlightView = glm::mat4(1.0f);
-    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 150.0f);
 
     glm::vec3 slendermanTranslationMatrix = glm::vec3(0.0f, -0.8f, -10.0f);
     
@@ -94,7 +101,7 @@ int main() {
     renderGrass(grassShader, grassModel, view, projection, camera);
     renderSlenderman(slenderShader, slenderTexture, slenderModel, slendermanTranslationMatrix, view, projection);
     renderFlashlight(flashlightShader, flashlightTexture, flashlightModel, flashlightView, projection);
-    if (DEBUG) renderInfo(camera);
+    if (DEBUG) renderInfo(camera, fps);
 
     // Swap dei buffer e processamento degli eventi in coda
     glfwSwapBuffers(window);
