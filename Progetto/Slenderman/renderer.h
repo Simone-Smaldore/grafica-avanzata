@@ -61,6 +61,16 @@ void renderForest(
         }
     }
 
+    //TODO Creare metodo per rifattorizzare il codice
+    for (int i = 0; i < K_MAP_TO_EXCLUDE.size(); i++) {
+        int val = K_MAP_TO_EXCLUDE[i];
+        auto it = find(VAO_indexes.begin(), VAO_indexes.end(), val);
+        if (it != VAO_indexes.end()) {
+            int deleteIndex = it - VAO_indexes.begin();
+            VAO_indexes.erase(VAO_indexes.begin() + deleteIndex);
+        }
+    }
+
     renderDynamicMap(forestShader, treeModel, VAO_indexes, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_TREE);
 }
 
@@ -131,6 +141,30 @@ void renderSlenderman(
     slenderModel.Draw(slenderShader);
 }
 
+void renderStreetlight(
+    Shader& streetlightShader,
+    unsigned int& streetlightTexture,
+    Model& streetlightModel,
+    vector<glm::vec3>& pointOfinterestTranslationVec,
+    glm::mat4& view,
+    glm::mat4& projection,
+    bool lightOn
+) {
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, streetlightTexture);
+    initLightShader(streetlightShader, lightOn);
+    streetlightShader.use();
+    streetlightShader.setMat4("view", view);
+    streetlightShader.setMat4("projection", projection);
+    for (int i = 0; i < pointOfinterestTranslationVec.size(); i++) {
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, pointOfinterestTranslationVec[i]);
+        model = glm::scale(model, glm::vec3(0.015f, 0.015f, 0.015f));
+        streetlightShader.setMat4("model", model);
+        streetlightModel.Draw(streetlightShader);
+    }
+}
+
 void renderFlashlight(
     Shader& flashlightShader,
     unsigned int& flashlightTexture,
@@ -160,18 +194,32 @@ void renderInfo(Camera& camera, int fps) {
     std::stringstream ssx; 
     ssx << "x: " << camera.Position.x;
     std::string x = ssx.str();
-    RenderText(x, 1100.0f, 250.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+    RenderText(x, 1100.0f, 300.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
     std::stringstream ssz;
     ssz << "z: " << camera.Position.z;
     std::string z = ssz.str();
-    RenderText(z, 1100.0f, 200.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+    RenderText(z, 1100.0f, 250.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 
+    int numVAOForSide = TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_TREE;
     vector<int> indexes = getVaoIndexesFromCamera(camera, TREE_OFFSET, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_TREE);
     int k_index = indexes[(indexes.size() - 1) /2];
+    int x_index = k_index / numVAOForSide;
+    int z_index = k_index % numVAOForSide;
+
     std::stringstream ssk;
     ssk << "k_index: " << k_index;
     std::string k = ssk.str();
-    RenderText(k, 1100.0f, 150.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+    RenderText(k, 1100.0f, 200.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+    std::stringstream ssxindex;
+    ssxindex << "x_index: " << x_index;
+    std::string x_ind = ssxindex.str();
+    RenderText(x_ind, 1100.0f, 150.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+    std::stringstream sszindex;
+    sszindex << "z_index: " << z_index;
+    std::string z_ind = sszindex.str();
+    RenderText(z_ind, 1100.0f, 100.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     std::stringstream ssfps;
     ssfps << "fps: " << fps;

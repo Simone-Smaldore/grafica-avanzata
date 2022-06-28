@@ -42,14 +42,14 @@ int main() {
   Shader forestShader("light_shader.vs", "light_shader.fs");
   Shader grassShader("light_shader.vs", "light_shader.fs");
   Shader fenceShader("light_shader.vs", "light_shader.fs");
-
-  
+  Shader streetlightShader("model_loading.vs", "model_loading.fs");
 
   // Caricamento texture
   unsigned int slenderTexture = loadTexture("resources/models/Slenderman/diffuse.png");
   unsigned int flashlightTexture = loadTexture("resources/models/Torcia/DefaultMaterial_albedo.jpg");
   unsigned int floorTexture = loadTexture("resources/textures/floor/floor.jpg");
   unsigned int fenceTexture = loadTexture("resources/models/Fence/wood-fence/textura_cerca_de_madeira_COLOR.png");
+  unsigned int streetlightTexture = loadTexture("resources/models/Streetlight/streetlight_default_color.tga.png");
 
   // Caricamento modelli
   Model slenderModel("resources/models/Slenderman/Slenderman.obj");
@@ -57,12 +57,14 @@ int main() {
   Model treeModel("resources/models/Tree/oaktrees.obj");
   Model fenceModel("resources/models/Fence/wood-fence/wood-fence.obj");
   Model grassModel("resources/models/Grass/scene.gltf");
+  Model streetlightModel("resources/models/Streetlight/streetlight.obj");
 
   // Inizializzazione One-Time Scena
   unsigned int floorVAO;
   unsigned int grassVAO;
   vector<int> positionsPointOfinterest;
-  initScene(floorVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest);
+  vector<glm::vec3> pointOfinterestTranslationVec;
+  initScene(floorVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest, pointOfinterestTranslationVec);
   float deltaTime = 0.0f;
   float lastFrame = 0.0f;
   int fps = 0;
@@ -104,6 +106,7 @@ int main() {
     renderFence(fenceShader, fenceTexture, fenceModel, view, projection, lightOn);
     renderGrass(grassShader, grassModel, view, projection, camera, lightOn);
     renderSlenderman(slenderShader, slenderTexture, slenderModel, slendermanTranslationMatrix, view, projection, lightOn);
+    renderStreetlight(streetlightShader, streetlightTexture, streetlightModel, pointOfinterestTranslationVec, view, projection, lightOn);
     renderFlashlight(flashlightShader, flashlightTexture, flashlightModel, flashlightView, projection, lightOn);
     if (DEBUG) renderInfo(camera, fps);
 

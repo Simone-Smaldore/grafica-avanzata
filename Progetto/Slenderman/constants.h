@@ -22,5 +22,8 @@ const int NUM_FENCES_FOR_SIDE = 160;
 const int NUMBER_POINTS_OF_INTEREST = 10;
 // Lasciare 1 altrimenti le prestazioni peggiorano di molto
 const int INT_OFFSET_VAO_INDEXES = 1;
+// ATTENZIONE DA CAMBIARE NEL CASO SI CAMBINO LE DIMENSIONI DELLA MAPPA
+// PER ADESSO NON DISEGNA SOLO IL VAO CORRISPONDENTE A (0, 0)
+const vector<int> K_MAP_TO_EXCLUDE{ 300 };
 
 
