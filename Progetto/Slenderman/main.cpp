@@ -39,6 +39,7 @@ int main() {
   Shader slenderShader("model_loading.vs", "model_loading.fs");
   Shader flashlightShader("model_loading.vs", "model_loading.fs");
   Shader floorShader("model_loading.vs", "model_loading.fs");
+  Shader pageShader("model_loading.vs", "model_loading.fs");
   Shader forestShader("light_shader.vs", "light_shader.fs");
   Shader grassShader("light_shader.vs", "light_shader.fs");
   Shader fenceShader("light_shader.vs", "light_shader.fs");
@@ -48,6 +49,8 @@ int main() {
   unsigned int slenderTexture = loadTexture("resources/models/Slenderman/diffuse.png");
   unsigned int flashlightTexture = loadTexture("resources/models/Torcia/DefaultMaterial_albedo.jpg");
   unsigned int floorTexture = loadTexture("resources/textures/floor/floor.jpg");
+  // TODO Caricare una texture per pagina
+  unsigned int pageTexture = loadTexture("resources/textures/Pages/page_1.jpg");
   unsigned int fenceTexture = loadTexture("resources/models/Fence/wood-fence/textura_cerca_de_madeira_COLOR.png");
   unsigned int streetlightTexture = loadTexture("resources/models/Streetlight/streetlight_default_color.tga.png");
 
@@ -61,10 +64,10 @@ int main() {
 
   // Inizializzazione One-Time Scena
   unsigned int floorVAO;
-  unsigned int grassVAO;
+  unsigned int pageVAO;
   vector<int> positionsPointOfinterest;
   vector<glm::vec3> pointOfinterestTranslationVec;
-  initScene(floorVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest, pointOfinterestTranslationVec);
+  initScene(floorVAO, pageVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest, pointOfinterestTranslationVec);
   float deltaTime = 0.0f;
   float lastFrame = 0.0f;
   int fps = 0;
@@ -108,6 +111,7 @@ int main() {
     renderSlenderman(slenderShader, slenderTexture, slenderModel, slendermanTranslationMatrix, view, projection, lightOn);
     renderStreetlight(streetlightShader, streetlightTexture, streetlightModel, pointOfinterestTranslationVec, view, projection, lightOn);
     renderFlashlight(flashlightShader, flashlightTexture, flashlightModel, flashlightView, projection, lightOn);
+    renderPages(pageShader, pageTexture, pageVAO, pointOfinterestTranslationVec, view, projection, lightOn);
     if (DEBUG) renderInfo(camera, fps);
 
     // Swap dei buffer e processamento degli eventi in coda

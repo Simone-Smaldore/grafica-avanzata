@@ -5,6 +5,7 @@
 //TODO Transformare in oggetto scene con metodi privati
 
 void initFloor(unsigned int& floorVAO);
+void initPage(unsigned int& pageVAO);
 void initTreeForest(Model& treeModel);
 void initFence(Model& fenceModel);
 void initGrass(Model& grassModel);
@@ -12,9 +13,11 @@ void initPointsOfInterest(vector<int>& positionsPointOfinterest, vector<glm::vec
 //Privati
 void initDynamicMapForModel(Model& model, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset);
 bool isGoodPointOfInterest(int k, vector<int>& positionsPointOfinterest, int kMax, int numVAOForSide);
+void initRectVAO(unsigned int& rectVAO, float dimension);
 
 void initScene(
 	unsigned int& floorVAO,
+    unsigned int& pageVAO,
 	Model& treeModel,
     Model& fenceModel,
     Model& grassModel,
@@ -22,6 +25,7 @@ void initScene(
     vector<glm::vec3>& pointOfinterestTranslationVec
 ) {
 	initFloor(floorVAO);
+    initPage(pageVAO);
 	initTreeForest(treeModel);
     initFence(fenceModel);
     initGrass(grassModel);
@@ -29,30 +33,11 @@ void initScene(
 }
 
 void initFloor(unsigned int& floorVAO) {
-    float floorVertices[] = {
-        // positions            // normals         // texcoords
-         2000.0f, 0.0f,  2000.0f,  0.0f, 1.0f, 0.0f,  2000.0f,  0.0f,
-        -2000.0f, 0.0f,  2000.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
-        -2000.0f, 0.0f, -2000.0f,  0.0f, 1.0f, 0.0f,   0.0f, 2000.0f,
+    initRectVAO(floorVAO, 2000.0f);
+}
 
-         2000.0f, 0.0f,  2000.0f,  0.0f, 1.0f, 0.0f,  2000.0f,  0.0f,
-        -2000.0f, 0.0f, -2000.0f,  0.0f, 1.0f, 0.0f,   0.0f, 2000.0f,
-         2000.0f, 0.0f, -2000.0f,  0.0f, 1.0f, 0.0f,  2000.0f, 2000.0f
-    };
-
-	unsigned int floorVBO;
-	glGenVertexArrays(1, &floorVAO);
-	glGenBuffers(1, &floorVBO);
-	glBindVertexArray(floorVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, floorVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(floorVertices), floorVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glBindVertexArray(0);
+void initPage(unsigned int& pageVAO) {
+    initRectVAO(pageVAO, 1.0f);
 }
 
 void initTreeForest(Model& treeModel) {
@@ -269,4 +254,31 @@ bool isGoodPointOfInterest(int k, vector<int>& positionsPointOfinterest, int kMa
         }
     }
     return true;
+}
+
+void initRectVAO(unsigned int& rectVAO, float dimension) {
+    float rectVertices[] = {
+        // positions            // normals         // texcoords
+         dimension, 0.0f,  dimension,  0.0f, 1.0f, 0.0f,  dimension,  0.0f,
+        -dimension, 0.0f,  dimension,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
+        -dimension, 0.0f, -dimension,  0.0f, 1.0f, 0.0f,   0.0f, dimension,
+
+         dimension, 0.0f,  dimension,  0.0f, 1.0f, 0.0f,  dimension,  0.0f,
+        -dimension, 0.0f, -dimension,  0.0f, 1.0f, 0.0f,   0.0f, dimension,
+         dimension, 0.0f, -dimension,  0.0f, 1.0f, 0.0f,  dimension, dimension
+    };
+
+    unsigned int rectVBO;
+    glGenVertexArrays(1, &rectVAO);
+    glGenBuffers(1, &rectVBO);
+    glBindVertexArray(rectVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, rectVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(rectVertices), rectVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glBindVertexArray(0);
 }

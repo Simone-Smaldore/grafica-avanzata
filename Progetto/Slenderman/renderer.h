@@ -34,6 +34,52 @@ void renderFloor(
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
+void renderPages(
+    Shader& pageShader,
+    unsigned int& pageTexture,
+    unsigned int& pageVAO,
+    vector<glm::vec3>& pointOfinterestTranslationVec,
+    glm::mat4& view,
+    glm::mat4& projection,
+    bool lightOn
+) {
+    initLightShader(pageShader, lightOn);
+    pageShader.use();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, pageTexture);    
+    pageShader.setMat4("view", view);
+    pageShader.setMat4("projection", projection);
+
+    //DEBUG TODO: Commentare
+    if (DEBUG) {
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(40.0f, -4.0f, 40.0f));
+        model = glm::translate(model, glm::vec3(0.7f, 4.3f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.6f, 0.6f, 0.4f));
+        model = glm::rotate(model, (float)glm::radians(5.0), glm::vec3(0.0f, 1.0f, 1.0f));
+        model = glm::rotate(model, (float)glm::radians(270.0), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::rotate(model, (float)glm::radians(90.0), glm::vec3(0.0f, 0.0f, 1.0f));
+        pageShader.setMat4("model", model);
+        glBindVertexArray(pageVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+    //
+
+    for (int i = 0; i < pointOfinterestTranslationVec.size(); i++) {
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, pointOfinterestTranslationVec[i]);
+        model = glm::translate(model, glm::vec3(0.7f, 4.3f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.6f, 0.6f, 0.4f));
+        model = glm::rotate(model, (float)glm::radians(5.0), glm::vec3(0.0f, 1.0f, 1.0f));
+        model = glm::rotate(model, (float)glm::radians(270.0), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::rotate(model, (float)glm::radians(90.0), glm::vec3(0.0f, 0.0f, 1.0f));
+        pageShader.setMat4("model", model);
+        glBindVertexArray(pageVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
+}
+
 void renderForest(
     Shader& forestShader,
     Model& treeModel,
@@ -156,6 +202,17 @@ void renderStreetlight(
     streetlightShader.use();
     streetlightShader.setMat4("view", view);
     streetlightShader.setMat4("projection", projection);
+
+    //DEBUG TODO: Commentare
+    if (DEBUG) {
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(40.0f, -4.0f, 40.0f));
+        model = glm::scale(model, glm::vec3(0.015f, 0.015f, 0.015f));
+        streetlightShader.setMat4("model", model);
+        streetlightModel.Draw(streetlightShader);
+    }
+    //
+
     for (int i = 0; i < pointOfinterestTranslationVec.size(); i++) {
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, pointOfinterestTranslationVec[i]);
