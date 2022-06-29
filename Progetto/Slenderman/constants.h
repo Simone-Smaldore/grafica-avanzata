@@ -20,6 +20,8 @@ const float GRASS_OFFSET = 6.0f;
 const float FENCE_OFFSET = 16.8f;
 const int NUM_FENCES_FOR_SIDE = 160;
 const int NUMBER_POINTS_OF_INTEREST = 10;
+// Deve essere minore di NUMBER_POINTS_OF_INTEREST, minore di 8 e maggiore di 1
+const int NUM_PAGES = 6;
 // Lasciare 1 altrimenti le prestazioni peggiorano di molto
 const int INT_OFFSET_VAO_INDEXES = 1;
 // ATTENZIONE DA CAMBIARE NEL CASO SI CAMBINO LE DIMENSIONI DELLA MAPPA

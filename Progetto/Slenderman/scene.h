@@ -10,6 +10,7 @@ void initTreeForest(Model& treeModel);
 void initFence(Model& fenceModel);
 void initGrass(Model& grassModel);
 void initPointsOfInterest(vector<int>& positionsPointOfinterest, vector<glm::vec3>& pointOfinterestTranslationVec);
+void initPageIndexPosition(vector<int>& pageIndexPosition);
 //Privati
 void initDynamicMapForModel(Model& model, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset);
 bool isGoodPointOfInterest(int k, vector<int>& positionsPointOfinterest, int kMax, int numVAOForSide);
@@ -22,6 +23,7 @@ void initScene(
     Model& fenceModel,
     Model& grassModel,
     vector<int>& positionsPointOfinterest,
+    vector<int>& pageIndexPosition,
     vector<glm::vec3>& pointOfinterestTranslationVec
 ) {
 	initFloor(floorVAO);
@@ -30,6 +32,7 @@ void initScene(
     initFence(fenceModel);
     initGrass(grassModel);
     initPointsOfInterest(positionsPointOfinterest, pointOfinterestTranslationVec);
+    initPageIndexPosition(pageIndexPosition);
 }
 
 void initFloor(unsigned int& floorVAO) {
@@ -151,6 +154,16 @@ void initPointsOfInterest(vector<int>& positionsPointOfinterest, vector<glm::vec
         positionsPointOfinterest.push_back(k);
     }
     
+}
+
+void initPageIndexPosition(vector<int>& pageIndexPosition) {
+    for (int i = 0; i < NUM_PAGES; i++) {
+        int ranIndex = rand() % (NUMBER_POINTS_OF_INTEREST - 1);
+        while(std::count(pageIndexPosition.begin(), pageIndexPosition.end(), ranIndex)) {
+            ranIndex = rand() % (NUMBER_POINTS_OF_INTEREST - 1);
+        }
+        pageIndexPosition.push_back(ranIndex);
+    }
 }
 
 void initDynamicMapForModel(Model& modelObj, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset) {

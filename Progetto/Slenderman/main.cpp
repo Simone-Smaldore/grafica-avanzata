@@ -49,10 +49,13 @@ int main() {
   unsigned int slenderTexture = loadTexture("resources/models/Slenderman/diffuse.png");
   unsigned int flashlightTexture = loadTexture("resources/models/Torcia/DefaultMaterial_albedo.jpg");
   unsigned int floorTexture = loadTexture("resources/textures/floor/floor.jpg");
-  // TODO Caricare una texture per pagina
-  unsigned int pageTexture = loadTexture("resources/textures/Pages/page_1.jpg");
   unsigned int fenceTexture = loadTexture("resources/models/Fence/wood-fence/textura_cerca_de_madeira_COLOR.png");
   unsigned int streetlightTexture = loadTexture("resources/models/Streetlight/streetlight_default_color.tga.png");
+  vector<unsigned int> pageTextures;
+  for (int i = 1; i <= NUM_PAGES; i++) {
+      std::string path = "resources/textures/Pages/page_"  + std::to_string(i) + ".jpg";
+      pageTextures.push_back(loadTexture(path.c_str()));
+  }
 
   // Caricamento modelli
   Model slenderModel("resources/models/Slenderman/Slenderman.obj");
@@ -66,8 +69,9 @@ int main() {
   unsigned int floorVAO;
   unsigned int pageVAO;
   vector<int> positionsPointOfinterest;
+  vector<int> pageIndexPosition;
   vector<glm::vec3> pointOfinterestTranslationVec;
-  initScene(floorVAO, pageVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest, pointOfinterestTranslationVec);
+  initScene(floorVAO, pageVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest, pageIndexPosition, pointOfinterestTranslationVec);
   float deltaTime = 0.0f;
   float lastFrame = 0.0f;
   int fps = 0;
@@ -111,7 +115,7 @@ int main() {
     renderSlenderman(slenderShader, slenderTexture, slenderModel, slendermanTranslationMatrix, view, projection, lightOn);
     renderStreetlight(streetlightShader, streetlightTexture, streetlightModel, pointOfinterestTranslationVec, view, projection, lightOn);
     renderFlashlight(flashlightShader, flashlightTexture, flashlightModel, flashlightView, projection, lightOn);
-    renderPages(pageShader, pageTexture, pageVAO, pointOfinterestTranslationVec, view, projection, lightOn);
+    renderPages(pageShader, pageTextures, pageIndexPosition, pageVAO, pointOfinterestTranslationVec, view, projection, lightOn);
     if (DEBUG) renderInfo(camera, fps);
 
     // Swap dei buffer e processamento degli eventi in coda

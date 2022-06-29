@@ -36,7 +36,8 @@ void renderFloor(
 
 void renderPages(
     Shader& pageShader,
-    unsigned int& pageTexture,
+    vector<unsigned int>& pageTextures,
+    vector<int>& pageIndexPosition,
     unsigned int& pageVAO,
     vector<glm::vec3>& pointOfinterestTranslationVec,
     glm::mat4& view,
@@ -44,14 +45,14 @@ void renderPages(
     bool lightOn
 ) {
     initLightShader(pageShader, lightOn);
-    pageShader.use();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, pageTexture);    
+    pageShader.use();   
     pageShader.setMat4("view", view);
     pageShader.setMat4("projection", projection);
 
     //DEBUG TODO: Commentare
     if (DEBUG) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, pageTextures[0]);
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(40.0f, -4.0f, 40.0f));
         model = glm::translate(model, glm::vec3(0.7f, 4.3f, 0.0f));
@@ -65,9 +66,12 @@ void renderPages(
     }
     //
 
-    for (int i = 0; i < pointOfinterestTranslationVec.size(); i++) {
+    for (int i = 0; i < pageIndexPosition.size(); i++) {
+        int pageIndex = pageIndexPosition[i];
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, pageTextures[i]);
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, pointOfinterestTranslationVec[i]);
+        model = glm::translate(model, pointOfinterestTranslationVec[pageIndex]);
         model = glm::translate(model, glm::vec3(0.7f, 4.3f, 0.0f));
         model = glm::scale(model, glm::vec3(0.6f, 0.6f, 0.4f));
         model = glm::rotate(model, (float)glm::radians(5.0), glm::vec3(0.0f, 1.0f, 1.0f));
