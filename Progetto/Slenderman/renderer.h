@@ -54,6 +54,7 @@ void renderPages(
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, pageTextures[0]);
         glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(STREETLIGHT_POI_OFFSET, 0.0f, STREETLIGHT_POI_OFFSET));
         model = glm::translate(model, glm::vec3(40.0f, -4.0f, 40.0f));
         model = glm::translate(model, glm::vec3(0.7f, 4.3f, 0.0f));
         model = glm::scale(model, glm::vec3(0.6f, 0.6f, 0.4f));
@@ -71,6 +72,8 @@ void renderPages(
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, pageTextures[i]);
         glm::mat4 model = glm::mat4(1.0f);
+        //TODO: Decidere se la pagina deve essere attaccata al lampione o al punto di interesse
+        model = glm::translate(model, glm::vec3(STREETLIGHT_POI_OFFSET, 0.0f, STREETLIGHT_POI_OFFSET));
         model = glm::translate(model, pointOfinterestTranslationVec[pageIndex]);
         model = glm::translate(model, glm::vec3(0.7f, 4.3f, 0.0f));
         model = glm::scale(model, glm::vec3(0.6f, 0.6f, 0.4f));
@@ -210,6 +213,7 @@ void renderStreetlight(
     //DEBUG TODO: Commentare
     if (DEBUG) {
         glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(STREETLIGHT_POI_OFFSET, 0.0f, STREETLIGHT_POI_OFFSET));
         model = glm::translate(model, glm::vec3(40.0f, -4.0f, 40.0f));
         model = glm::scale(model, glm::vec3(0.015f, 0.015f, 0.015f));
         streetlightShader.setMat4("model", model);
@@ -219,11 +223,53 @@ void renderStreetlight(
 
     for (int i = 0; i < pointOfinterestTranslationVec.size(); i++) {
         glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(STREETLIGHT_POI_OFFSET, 0.0f, STREETLIGHT_POI_OFFSET));
         model = glm::translate(model, pointOfinterestTranslationVec[i]);
         model = glm::scale(model, glm::vec3(0.015f, 0.015f, 0.015f));
         streetlightShader.setMat4("model", model);
         streetlightModel.Draw(streetlightShader);
     }
+}
+
+void renderPointsOfInterest(
+    Shader& pointOfInterestShader,
+    vector<Model>& pointOfInterestModels,
+    vector<unsigned int>& pointOfInterestTexture,
+    vector<glm::vec3>& pointOfinterestTranslationVec,
+    glm::mat4& view,
+    glm::mat4& projection,
+    bool lightOn,
+    vector<glm::vec3>& poiModelScale,
+    vector<glm::vec3>& poiModelTranslations
+) {
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, pointOfInterestTexture[0]);
+    initLightShader(pointOfInterestShader, lightOn);
+    pointOfInterestShader.use();
+    pointOfInterestShader.setMat4("view", view);
+    pointOfInterestShader.setMat4("projection", projection);
+
+    //DEBUG TODO: Commentare
+    if (DEBUG) {
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(40.0f, -4.0f, 40.0f));
+        model = glm::scale(model, glm::vec3(0.008f, 0.008f, 0.008f));
+        pointOfInterestShader.setMat4("model", model);
+        pointOfInterestModels[0].Draw(pointOfInterestShader);
+    }
+    //
+
+    for (int i = 0; i < pointOfinterestTranslationVec.size(); i++) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, pointOfInterestTexture[i]);
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, poiModelTranslations[i]);
+        model = glm::translate(model, pointOfinterestTranslationVec[i]);
+        model = glm::scale(model, poiModelScale[i]);
+        pointOfInterestShader.setMat4("model", model);
+        pointOfInterestModels[i].Draw(pointOfInterestShader);
+    }
+
 }
 
 void renderFlashlight(
@@ -255,11 +301,11 @@ void renderInfo(Camera& camera, int fps) {
     std::stringstream ssx; 
     ssx << "x: " << camera.Position.x;
     std::string x = ssx.str();
-    RenderText(x, 1100.0f, 300.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+    RenderText(x, SCR_WIDTH - 200.0f, 50.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
     std::stringstream ssz;
     ssz << "z: " << camera.Position.z;
     std::string z = ssz.str();
-    RenderText(z, 1100.0f, 250.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+    RenderText(z, SCR_WIDTH - 200.0f, 70.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     int numVAOForSide = TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_TREE;
     vector<int> indexes = getVaoIndexesFromCamera(camera, TREE_OFFSET, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_TREE);
@@ -270,22 +316,22 @@ void renderInfo(Camera& camera, int fps) {
     std::stringstream ssk;
     ssk << "k_index: " << k_index;
     std::string k = ssk.str();
-    RenderText(k, 1100.0f, 200.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+    RenderText(k, SCR_WIDTH - 200.0f, 120.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     std::stringstream ssxindex;
     ssxindex << "x_index: " << x_index;
     std::string x_ind = ssxindex.str();
-    RenderText(x_ind, 1100.0f, 150.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+    RenderText(x_ind, SCR_WIDTH - 200.0f, 140.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     std::stringstream sszindex;
     sszindex << "z_index: " << z_index;
     std::string z_ind = sszindex.str();
-    RenderText(z_ind, 1100.0f, 100.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+    RenderText(z_ind, SCR_WIDTH - 200.0f, 160.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     std::stringstream ssfps;
     ssfps << "fps: " << fps;
     std::string fps_str = ssfps.str();
-    RenderText(fps_str, 1100.0f, 1000.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+    RenderText(fps_str, SCR_WIDTH - 200.0f, SCR_HEIGHT - 50.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void renderDynamicMap(Shader& shader, Model& modelObj, vector<int>& VAO_indexes, int quadSide, int vaoObjectSide)  {

@@ -44,6 +44,7 @@ int main() {
   Shader grassShader("light_shader.vs", "light_shader.fs");
   Shader fenceShader("light_shader.vs", "light_shader.fs");
   Shader streetlightShader("model_loading.vs", "model_loading.fs");
+  Shader pointsOfInterestShader("model_loading.vs", "model_loading.fs");
 
   // Caricamento texture
   unsigned int slenderTexture = loadTexture("resources/models/Slenderman/diffuse.png");
@@ -56,6 +57,12 @@ int main() {
       std::string path = "resources/textures/Pages/page_"  + std::to_string(i) + ".jpg";
       pageTextures.push_back(loadTexture(path.c_str()));
   }
+  vector<unsigned int> pointOfInterestTextures;
+  for (int i = 1; i <= NUMBER_POINTS_OF_INTEREST; i++) {
+      std::string path = "resources/models/Points of interest/" + std::to_string(i) + "/" + std::to_string(i) + ".jpg";
+      pointOfInterestTextures.push_back(loadTexture(path.c_str()));
+  }
+
 
   // Caricamento modelli
   Model slenderModel("resources/models/Slenderman/Slenderman.obj");
@@ -64,6 +71,11 @@ int main() {
   Model fenceModel("resources/models/Fence/wood-fence/wood-fence.obj");
   Model grassModel("resources/models/Grass/scene.gltf");
   Model streetlightModel("resources/models/Streetlight/streetlight.obj");
+  vector<Model> pointsOfInterestModels;
+  for (int i = 1; i <= NUMBER_POINTS_OF_INTEREST; i++) {
+      std::string path = "resources/models/Points of interest/" + std::to_string(i) + "/" + std::to_string(i) + ".dae";
+      pointsOfInterestModels.push_back(Model(path.c_str()));
+  }
 
   // Inizializzazione One-Time Scena
   unsigned int floorVAO;
@@ -71,6 +83,26 @@ int main() {
   vector<int> positionsPointOfinterest;
   vector<int> pageIndexPosition;
   vector<glm::vec3> pointOfinterestTranslationVec;
+  vector<glm::vec3> poiModelScale{
+    glm::vec3(0.008f, 0.008f, 0.008f),
+    glm::vec3(0.008f, 0.008f, 0.008f),
+    glm::vec3(0.008f, 0.008f, 0.008f),
+    glm::vec3(0.008f, 0.008f, 0.008f),
+    glm::vec3(0.008f, 0.008f, 0.008f),
+    glm::vec3(0.008f, 0.008f, 0.008f),
+    glm::vec3(0.008f, 0.008f, 0.008f),
+    glm::vec3(0.008f, 0.008f, 0.008f),
+  };
+  vector<glm::vec3> poiModelTranslations{
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+  };
   initScene(floorVAO, pageVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest, pageIndexPosition, pointOfinterestTranslationVec);
   float deltaTime = 0.0f;
   float lastFrame = 0.0f;
@@ -116,6 +148,7 @@ int main() {
     renderStreetlight(streetlightShader, streetlightTexture, streetlightModel, pointOfinterestTranslationVec, view, projection, lightOn);
     renderFlashlight(flashlightShader, flashlightTexture, flashlightModel, flashlightView, projection, lightOn);
     renderPages(pageShader, pageTextures, pageIndexPosition, pageVAO, pointOfinterestTranslationVec, view, projection, lightOn);
+    renderPointsOfInterest(pointsOfInterestShader, pointsOfInterestModels, pointOfInterestTextures, pointOfinterestTranslationVec, view, projection, lightOn, poiModelScale, poiModelTranslations);
     if (DEBUG) renderInfo(camera, fps);
 
     // Swap dei buffer e processamento degli eventi in coda
