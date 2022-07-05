@@ -72,8 +72,18 @@ int main() {
   Model grassModel("resources/models/Grass/scene.gltf");
   Model streetlightModel("resources/models/Streetlight/streetlight.obj");
   vector<Model> pointsOfInterestModels;
+  vector<std::string> poiModelExtensions{
+      ".dae",
+      ".gltf",
+      ".dae",
+      ".dae",
+      ".dae",
+      ".dae",
+      ".dae",
+      ".dae",
+  };
   for (int i = 1; i <= NUMBER_POINTS_OF_INTEREST; i++) {
-      std::string path = "resources/models/Points of interest/" + std::to_string(i) + "/" + std::to_string(i) + ".dae";
+      std::string path = "resources/models/Points of interest/" + std::to_string(i) + "/" + std::to_string(i) + poiModelExtensions[i - 1];
       pointsOfInterestModels.push_back(Model(path.c_str()));
   }
 
@@ -83,9 +93,20 @@ int main() {
   vector<int> positionsPointOfinterest;
   vector<int> pageIndexPosition;
   vector<glm::vec3> pointOfinterestTranslationVec;
+  //TODO: Spostare questi vector e trasformarli in matrici model da passare
+  vector<glm::vec3> poiModelRotation{
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(1.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+  };
   vector<glm::vec3> poiModelScale{
     glm::vec3(0.008f, 0.008f, 0.008f),
-    glm::vec3(0.008f, 0.008f, 0.008f),
+    glm::vec3(0.03f, 0.03f, 0.03f),
     glm::vec3(0.008f, 0.008f, 0.008f),
     glm::vec3(0.008f, 0.008f, 0.008f),
     glm::vec3(0.008f, 0.008f, 0.008f),
@@ -95,7 +116,7 @@ int main() {
   };
   vector<glm::vec3> poiModelTranslations{
       glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, -0.1f, 0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
@@ -148,7 +169,7 @@ int main() {
     renderStreetlight(streetlightShader, streetlightTexture, streetlightModel, pointOfinterestTranslationVec, view, projection, lightOn);
     renderFlashlight(flashlightShader, flashlightTexture, flashlightModel, flashlightView, projection, lightOn);
     renderPages(pageShader, pageTextures, pageIndexPosition, pageVAO, pointOfinterestTranslationVec, view, projection, lightOn);
-    renderPointsOfInterest(pointsOfInterestShader, pointsOfInterestModels, pointOfInterestTextures, pointOfinterestTranslationVec, view, projection, lightOn, poiModelScale, poiModelTranslations);
+    renderPointsOfInterest(pointsOfInterestShader, pointsOfInterestModels, pointOfInterestTextures, pointOfinterestTranslationVec, view, projection, lightOn, poiModelRotation, poiModelScale, poiModelTranslations);
     if (DEBUG) renderInfo(camera, fps);
 
     // Swap dei buffer e processamento degli eventi in coda

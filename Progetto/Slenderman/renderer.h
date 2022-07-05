@@ -239,6 +239,7 @@ void renderPointsOfInterest(
     glm::mat4& view,
     glm::mat4& projection,
     bool lightOn,
+    vector<glm::vec3>& poiModelRotation,
     vector<glm::vec3>& poiModelScale,
     vector<glm::vec3>& poiModelTranslations
 ) {
@@ -250,12 +251,17 @@ void renderPointsOfInterest(
     pointOfInterestShader.setMat4("projection", projection);
 
     //DEBUG TODO: Commentare
+    int poiDebugPosition = 1;
     if (DEBUG) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, pointOfInterestTexture[poiDebugPosition]);
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(40.0f, -4.0f, 40.0f));
-        model = glm::scale(model, glm::vec3(0.008f, 0.008f, 0.008f));
+        model = glm::translate(model, poiModelTranslations[poiDebugPosition]);
+        model = glm::scale(model, poiModelScale[poiDebugPosition]);
+        model = glm::rotate(model, (float)glm::radians(270.0), poiModelRotation[poiDebugPosition]);
         pointOfInterestShader.setMat4("model", model);
-        pointOfInterestModels[0].Draw(pointOfInterestShader);
+        pointOfInterestModels[poiDebugPosition].Draw(pointOfInterestShader);
     }
     //
 
@@ -266,6 +272,7 @@ void renderPointsOfInterest(
         model = glm::translate(model, poiModelTranslations[i]);
         model = glm::translate(model, pointOfinterestTranslationVec[i]);
         model = glm::scale(model, poiModelScale[i]);
+        model = glm::rotate(model, (float)glm::radians(270.0), poiModelRotation[i]);
         pointOfInterestShader.setMat4("model", model);
         pointOfInterestModels[i].Draw(pointOfInterestShader);
     }
