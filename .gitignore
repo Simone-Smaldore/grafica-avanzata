@@ -5,7 +5,6 @@
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch
@@ -69,3 +68,7 @@ Progetto/Slenderman/Debug/Slenderman.tlog/Slenderman.lastbuildstate
 *.zip
 Progetto/Slenderman/x64/
 Progetto/x64/
+Progetto/Slenderman/Release/glad.obj
+Progetto/Slenderman/Release/main.obj
+Progetto/Slenderman/Debug/glad.obj
+Progetto/Slenderman/Debug/main.obj
