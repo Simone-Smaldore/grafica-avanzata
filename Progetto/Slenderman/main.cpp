@@ -90,41 +90,12 @@ int main() {
   // Inizializzazione One-Time Scena
   unsigned int floorVAO;
   unsigned int pageVAO;
+  vector<glm::mat4> modelPoiMatrices;
   vector<int> positionsPointOfinterest;
   vector<int> pageIndexPosition;
   vector<glm::vec3> pointOfinterestTranslationVec;
-  //TODO: Spostare questi vector e trasformarli in matrici model da passare
-  vector<glm::vec3> poiModelRotation{
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(1.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-  };
-  vector<glm::vec3> poiModelScale{
-    glm::vec3(0.008f, 0.008f, 0.008f),
-    glm::vec3(0.03f, 0.03f, 0.03f),
-    glm::vec3(0.008f, 0.008f, 0.008f),
-    glm::vec3(0.008f, 0.008f, 0.008f),
-    glm::vec3(0.008f, 0.008f, 0.008f),
-    glm::vec3(0.008f, 0.008f, 0.008f),
-    glm::vec3(0.008f, 0.008f, 0.008f),
-    glm::vec3(0.008f, 0.008f, 0.008f),
-  };
-  vector<glm::vec3> poiModelTranslations{
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, -0.1f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-  };
-  initScene(floorVAO, pageVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest, pageIndexPosition, pointOfinterestTranslationVec);
+
+  initScene(floorVAO, pageVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest, pageIndexPosition, pointOfinterestTranslationVec, modelPoiMatrices);
   float deltaTime = 0.0f;
   float lastFrame = 0.0f;
   int fps = 0;
@@ -169,7 +140,7 @@ int main() {
     renderStreetlight(streetlightShader, streetlightTexture, streetlightModel, pointOfinterestTranslationVec, view, projection, lightOn);
     renderFlashlight(flashlightShader, flashlightTexture, flashlightModel, flashlightView, projection, lightOn);
     renderPages(pageShader, pageTextures, pageIndexPosition, pageVAO, pointOfinterestTranslationVec, view, projection, lightOn);
-    renderPointsOfInterest(pointsOfInterestShader, pointsOfInterestModels, pointOfInterestTextures, pointOfinterestTranslationVec, view, projection, lightOn, poiModelRotation, poiModelScale, poiModelTranslations);
+    renderPointsOfInterest(pointsOfInterestShader, pointsOfInterestModels, pointOfInterestTextures, view, projection, lightOn, modelPoiMatrices);
     if (DEBUG) renderInfo(camera, fps);
 
     // Swap dei buffer e processamento degli eventi in coda

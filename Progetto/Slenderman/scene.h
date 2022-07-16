@@ -10,6 +10,7 @@ void initTreeForest(Model& treeModel);
 void initFence(Model& fenceModel);
 void initGrass(Model& grassModel);
 void initPointsOfInterest(vector<int>& positionsPointOfinterest, vector<glm::vec3>& pointOfinterestTranslationVec);
+void initPoiModels(vector<glm::mat4>& modelPoiMatrices, vector<glm::vec3>& pointOfinterestTranslationVec);
 void initPageIndexPosition(vector<int>& pageIndexPosition);
 //Privati
 void initDynamicMapForModel(Model& model, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset);
@@ -24,7 +25,8 @@ void initScene(
     Model& grassModel,
     vector<int>& positionsPointOfinterest,
     vector<int>& pageIndexPosition,
-    vector<glm::vec3>& pointOfinterestTranslationVec
+    vector<glm::vec3>& pointOfinterestTranslationVec,
+    vector<glm::mat4>& modelPoiMatrices
 ) {
 	initFloor(floorVAO);
     initPage(pageVAO);
@@ -32,6 +34,7 @@ void initScene(
     initFence(fenceModel);
     initGrass(grassModel);
     initPointsOfInterest(positionsPointOfinterest, pointOfinterestTranslationVec);
+    initPoiModels(modelPoiMatrices, pointOfinterestTranslationVec);
     initPageIndexPosition(pageIndexPosition);
 }
 
@@ -154,6 +157,58 @@ void initPointsOfInterest(vector<int>& positionsPointOfinterest, vector<glm::vec
         positionsPointOfinterest.push_back(k);
     }
     
+}
+
+void initPoiModels(vector<glm::mat4>& modelPoiMatrices, vector<glm::vec3>& pointOfinterestTranslationVec) {
+    //1
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, pointOfinterestTranslationVec[0]);
+    model = glm::scale(model, glm::vec3(0.008f, 0.008f, 0.008f));
+    modelPoiMatrices.push_back(model);
+
+    //2 
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, -0.1f, 0.0f));
+    model = glm::translate(model, pointOfinterestTranslationVec[1]);
+    model = glm::scale(model, glm::vec3(0.03f, 0.03f, 0.03f));
+    model = glm::rotate(model, (float)glm::radians(270.0), glm::vec3(1.0f, 0.0f, 0.0f));
+    modelPoiMatrices.push_back(model);
+
+    //3
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, pointOfinterestTranslationVec[2]);
+    model = glm::scale(model, glm::vec3(0.008f, 0.008f, 0.008f));
+    modelPoiMatrices.push_back(model);
+
+    //4
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, pointOfinterestTranslationVec[3]);
+    model = glm::scale(model, glm::vec3(0.008f, 0.008f, 0.008f));
+    modelPoiMatrices.push_back(model);
+
+    //5
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, pointOfinterestTranslationVec[4]);
+    model = glm::scale(model, glm::vec3(0.008f, 0.008f, 0.008f));
+    modelPoiMatrices.push_back(model);
+
+    //6
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, pointOfinterestTranslationVec[5]);
+    model = glm::scale(model, glm::vec3(0.008f, 0.008f, 0.008f));
+    modelPoiMatrices.push_back(model);
+
+    //7
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, pointOfinterestTranslationVec[6]);
+    model = glm::scale(model, glm::vec3(0.008f, 0.008f, 0.008f));
+    modelPoiMatrices.push_back(model);
+
+    //8
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, pointOfinterestTranslationVec[7]);
+    model = glm::scale(model, glm::vec3(0.008f, 0.008f, 0.008f));
+    modelPoiMatrices.push_back(model);
 }
 
 void initPageIndexPosition(vector<int>& pageIndexPosition) {

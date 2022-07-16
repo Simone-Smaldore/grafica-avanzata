@@ -102,7 +102,6 @@ void renderForest(
     forestShader.setMat4("projection", projection);
     forestShader.setMat4("view", view);
     forestShader.setFloat("alphaValue", 0.7f);
-    //TODO: Implementare strategia per scartare alcuni k in modo da non renderizzare pezzi di foresta ?
 
     vector<int> VAO_indexes = getVaoIndexesFromCamera(camera, TREE_OFFSET, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_TREE);
     for (int i = 0; i < positionsPointOfinterest.size(); i++) {
@@ -235,13 +234,10 @@ void renderPointsOfInterest(
     Shader& pointOfInterestShader,
     vector<Model>& pointOfInterestModels,
     vector<unsigned int>& pointOfInterestTexture,
-    vector<glm::vec3>& pointOfinterestTranslationVec,
     glm::mat4& view,
     glm::mat4& projection,
     bool lightOn,
-    vector<glm::vec3>& poiModelRotation,
-    vector<glm::vec3>& poiModelScale,
-    vector<glm::vec3>& poiModelTranslations
+    vector<glm::mat4>& modelPoiMatrices
 ) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, pointOfInterestTexture[0]);
@@ -257,23 +253,18 @@ void renderPointsOfInterest(
         glBindTexture(GL_TEXTURE_2D, pointOfInterestTexture[poiDebugPosition]);
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(40.0f, -4.0f, 40.0f));
-        model = glm::translate(model, poiModelTranslations[poiDebugPosition]);
-        model = glm::scale(model, poiModelScale[poiDebugPosition]);
-        model = glm::rotate(model, (float)glm::radians(270.0), poiModelRotation[poiDebugPosition]);
+        model = glm::translate(model, glm::vec3(0.0f, -0.1f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.03f, 0.03f, 0.03f));
+        model = glm::rotate(model, (float)glm::radians(270.0), glm::vec3(1.0f, 0.0f, 0.0f));
         pointOfInterestShader.setMat4("model", model);
         pointOfInterestModels[poiDebugPosition].Draw(pointOfInterestShader);
     }
     //
 
-    for (int i = 0; i < pointOfinterestTranslationVec.size(); i++) {
+    for (int i = 0; i < modelPoiMatrices.size(); i++) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, pointOfInterestTexture[i]);
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, poiModelTranslations[i]);
-        model = glm::translate(model, pointOfinterestTranslationVec[i]);
-        model = glm::scale(model, poiModelScale[i]);
-        model = glm::rotate(model, (float)glm::radians(270.0), poiModelRotation[i]);
-        pointOfInterestShader.setMat4("model", model);
+        pointOfInterestShader.setMat4("model", modelPoiMatrices[i]);
         pointOfInterestModels[i].Draw(pointOfInterestShader);
     }
 
