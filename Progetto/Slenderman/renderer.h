@@ -247,14 +247,14 @@ void renderPointsOfInterest(
     pointOfInterestShader.setMat4("projection", projection);
 
     //DEBUG TODO: Commentare
-    int poiDebugPosition = 1;
+    int poiDebugPosition = 7;
     if (DEBUG) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, pointOfInterestTexture[poiDebugPosition]);
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(40.0f, -4.0f, 40.0f));
-        model = glm::translate(model, glm::vec3(0.0f, -0.1f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.03f, 0.03f, 0.03f));
+        model = glm::translate(model, glm::vec3(-60.0f, 3.8f, 60.0f));
+        model = glm::scale(model, glm::vec3(0.008f, 0.008f, 0.008f));
         model = glm::rotate(model, (float)glm::radians(270.0), glm::vec3(1.0f, 0.0f, 0.0f));
         pointOfInterestShader.setMat4("model", model);
         pointOfInterestModels[poiDebugPosition].Draw(pointOfInterestShader);

@@ -176,38 +176,46 @@ void initPoiModels(vector<glm::mat4>& modelPoiMatrices, vector<glm::vec3>& point
 
     //3
     model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, -0.1f, 0.0f));
     model = glm::translate(model, pointOfinterestTranslationVec[2]);
-    model = glm::scale(model, glm::vec3(0.008f, 0.008f, 0.008f));
+    model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
+    model = glm::rotate(model, (float)glm::radians(270.0), glm::vec3(1.0f, 0.0f, 0.0f));
     modelPoiMatrices.push_back(model);
 
     //4
     model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, -3.1f, 0.0f));
     model = glm::translate(model, pointOfinterestTranslationVec[3]);
-    model = glm::scale(model, glm::vec3(0.008f, 0.008f, 0.008f));
+    model = glm::scale(model, glm::vec3(8.5f, 8.5f, 8.5f));
     modelPoiMatrices.push_back(model);
 
     //5
     model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, 1.4f, 0.0f));
     model = glm::translate(model, pointOfinterestTranslationVec[4]);
-    model = glm::scale(model, glm::vec3(0.008f, 0.008f, 0.008f));
+    model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
     modelPoiMatrices.push_back(model);
 
     //6
     model = glm::mat4(1.0f);
     model = glm::translate(model, pointOfinterestTranslationVec[5]);
-    model = glm::scale(model, glm::vec3(0.008f, 0.008f, 0.008f));
+    model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
     modelPoiMatrices.push_back(model);
 
     //7
     model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, -0.8f, 0.0f));
     model = glm::translate(model, pointOfinterestTranslationVec[6]);
-    model = glm::scale(model, glm::vec3(0.008f, 0.008f, 0.008f));
+    model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+    model = glm::rotate(model, (float)glm::radians(270.0), glm::vec3(1.0f, 0.0f, 0.0f));
     modelPoiMatrices.push_back(model);
 
     //8
     model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(-60.0f, 3.8f, 60.0f));
     model = glm::translate(model, pointOfinterestTranslationVec[7]);
     model = glm::scale(model, glm::vec3(0.008f, 0.008f, 0.008f));
+    model = glm::rotate(model, (float)glm::radians(270.0), glm::vec3(1.0f, 0.0f, 0.0f));
     modelPoiMatrices.push_back(model);
 }
 

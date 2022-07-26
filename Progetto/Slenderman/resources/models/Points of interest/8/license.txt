@@ -1,0 +1,11 @@
+Model Information:
+* title:	Free - Water Tower
+* source:	https://sketchfab.com/3d-models/free-water-tower-56fbfe448a2a41879c382444b9d1c8e1
+* author:	Emanuel (https://sketchfab.com/thismanuel)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Free - Water Tower" (https://sketchfab.com/3d-models/free-water-tower-56fbfe448a2a41879c382444b9d1c8e1) by Emanuel (https://sketchfab.com/thismanuel) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

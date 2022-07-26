@@ -1,0 +1,11 @@
+Model Information:
+* title:	Old Truck
+* source:	https://sketchfab.com/3d-models/old-truck-a9f888b7832d4bbf9ed18fe18f00bf89
+* author:	Renafox (https://sketchfab.com/kryik1023)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Old Truck" (https://sketchfab.com/3d-models/old-truck-a9f888b7832d4bbf9ed18fe18f00bf89) by Renafox (https://sketchfab.com/kryik1023) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)

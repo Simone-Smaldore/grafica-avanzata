@@ -75,12 +75,12 @@ int main() {
   vector<std::string> poiModelExtensions{
       ".dae",
       ".gltf",
-      ".dae",
-      ".dae",
-      ".dae",
-      ".dae",
-      ".dae",
-      ".dae",
+      ".gltf",
+      ".gltf",
+      ".gltf",
+      ".gltf",
+      ".gltf",
+      ".gltf",
   };
   for (int i = 1; i <= NUMBER_POINTS_OF_INTEREST; i++) {
       std::string path = "resources/models/Points of interest/" + std::to_string(i) + "/" + std::to_string(i) + poiModelExtensions[i - 1];
@@ -129,8 +129,8 @@ int main() {
     glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 2000.0f);
 
     glm::vec3 slendermanTranslationMatrix = glm::vec3(0.0f, -0.8f, -10.0f);
-    
-    //TODO: Aggiungere i punti di interesse
+
+
     //TODO: Aggiungere mappa?
     renderFloor(floorShader, floorTexture, floorVAO, view, projection, lightOn);
     renderForest(forestShader, treeModel, view, projection, camera, positionsPointOfinterest, lightOn);
