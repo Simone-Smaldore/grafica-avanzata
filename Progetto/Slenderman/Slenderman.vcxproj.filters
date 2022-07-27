@@ -34,6 +34,15 @@
     <None Include="light_shader.vs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="multiple_lights.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="multiple_lights.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="multiple_lights_instancing.vs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

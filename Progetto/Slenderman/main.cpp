@@ -36,15 +36,15 @@ int main() {
   glEnable(GL_DEPTH_TEST);
 
   // Build e compilazione degli shader (TODO: Refactor finale shader)
-  Shader slenderShader("model_loading.vs", "model_loading.fs");
-  Shader flashlightShader("model_loading.vs", "model_loading.fs");
-  Shader floorShader("model_loading.vs", "model_loading.fs");
-  Shader pageShader("model_loading.vs", "model_loading.fs");
-  Shader forestShader("light_shader.vs", "light_shader.fs");
-  Shader grassShader("light_shader.vs", "light_shader.fs");
-  Shader fenceShader("light_shader.vs", "light_shader.fs");
-  Shader streetlightShader("model_loading.vs", "model_loading.fs");
-  Shader pointsOfInterestShader("model_loading.vs", "model_loading.fs");
+  Shader slenderShader("multiple_lights.vs", "multiple_lights.fs");
+  Shader flashlightShader("multiple_lights.vs", "multiple_lights.fs");
+  Shader floorShader("multiple_lights.vs", "multiple_lights.fs");
+  Shader pageShader("multiple_lights.vs", "multiple_lights.fs");
+  Shader forestShader("multiple_lights_instancing.vs", "multiple_lights.fs");
+  Shader grassShader("multiple_lights_instancing.vs", "multiple_lights.fs");
+  Shader fenceShader("multiple_lights_instancing.vs", "multiple_lights.fs");
+  Shader streetlightShader("multiple_lights.vs", "multiple_lights.fs");
+  Shader pointsOfInterestShader("multiple_lights.vs", "multiple_lights.fs");
 
   // Caricamento texture
   unsigned int slenderTexture = loadTexture("resources/models/Slenderman/diffuse.png");
