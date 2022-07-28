@@ -279,6 +279,11 @@ void Renderer::renderInfo(Camera& camera, int fps) {
     std::string z_ind = sszindex.str();
     RenderText(z_ind, SCR_WIDTH - 200.0f, 160.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
+    std::stringstream ssfrontinfo;
+    ssfrontinfo << "x: " << camera.Front.x << " y: " << camera.Front.y << " z: " << camera.Front.z;
+    std::string front_info = ssfrontinfo.str();
+    RenderText(front_info, 100.0f, 50.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+
     std::stringstream ssfps;
     ssfps << "fps: " << fps;
     std::string fps_str = ssfps.str();
