@@ -18,9 +18,6 @@
 #include "render_text.h"
 #include "fps_manager.h"
 
-
-
-
 int main() {
   // Inizializza Glfw
   GLFWwindow* window = initGlfw();
@@ -105,6 +102,7 @@ int main() {
   for (int i = 0; i < positionsPointOfinterest.size(); i++) {
       cout << "K " << i << ": " << positionsPointOfinterest[i] << endl;
   }
+  Renderer renderer = Renderer(pointOfinterestTranslationVec);
 
   // Loop di rendering
   // -----------
@@ -126,22 +124,32 @@ int main() {
     // Rendering della scena
     glm::mat4 view = camera.GetViewMatrix();
     glm::mat4 flashlightView = glm::mat4(1.0f);
-    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 2000.0f);
+    float farClippingPlane = 300.0f;
+    if (DEBUG) {
+        farClippingPlane = 2000.0f;
+    }
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, farClippingPlane);
 
     glm::vec3 slendermanTranslationMatrix = glm::vec3(0.0f, -0.8f, -10.0f);
 
+    renderer.lightOn = lightOn;
+    renderer.view = view;
+    renderer.projection = projection;
 
     //TODO: Aggiungere mappa?
-    renderFloor(floorShader, floorTexture, floorVAO, view, projection, lightOn);
-    renderForest(forestShader, treeModel, view, projection, camera, positionsPointOfinterest, lightOn);
-    renderFence(fenceShader, fenceTexture, fenceModel, view, projection, lightOn);
-    renderGrass(grassShader, grassModel, view, projection, camera, lightOn);
-    renderSlenderman(slenderShader, slenderTexture, slenderModel, slendermanTranslationMatrix, view, projection, lightOn);
-    renderStreetlight(streetlightShader, streetlightTexture, streetlightModel, pointOfinterestTranslationVec, view, projection, lightOn);
-    renderFlashlight(flashlightShader, flashlightTexture, flashlightModel, flashlightView, projection, lightOn);
-    renderPages(pageShader, pageTextures, pageIndexPosition, pageVAO, pointOfinterestTranslationVec, view, projection, lightOn);
-    renderPointsOfInterest(pointsOfInterestShader, pointsOfInterestModels, pointOfInterestTextures, view, projection, lightOn, modelPoiMatrices);
-    if (DEBUG) renderInfo(camera, fps);
+    renderer.renderFloor(floorShader, floorTexture, floorVAO);
+    renderer.renderForest(forestShader, treeModel, camera, positionsPointOfinterest);
+    renderer.renderFence(fenceShader, fenceTexture, fenceModel);
+    renderer.renderGrass(grassShader, grassModel, camera);
+    renderer.renderSlenderman(slenderShader, slenderTexture, slenderModel, slendermanTranslationMatrix);
+    renderer.renderStreetlight(streetlightShader, streetlightTexture, streetlightModel);
+    renderer.renderPages(pageShader, pageTextures, pageIndexPosition, pageVAO);
+    renderer.renderPointsOfInterest(pointsOfInterestShader, pointsOfInterestModels, pointOfInterestTextures, modelPoiMatrices);
+    // Renderizzare sempre come ultimo
+    //renderer.renderFlashlight(flashlightShader, flashlightTexture, flashlightModel);
+    
+    
+    if (DEBUG) renderer.renderInfo(camera, fps);
 
     // Swap dei buffer e processamento degli eventi in coda
     glfwSwapBuffers(window);

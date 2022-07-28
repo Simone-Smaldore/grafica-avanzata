@@ -5,6 +5,11 @@
 
 class LightUtils {
     public:
+        LightUtils() = default;
+        LightUtils(vector<glm::vec3> translationVec) {
+            lightTranslationVec = translationVec;
+        }
+        vector<glm::vec3> lightTranslationVec;
         void initLightShader(Shader& shader, bool lightOn, Camera& camera);
     private:
         void initSpotLight(Shader& shader, bool lightOn, Camera& camera);
@@ -15,9 +20,8 @@ class LightUtils {
 void LightUtils::initLightShader(Shader& shader, bool lightOn, Camera& camera) {
     shader.use();
     initSpotLight(shader, lightOn, camera);
-    int firstLightIndex = 0;
-    if (DEBUG) {
-        initPointLightForPoi(shader, glm::vec3(40.0f, -4.0f, 40.0f), firstLightIndex);
+    for (int i = 0; i < lightTranslationVec.size(); i++) {
+        initPointLightForPoi(shader, lightTranslationVec[i], i);
     }
     shader.setFloat("material.shininess", 32.0f);
 }
@@ -56,22 +60,12 @@ void LightUtils::initSpotLight(Shader& shader, bool lightOn, Camera& camera) {
 }
 
 void LightUtils::initPointLightForPoi(Shader& shader, glm::vec3 basePosition, int lightIndex) {
-    glm::vec3 light1Pos = basePosition + glm::vec3(STREETLIGHT_POI_OFFSET, 9.0f, STREETLIGHT_POI_OFFSET + 4.0f);
-    // point light 1
-    shader.setVec3("pointLights[" + std::to_string(lightIndex) + "].position", light1Pos);
+    glm::vec3 lightPos = basePosition + glm::vec3(STREETLIGHT_POI_OFFSET, 9.0f, STREETLIGHT_POI_OFFSET);
+    shader.setVec3("pointLights[" + std::to_string(lightIndex) + "].position", lightPos);
     shader.setVec3("pointLights[" + std::to_string(lightIndex) + "].ambient", 1.0, 0.8, 0.0);
     shader.setVec3("pointLights[" + std::to_string(lightIndex) + "].diffuse", 1.0, 0.8, 0.0);
     shader.setVec3("pointLights[" + std::to_string(lightIndex) + "].specular", 1.0, 0.8, 0.0);
     shader.setFloat("pointLights[" + std::to_string(lightIndex) + "].constant", 1.0f);
     shader.setFloat("pointLights[" + std::to_string(lightIndex) + "].linear", 0.09);
     shader.setFloat("pointLights[" + std::to_string(lightIndex) + "].quadratic", 0.032);
-    // point light 2
-    glm::vec3 light2Pos = basePosition + glm::vec3(STREETLIGHT_POI_OFFSET, 9.0f, STREETLIGHT_POI_OFFSET - 4.0f);
-    shader.setVec3("pointLights[" + std::to_string(lightIndex + 1) + "].position", light2Pos);
-    shader.setVec3("pointLights[" + std::to_string(lightIndex + 1) + "].ambient", 1.0, 0.8, 0.0);
-    shader.setVec3("pointLights[" + std::to_string(lightIndex + 1) + "].diffuse", 1.0, 0.8, 0.0);
-    shader.setVec3("pointLights[" + std::to_string(lightIndex + 1) + "].specular", 1.0, 0.8, 0.0);
-    shader.setFloat("pointLights[" + std::to_string(lightIndex + 1) + "].constant", 1.0f);
-    shader.setFloat("pointLights[" + std::to_string(lightIndex + 1) + "].linear", 0.09);
-    shader.setFloat("pointLights[" + std::to_string(lightIndex + 1) + "].quadratic", 0.032);
 }

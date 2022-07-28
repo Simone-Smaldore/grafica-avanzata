@@ -6,23 +6,37 @@
 #include <sstream>
 #include <string>
 #include "light_utils.h"
+class Renderer {
 
-//TODO Transformare in oggetto renderer con metodi privati
+public:
+    Renderer(vector<glm::vec3> poiTranslations) {
+        pointOfinterestTranslationVec = poiTranslations;
+        lightUtils = LightUtils(pointOfinterestTranslationVec);
+    };
+    bool lightOn;
+    glm::mat4 view;
+    glm::mat4 projection;
+    vector<glm::vec3> pointOfinterestTranslationVec;
+    LightUtils lightUtils;
 
-//Privati
-void renderDynamicMap(Shader& shader, Model& modelObj, vector<int>& VAO_indexes, int quadSide, int vaoObjectSide);
-vector<int> getVaoIndexesFromCamera(Camera& camera, float offset, int quadSide, int vaoObjectSide);
-void initLightShader(Shader& shader, bool lightOn);
+    void renderFloor(Shader& floorShader, unsigned int& floorTexture, unsigned int& floorVAO);
+    void renderPages(Shader& pageShader, vector<unsigned int>& pageTextures, vector<int>& pageIndexPosition, unsigned int& pageVAO);
+    void renderForest(Shader& forestShader, Model& treeModel, Camera& camera, vector<int>& positionsPointOfinterest);
+    void renderFence(Shader& fenceShader, unsigned int& fenceTexture, Model& fenceModel);
+    void renderGrass(Shader& grassShader, Model& grassModel, Camera& camera);
+    void renderSlenderman(Shader& slenderShader, unsigned int& slenderTexture, Model& slenderModel, glm::vec3& translationMatrix);
+    void renderStreetlight(Shader& streetlightShader, unsigned int& streetlightTexture, Model& streetlightModel);
+    void renderPointsOfInterest(Shader& pointOfInterestShader, vector<Model>& pointOfInterestModels, vector<unsigned int>& pointOfInterestTexture, vector<glm::mat4>& modelPoiMatrices);
+    void renderFlashlight(Shader& flashlightShader, unsigned int& flashlightTexture, Model& flashlightModel);
+    void renderInfo(Camera& camera, int fps);
+private:
+    void renderDynamicMap(Shader& shader, Model& modelObj, vector<int>& VAO_indexes, int quadSide, int vaoObjectSide);
+    vector<int> getVaoIndexesFromCamera(Camera& camera, float offset, int quadSide, int vaoObjectSide);
 
-void renderFloor(
-    Shader& floorShader,
-    unsigned int& floorTexture,
-    unsigned int& floorVAO,
-    glm::mat4& view,
-    glm::mat4& projection,
-    bool lightOn
-) {
-    initLightShader(floorShader, lightOn);
+};
+
+void Renderer::renderFloor(Shader& floorShader, unsigned int& floorTexture, unsigned int& floorVAO) {
+    lightUtils.initLightShader(floorShader, lightOn, camera);
     floorShader.use();
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, floorTexture);
@@ -35,18 +49,9 @@ void renderFloor(
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void renderPages(
-    Shader& pageShader,
-    vector<unsigned int>& pageTextures,
-    vector<int>& pageIndexPosition,
-    unsigned int& pageVAO,
-    vector<glm::vec3>& pointOfinterestTranslationVec,
-    glm::mat4& view,
-    glm::mat4& projection,
-    bool lightOn
-) {
-    initLightShader(pageShader, lightOn);
-    pageShader.use();   
+void Renderer::renderPages(Shader& pageShader, vector<unsigned int>& pageTextures, vector<int>& pageIndexPosition, unsigned int& pageVAO) {
+    lightUtils.initLightShader(pageShader, lightOn, camera);
+    pageShader.use();
     pageShader.setMat4("view", view);
     pageShader.setMat4("projection", projection);
 
@@ -88,17 +93,9 @@ void renderPages(
 
 }
 
-void renderForest(
-    Shader& forestShader,
-    Model& treeModel,
-    glm::mat4& view,
-    glm::mat4& projection,
-    Camera& camera,
-    vector<int>& positionsPointOfinterest,
-    bool lightOn
-) {
+void Renderer::renderForest(Shader& forestShader, Model& treeModel, Camera& camera, vector<int>& positionsPointOfinterest) {
 
-    initLightShader(forestShader, lightOn);
+    lightUtils.initLightShader(forestShader, lightOn, camera);
     forestShader.use();
     forestShader.setMat4("projection", projection);
     forestShader.setMat4("view", view);
@@ -108,7 +105,7 @@ void renderForest(
     for (int i = 0; i < positionsPointOfinterest.size(); i++) {
         int val = positionsPointOfinterest[i];
         auto it = find(VAO_indexes.begin(), VAO_indexes.end(), val);
-        if (it != VAO_indexes.end()){
+        if (it != VAO_indexes.end()) {
             int deleteIndex = it - VAO_indexes.begin();
             VAO_indexes.erase(VAO_indexes.begin() + deleteIndex);
         }
@@ -127,15 +124,8 @@ void renderForest(
     renderDynamicMap(forestShader, treeModel, VAO_indexes, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_TREE);
 }
 
-void renderFence(
-    Shader& fenceShader,
-    unsigned int& fenceTexture,
-    Model& fenceModel,
-    glm::mat4& view,
-    glm::mat4& projection,
-    bool lightOn
-) {
-    initLightShader(fenceShader, lightOn);
+void Renderer::renderFence(Shader& fenceShader, unsigned int& fenceTexture, Model& fenceModel) {
+    lightUtils.initLightShader(fenceShader, lightOn, camera);
     fenceShader.use();
     fenceShader.setMat4("projection", projection);
     fenceShader.setMat4("view", view);
@@ -153,15 +143,8 @@ void renderFence(
     }
 }
 
-void renderGrass(
-    Shader& grassShader,
-    Model& grassModel,
-    glm::mat4& view,
-    glm::mat4& projection,
-    Camera& camera,
-    bool lightOn
-) {
-    initLightShader(grassShader, lightOn);
+void Renderer::renderGrass(Shader& grassShader, Model& grassModel, Camera& camera) {
+    lightUtils.initLightShader(grassShader, lightOn, camera);
     grassShader.use();
     grassShader.setMat4("projection", projection);
     grassShader.setMat4("view", view);
@@ -172,18 +155,10 @@ void renderGrass(
 }
 
 
-void renderSlenderman(
-    Shader& slenderShader,
-    unsigned int& slenderTexture,
-    Model& slenderModel,
-    glm::vec3& translationMatrix,
-    glm::mat4& view,
-    glm::mat4& projection,
-    bool lightOn
-) {
+void Renderer::renderSlenderman(Shader& slenderShader, unsigned int& slenderTexture, Model& slenderModel, glm::vec3& translationMatrix) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, slenderTexture);
-    initLightShader(slenderShader, lightOn);
+    lightUtils.initLightShader(slenderShader, lightOn, camera);
     slenderShader.use();
     slenderShader.setMat4("view", view);
     slenderShader.setMat4("projection", projection);
@@ -194,18 +169,10 @@ void renderSlenderman(
     slenderModel.Draw(slenderShader);
 }
 
-void renderStreetlight(
-    Shader& streetlightShader,
-    unsigned int& streetlightTexture,
-    Model& streetlightModel,
-    vector<glm::vec3>& pointOfinterestTranslationVec,
-    glm::mat4& view,
-    glm::mat4& projection,
-    bool lightOn
-) {
+void Renderer::renderStreetlight(Shader& streetlightShader, unsigned int& streetlightTexture, Model& streetlightModel) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, streetlightTexture);
-    initLightShader(streetlightShader, lightOn);
+    lightUtils.initLightShader(streetlightShader, lightOn, camera);
     streetlightShader.use();
     streetlightShader.setMat4("view", view);
     streetlightShader.setMat4("projection", projection);
@@ -231,18 +198,10 @@ void renderStreetlight(
     }
 }
 
-void renderPointsOfInterest(
-    Shader& pointOfInterestShader,
-    vector<Model>& pointOfInterestModels,
-    vector<unsigned int>& pointOfInterestTexture,
-    glm::mat4& view,
-    glm::mat4& projection,
-    bool lightOn,
-    vector<glm::mat4>& modelPoiMatrices
-) {
+void Renderer::renderPointsOfInterest(Shader& pointOfInterestShader, vector<Model>& pointOfInterestModels, vector<unsigned int>& pointOfInterestTexture, vector<glm::mat4>& modelPoiMatrices) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, pointOfInterestTexture[0]);
-    initLightShader(pointOfInterestShader, lightOn);
+    lightUtils.initLightShader(pointOfInterestShader, lightOn, camera);
     pointOfInterestShader.use();
     pointOfInterestShader.setMat4("view", view);
     pointOfInterestShader.setMat4("projection", projection);
@@ -271,17 +230,10 @@ void renderPointsOfInterest(
 
 }
 
-void renderFlashlight(
-    Shader& flashlightShader,
-    unsigned int& flashlightTexture,
-    Model& flashlightModel,
-    glm::mat4& view,
-    glm::mat4& projection,
-    bool lightOn
-) {
+void Renderer::renderFlashlight(Shader& flashlightShader, unsigned int& flashlightTexture, Model& flashlightModel) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, flashlightTexture);
-    initLightShader(flashlightShader, lightOn);
+    lightUtils.initLightShader(flashlightShader, lightOn, camera);
     flashlightShader.use();
     view = glm::mat4(1.0f);
     flashlightShader.setMat4("view", view);
@@ -296,8 +248,8 @@ void renderFlashlight(
     flashlightModel.Draw(flashlightShader);
 }
 
-void renderInfo(Camera& camera, int fps) {
-    std::stringstream ssx; 
+void Renderer::renderInfo(Camera& camera, int fps) {
+    std::stringstream ssx;
     ssx << "x: " << camera.Position.x;
     std::string x = ssx.str();
     RenderText(x, SCR_WIDTH - 200.0f, 50.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
@@ -308,7 +260,7 @@ void renderInfo(Camera& camera, int fps) {
 
     int numVAOForSide = TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_TREE;
     vector<int> indexes = getVaoIndexesFromCamera(camera, TREE_OFFSET, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_TREE);
-    int k_index = indexes[(indexes.size() - 1) /2];
+    int k_index = indexes[(indexes.size() - 1) / 2];
     int x_index = k_index / numVAOForSide;
     int z_index = k_index % numVAOForSide;
 
@@ -333,7 +285,7 @@ void renderInfo(Camera& camera, int fps) {
     RenderText(fps_str, SCR_WIDTH - 200.0f, SCR_HEIGHT - 50.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
-void renderDynamicMap(Shader& shader, Model& modelObj, vector<int>& VAO_indexes, int quadSide, int vaoObjectSide)  {
+void Renderer::renderDynamicMap(Shader& shader, Model& modelObj, vector<int>& VAO_indexes, int quadSide, int vaoObjectSide) {
     unsigned int num_VAO = (quadSide / vaoObjectSide) * (quadSide / vaoObjectSide);
     unsigned int num_element_for_VAO = (quadSide * quadSide) / num_VAO;
 
@@ -353,7 +305,7 @@ void renderDynamicMap(Shader& shader, Model& modelObj, vector<int>& VAO_indexes,
     }
 }
 
-vector<int> getVaoIndexesFromCamera(Camera& camera, float offset, int quadSide, int vaoObjectSide) {
+vector<int> Renderer::getVaoIndexesFromCamera(Camera& camera, float offset, int quadSide, int vaoObjectSide) {
     vector<int> result;
 
     float x_camera = camera.Position.x + (offset * quadSide / 2) + offset / 2;
@@ -386,9 +338,4 @@ vector<int> getVaoIndexesFromCamera(Camera& camera, float offset, int quadSide, 
     return result;
 }
 
-void initLightShader(Shader& shader, bool lightOn) {
-    LightUtils lightUtils = LightUtils();
-    lightUtils.initLightShader(shader, lightOn, camera);
-}
-    
 
