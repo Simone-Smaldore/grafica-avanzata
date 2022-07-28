@@ -52,10 +52,10 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 
 void main()
 {    
-
     vec4 textColor = texture(material.diffuse, TexCoords);
     if(textColor.a < alphaValue) 
         discard;
+
 
     // properties
     vec3 norm = normalize(Normal);
@@ -76,6 +76,10 @@ void main()
     result += CalcSpotLight(spotLight, norm, FragPos, viewDir);    
     
     FragColor = vec4(result, 1.0);
+
+    if(textColor.r > 0.8 && textColor.g > 0.5) 
+        FragColor = vec4(1.0, 0.8, 0.0, 1.0);
+
 }
 
 

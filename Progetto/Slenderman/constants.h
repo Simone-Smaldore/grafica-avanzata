@@ -29,6 +29,6 @@ const int INT_OFFSET_VAO_INDEXES = 1;
 // PER ADESSO NON DISEGNA SOLO IL VAO CORRISPONDENTE A (0, 0)
 const vector<int> K_MAP_TO_EXCLUDE{ 300 };
 // Indica l'offset che ha il lampione lungo x e lungo z dal centro del VAO
-const float STREETLIGHT_POI_OFFSET = 20.0f;
+const float STREETLIGHT_POI_OFFSET = 10.0f;
 
 

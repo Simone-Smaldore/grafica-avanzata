@@ -43,6 +43,9 @@
     <None Include="multiple_lights_instancing.vs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="streetlight_shader.fs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -90,6 +93,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="fps_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="light_utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

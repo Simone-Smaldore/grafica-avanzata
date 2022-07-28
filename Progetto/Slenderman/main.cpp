@@ -43,7 +43,7 @@ int main() {
   Shader forestShader("multiple_lights_instancing.vs", "multiple_lights.fs");
   Shader grassShader("multiple_lights_instancing.vs", "multiple_lights.fs");
   Shader fenceShader("multiple_lights_instancing.vs", "multiple_lights.fs");
-  Shader streetlightShader("multiple_lights.vs", "multiple_lights.fs");
+  Shader streetlightShader("multiple_lights.vs", "streetlight_shader.fs");
   Shader pointsOfInterestShader("multiple_lights.vs", "multiple_lights.fs");
 
   // Caricamento texture

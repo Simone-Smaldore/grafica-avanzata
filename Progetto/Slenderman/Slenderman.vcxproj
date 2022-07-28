@@ -172,6 +172,7 @@
     <None Include="packages.config" />
     <None Include="model_loading.fs" />
     <None Include="model_loading.vs" />
+    <None Include="streetlight_shader.fs" />
     <None Include="text.fs" />
     <None Include="text.vs" />
   </ItemGroup>
@@ -185,6 +186,7 @@
     <ClInclude Include="fps_manager.h" />
     <ClInclude Include="input_utils.h" />
     <ClInclude Include="glfw_utils.h" />
+    <ClInclude Include="light_utils.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="renderer.h" />
