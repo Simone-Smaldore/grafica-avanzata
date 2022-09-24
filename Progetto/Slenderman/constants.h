@@ -31,4 +31,17 @@ const vector<int> K_MAP_TO_EXCLUDE{ 300 };
 // Indica l'offset che ha il lampione lungo x e lungo z dal centro del VAO
 const float STREETLIGHT_POI_OFFSET = 10.0f;
 
+// COSTANTI PER LA COLLEZIONE DELLE PAGINE
+// -------------------------------------------------------------------------------------------
+const float Z_V_MIN_PAGE = -0.3f;
+const float X_V_MIN_PAGE = -0.95f;
+const float Y_V_MIN_PAGE = -0.2f;
+
+const float Z_V_MAX_PAGE = 0.4f;
+const float X_V_MAX_PAGE = -0.85f;
+const float Y_V_MAX_PAGE = 0.3f;
+
+const float Z_OFFSET_PAGE = 5.0f;
+const float X_OFFSET_PAGE = 7.0f;
+
 

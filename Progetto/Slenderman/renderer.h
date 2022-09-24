@@ -14,6 +14,7 @@ public:
         lightUtils = LightUtils(pointOfinterestTranslationVec);
     };
     bool lightOn;
+    bool collectPage;
     glm::mat4 view;
     glm::mat4 projection;
     vector<glm::vec3> pointOfinterestTranslationVec;
@@ -280,7 +281,7 @@ void Renderer::renderInfo(Camera& camera, int fps) {
     RenderText(z_ind, SCR_WIDTH - 200.0f, 160.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     std::stringstream ssfrontinfo;
-    ssfrontinfo << "x: " << camera.Front.x << " y: " << camera.Front.y << " z: " << camera.Front.z;
+    ssfrontinfo << "x_v: " << camera.Front.x << " y_v: " << camera.Front.y << " z_v: " << camera.Front.z;
     std::string front_info = ssfrontinfo.str();
     RenderText(front_info, 100.0f, 50.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
@@ -288,6 +289,11 @@ void Renderer::renderInfo(Camera& camera, int fps) {
     ssfps << "fps: " << fps;
     std::string fps_str = ssfps.str();
     RenderText(fps_str, SCR_WIDTH - 200.0f, SCR_HEIGHT - 50.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+    std::stringstream ssCollectPage;
+    ssCollectPage << "Collect: " << collectPage;
+    std::string collectPage_str = ssCollectPage.str();
+    RenderText(collectPage_str, 50.0f, SCR_HEIGHT - 50.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void Renderer::renderDynamicMap(Shader& shader, Model& modelObj, vector<int>& VAO_indexes, int quadSide, int vaoObjectSide) {

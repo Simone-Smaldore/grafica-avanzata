@@ -136,6 +136,16 @@ int main() {
     renderer.view = view;
     renderer.projection = projection;
 
+    // TODO: rimuovere magic numbers: Come ottengo la posizione del lampione?
+    // Una volta ottenuta la posizione posso applicare gli offset definiti nelle costanti
+    bool collectXZ = (camera.Position.x > 50 && camera.Position.x < 62) &&
+        (camera.Position.z > 42 && camera.Position.z < 58);
+    bool collectV = (camera.Front.x > X_V_MIN_PAGE && camera.Front.x < X_V_MAX_PAGE)
+        && (camera.Front.y > Y_V_MIN_PAGE && camera.Front.y < Y_V_MAX_PAGE)
+        && (camera.Front.z > Z_V_MIN_PAGE && camera.Front.z < Z_V_MAX_PAGE);
+    bool collectPage = collectXZ && collectV;
+    renderer.collectPage = collectPage;
+
     //TODO: Aggiungere mappa?
     renderer.renderFloor(floorShader, floorTexture, floorVAO);
     renderer.renderForest(forestShader, treeModel, camera, positionsPointOfinterest);
