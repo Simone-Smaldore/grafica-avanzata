@@ -70,33 +70,29 @@ void Renderer::renderPages(Shader& pageShader, Shader& shaderSingleColor, vector
 		model = glm::rotate(model, (float)glm::radians(270.0), glm::vec3(1.0f, 0.0f, 0.0f));
 		model = glm::rotate(model, (float)glm::radians(90.0), glm::vec3(0.0f, 0.0f, 1.0f));
 		pageShader.setMat4("model", model);
-		if (true) {
-			glEnable(GL_STENCIL_TEST);
-			glStencilFunc(GL_ALWAYS, 1, 0xFF);
-			glStencilMask(0xFF);
-		}
+		glEnable(GL_STENCIL_TEST);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glStencilMask(0xFF);
 		glBindVertexArray(pageVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		if (true) {
-			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-			glStencilMask(0x00);
-			glDisable(GL_DEPTH_TEST);
-			shaderSingleColor.use();
-			shaderSingleColor.setMat4("view", view);
-			shaderSingleColor.setMat4("projection", projection);
-			float scale = 1.05f;
-			model = glm::scale(model, glm::vec3(scale, scale, scale));
-			shaderSingleColor.setMat4("model", model);
-			glBindVertexArray(pageVAO);
-			glDrawArrays(GL_TRIANGLES, 0, 6);
+		glStencilMask(0x00);
+		glDisable(GL_DEPTH_TEST);
+		shaderSingleColor.use();
+		shaderSingleColor.setMat4("view", view);
+		shaderSingleColor.setMat4("projection", projection);
+		float scale = 1.15f;
+		model = glm::scale(model, glm::vec3(scale, scale, scale));
+		shaderSingleColor.setMat4("model", model);
+		glBindVertexArray(pageVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-			glStencilMask(0xFF);
-			glStencilFunc(GL_ALWAYS, 0, 0xFF);
-			glEnable(GL_DEPTH_TEST);
-			glDisable(GL_STENCIL_TEST);
-		}
+		glStencilMask(0xFF);
+		glStencilFunc(GL_ALWAYS, 0, 0xFF);
+		glEnable(GL_DEPTH_TEST);
+		glDisable(GL_STENCIL_TEST);
 	}
 	//
 
@@ -134,7 +130,7 @@ void Renderer::renderPages(Shader& pageShader, Shader& shaderSingleColor, vector
 			shaderSingleColor.use();
 			shaderSingleColor.setMat4("view", view);
 			shaderSingleColor.setMat4("projection", projection);
-			float scale = 1.05f;
+			float scale = 1.15f;
 			model = glm::scale(model, glm::vec3(scale, scale, scale));
 			shaderSingleColor.setMat4("model", model);
 			glBindVertexArray(pageVAO);
