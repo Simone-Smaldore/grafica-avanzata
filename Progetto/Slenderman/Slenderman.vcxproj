@@ -172,6 +172,8 @@
     <None Include="packages.config" />
     <None Include="model_loading.fs" />
     <None Include="model_loading.vs" />
+    <None Include="stencil_single_color.fs" />
+    <None Include="stencil_single_color.vs" />
     <None Include="streetlight_shader.fs" />
     <None Include="text.fs" />
     <None Include="text.vs" />

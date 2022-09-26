@@ -46,6 +46,12 @@
     <None Include="streetlight_shader.fs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="stencil_single_color.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="stencil_single_color.vs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

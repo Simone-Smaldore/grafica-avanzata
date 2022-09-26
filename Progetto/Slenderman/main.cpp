@@ -37,6 +37,7 @@ int main() {
   Shader flashlightShader("multiple_lights.vs", "multiple_lights.fs");
   Shader floorShader("multiple_lights.vs", "multiple_lights.fs");
   Shader pageShader("multiple_lights.vs", "multiple_lights.fs");
+  Shader shaderSingleColor("stencil_single_color.vs", "stencil_single_color.fs");
   Shader forestShader("multiple_lights_instancing.vs", "multiple_lights.fs");
   Shader grassShader("multiple_lights_instancing.vs", "multiple_lights.fs");
   Shader fenceShader("multiple_lights_instancing.vs", "multiple_lights.fs");
@@ -122,7 +123,7 @@ int main() {
 
     // Pulizia dei buffer
     glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     // Rendering della scena
     glm::mat4 view = camera.GetViewMatrix();
@@ -148,7 +149,7 @@ int main() {
     renderer.renderGrass(grassShader, grassModel, camera);
     renderer.renderSlenderman(slenderShader, slenderTexture, slenderModel, slendermanTranslationMatrix);
     renderer.renderStreetlight(streetlightShader, streetlightTexture, streetlightModel);
-    renderer.renderPages(pageShader, pageTextures, pageIndexPosition, pageVAO);
+    renderer.renderPages(pageShader, shaderSingleColor, pageTextures, pageIndexPosition, pageVAO);
     renderer.renderPointsOfInterest(pointsOfInterestShader, pointsOfInterestModels, pointOfInterestTextures, modelPoiMatrices);
     // Renderizzare sempre come ultimo
     //renderer.renderFlashlight(flashlightShader, flashlightTexture, flashlightModel);
