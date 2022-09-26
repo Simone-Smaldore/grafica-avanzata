@@ -98,6 +98,7 @@ int main() {
   float lastFrame = 0.0f;
   int fps = 0;
   bool lightOn = true;
+  vector<bool> collectedPagesIndices(pageIndexPosition.size(), false);
 
   cout << "Punti di interesse: " << endl;
   for (int i = 0; i < pageIndexPosition.size(); i++) {
@@ -119,7 +120,7 @@ int main() {
     fps = fpsManager->getFps();
 
     // Gestione dell'input
-    processInput(window, camera, deltaTime, lightOn);
+    processInput(window, camera, deltaTime, lightOn, renderer.posViewedPage, collectedPagesIndices);
 
     // Pulizia dei buffer
     glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
@@ -149,7 +150,7 @@ int main() {
     renderer.renderGrass(grassShader, grassModel, camera);
     renderer.renderSlenderman(slenderShader, slenderTexture, slenderModel, slendermanTranslationMatrix);
     renderer.renderStreetlight(streetlightShader, streetlightTexture, streetlightModel);
-    renderer.renderPages(pageShader, shaderSingleColor, pageTextures, pageIndexPosition, pageVAO);
+    renderer.renderPages(pageShader, shaderSingleColor, pageTextures, pageIndexPosition, collectedPagesIndices, pageVAO);
     renderer.renderPointsOfInterest(pointsOfInterestShader, pointsOfInterestModels, pointOfInterestTextures, modelPoiMatrices);
     // Renderizzare sempre come ultimo
     //renderer.renderFlashlight(flashlightShader, flashlightTexture, flashlightModel);

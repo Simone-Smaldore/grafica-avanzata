@@ -2,9 +2,11 @@
 #include <GLFW/glfw3.h>
 #include "camera.h"
 
+using namespace std;
+
 double previousTime = glfwGetTime();
 
-void processInput(GLFWwindow* window, Camera& camera, float deltaTime, bool& lightOn) {
+void processInput(GLFWwindow* window, Camera& camera, float deltaTime, bool& lightOn, int posViewedPage, vector<bool>& collectedPagesIndices) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -22,6 +24,7 @@ void processInput(GLFWwindow* window, Camera& camera, float deltaTime, bool& lig
             lightOn = !lightOn;
         }
     }
-
-        
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && posViewedPage != -1) {
+        collectedPagesIndices[posViewedPage] = true;
+    }  
 }

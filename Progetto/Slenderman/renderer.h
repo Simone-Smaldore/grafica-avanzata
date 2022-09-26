@@ -12,6 +12,7 @@ public:
 	Renderer(vector<glm::vec3> poiTranslations) {
 		pointOfinterestTranslationVec = poiTranslations;
 		lightUtils = LightUtils(pointOfinterestTranslationVec);
+		posViewedPage = -1;
 	};
 	bool lightOn;
 	glm::mat4 view;
@@ -21,7 +22,7 @@ public:
 	int posViewedPage;
 
 	void renderFloor(Shader& floorShader, unsigned int& floorTexture, unsigned int& floorVAO);
-	void renderPages(Shader& pageShader, Shader& shaderSingleColor, vector<unsigned int>& pageTextures, vector<int>& pageIndexPosition, unsigned int& pageVAO);
+	void renderPages(Shader& pageShader, Shader& shaderSingleColor, vector<unsigned int>& pageTextures, vector<int>& pageIndexPosition, vector<bool>& collectedPagesIndices,  unsigned int& pageVAO);
 	void renderForest(Shader& forestShader, Model& treeModel, Camera& camera, vector<int>& positionsPointOfinterest);
 	void renderFence(Shader& fenceShader, unsigned int& fenceTexture, Model& fenceModel);
 	void renderGrass(Shader& grassShader, Model& grassModel, Camera& camera);
@@ -51,7 +52,7 @@ void Renderer::renderFloor(Shader& floorShader, unsigned int& floorTexture, unsi
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void Renderer::renderPages(Shader& pageShader, Shader& shaderSingleColor, vector<unsigned int>& pageTextures, vector<int>& pageIndexPosition, unsigned int& pageVAO) {
+void Renderer::renderPages(Shader& pageShader, Shader& shaderSingleColor, vector<unsigned int>& pageTextures, vector<int>& pageIndexPosition, vector<bool>& collectedPagesIndices, unsigned int& pageVAO) {
 	lightUtils.initLightShader(pageShader, lightOn, camera);
 	pageShader.use();
 	pageShader.setMat4("view", view);
@@ -70,7 +71,9 @@ void Renderer::renderPages(Shader& pageShader, Shader& shaderSingleColor, vector
 		model = glm::rotate(model, (float)glm::radians(270.0), glm::vec3(1.0f, 0.0f, 0.0f));
 		model = glm::rotate(model, (float)glm::radians(90.0), glm::vec3(0.0f, 0.0f, 1.0f));
 		pageShader.setMat4("model", model);
-		glEnable(GL_STENCIL_TEST);
+		glBindVertexArray(pageVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		/*glEnable(GL_STENCIL_TEST);
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 		glStencilMask(0xFF);
 		glBindVertexArray(pageVAO);
@@ -92,11 +95,15 @@ void Renderer::renderPages(Shader& pageShader, Shader& shaderSingleColor, vector
 		glStencilMask(0xFF);
 		glStencilFunc(GL_ALWAYS, 0, 0xFF);
 		glEnable(GL_DEPTH_TEST);
-		glDisable(GL_STENCIL_TEST);
+		glDisable(GL_STENCIL_TEST);*/
 	}
 	//
-
+	
 	for (int i = 0; i < pageIndexPosition.size(); i++) {
+		if (collectedPagesIndices[i]) {
+			// Disegna solo le pagine non collezionate
+			continue;
+		}
 		int pageIndex = pageIndexPosition[i];
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, pageTextures[i]);
@@ -120,8 +127,6 @@ void Renderer::renderPages(Shader& pageShader, Shader& shaderSingleColor, vector
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		if (i == posViewedPage) {
-			cout << "[DEBUG] **** Drawing stencil model for page index: " << pageIndex << endl;
-			//glEnable(GL_STENCIL_TEST);
 			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
@@ -142,6 +147,9 @@ void Renderer::renderPages(Shader& pageShader, Shader& shaderSingleColor, vector
 			glEnable(GL_DEPTH_TEST);
 			glDisable(GL_STENCIL_TEST);
 		}
+	}
+	if (posViewedPage != -1 && !collectedPagesIndices[posViewedPage]) {
+		RenderText("Press P to collect the page", (SCR_WIDTH / 2) - 200.0f, 200.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 	}
 }
 
