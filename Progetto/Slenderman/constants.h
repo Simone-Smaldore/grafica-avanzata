@@ -33,15 +33,16 @@ const float STREETLIGHT_POI_OFFSET = 10.0f;
 
 // COSTANTI PER LA COLLEZIONE DELLE PAGINE
 // -------------------------------------------------------------------------------------------
-const float Z_V_MIN_PAGE = -0.3f;
-const float X_V_MIN_PAGE = -0.95f;
+const float Z_V_MIN_PAGE = -0.35f;
+const float X_V_MIN_PAGE = -1.0f;
 const float Y_V_MIN_PAGE = -0.2f;
 
-const float Z_V_MAX_PAGE = 0.4f;
-const float X_V_MAX_PAGE = -0.85f;
+const float Z_V_MAX_PAGE = 0.35f;
+const float X_V_MAX_PAGE = 0.0f;
 const float Y_V_MAX_PAGE = 0.3f;
 
-const float Z_OFFSET_PAGE = 5.0f;
-const float X_OFFSET_PAGE = 7.0f;
+const float MAX_ANGLE_PAGE = 0.9f;
+const float PAGE_SELECTION_DISTANCE = 10.0f;
+
 
 
