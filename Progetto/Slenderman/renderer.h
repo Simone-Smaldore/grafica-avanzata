@@ -14,11 +14,11 @@ public:
         lightUtils = LightUtils(pointOfinterestTranslationVec);
     };
     bool lightOn;
-    bool collectPage;
     glm::mat4 view;
     glm::mat4 projection;
     vector<glm::vec3> pointOfinterestTranslationVec;
     LightUtils lightUtils;
+    int posViewedPage;
 
     void renderFloor(Shader& floorShader, unsigned int& floorTexture, unsigned int& floorVAO);
     void renderPages(Shader& pageShader, vector<unsigned int>& pageTextures, vector<int>& pageIndexPosition, unsigned int& pageVAO);
@@ -30,6 +30,7 @@ public:
     void renderPointsOfInterest(Shader& pointOfInterestShader, vector<Model>& pointOfInterestModels, vector<unsigned int>& pointOfInterestTexture, vector<glm::mat4>& modelPoiMatrices);
     void renderFlashlight(Shader& flashlightShader, unsigned int& flashlightTexture, Model& flashlightModel);
     void renderInfo(Camera& camera, int fps);
+    void findLookingPage(Camera& camera, vector<int> pageIndexPosition);
 private:
     void renderDynamicMap(Shader& shader, Model& modelObj, vector<int>& VAO_indexes, int quadSide, int vaoObjectSide);
     vector<int> getVaoIndexesFromCamera(Camera& camera, float offset, int quadSide, int vaoObjectSide);
@@ -291,9 +292,33 @@ void Renderer::renderInfo(Camera& camera, int fps) {
     RenderText(fps_str, SCR_WIDTH - 200.0f, SCR_HEIGHT - 50.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     std::stringstream ssCollectPage;
-    ssCollectPage << "Collect: " << collectPage;
+    ssCollectPage << "Viewed Page: " << posViewedPage;
     std::string collectPage_str = ssCollectPage.str();
     RenderText(collectPage_str, 50.0f, SCR_HEIGHT - 50.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+}
+
+void Renderer::findLookingPage(Camera& camera, vector<int> pageIndexPosition) {
+    for (int k = 0; k < pageIndexPosition.size(); k++) {
+        int indexPoi = pageIndexPosition[k];
+        glm::vec3 translationVec = pointOfinterestTranslationVec[indexPoi];
+        float x_lampione = translationVec.x + STREETLIGHT_POI_OFFSET;
+        float z_lampione = translationVec.z + STREETLIGHT_POI_OFFSET;
+
+        float distanza_lampione = sqrt(pow(x_lampione - camera.Position.x, 2) + pow(z_lampione - camera.Position.z, 2));
+        bool collectPosition = (camera.Position.x > x_lampione && distanza_lampione <= PAGE_SELECTION_DISTANCE);
+
+        float componente_z = z_lampione - camera.Position.z;
+        float angolo_alpha = componente_z / distanza_lampione;
+        bool collectVision = (camera.Front.x > X_V_MIN_PAGE && camera.Front.x < X_V_MAX_PAGE)
+            && (camera.Front.y > Y_V_MIN_PAGE && camera.Front.y < Y_V_MAX_PAGE)
+            && (camera.Front.z > (Z_V_MIN_PAGE + angolo_alpha) && camera.Front.z < (Z_V_MAX_PAGE + angolo_alpha))
+            && (abs(angolo_alpha) < MAX_ANGLE_PAGE);
+        if (collectPosition && collectVision) {
+            posViewedPage = k;
+            return;
+        }
+    }
+    posViewedPage = -1;
 }
 
 void Renderer::renderDynamicMap(Shader& shader, Model& modelObj, vector<int>& VAO_indexes, int quadSide, int vaoObjectSide) {

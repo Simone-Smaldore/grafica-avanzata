@@ -139,23 +139,7 @@ int main() {
     renderer.view = view;
     renderer.projection = projection;
 
-    // TODO: rimuovere magic numbers: Come ottengo la posizione del lampione?
-    // Una volta ottenuta la posizione posso applicare gli offset definiti nelle costanti
-
-    float x_lampione = 50.0f;
-    float z_lampione = 50.0f;
-
-    float distanza_lampione = sqrt(pow(x_lampione - camera.Position.x, 2) + pow(z_lampione - camera.Position.z, 2));
-    bool collectPosition = (camera.Position.x > x_lampione && distanza_lampione <= PAGE_SELECTION_DISTANCE);
-
-    float componente_z = z_lampione - camera.Position.z;
-    float angolo_alpha = componente_z / distanza_lampione;
-    bool collectVision = (camera.Front.x > X_V_MIN_PAGE && camera.Front.x < X_V_MAX_PAGE)
-        && (camera.Front.y > Y_V_MIN_PAGE && camera.Front.y < Y_V_MAX_PAGE)
-        && (camera.Front.z > (Z_V_MIN_PAGE + angolo_alpha) && camera.Front.z < (Z_V_MAX_PAGE + angolo_alpha))
-        && (abs(angolo_alpha) < MAX_ANGLE_PAGE);
-    bool collectPage = collectPosition && collectVision;
-    renderer.collectPage = collectPage;
+    renderer.findLookingPage(camera, pageIndexPosition);
 
     //TODO: Aggiungere mappa?
     renderer.renderFloor(floorShader, floorTexture, floorVAO);
