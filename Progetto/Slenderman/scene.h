@@ -12,7 +12,7 @@ void initGrass(Model& grassModel);
 void initPointsOfInterest(vector<int>& positionsPointOfinterest, vector<glm::vec3>& pointOfinterestTranslationVec);
 void initPoiModels(vector<glm::mat4>& modelPoiMatrices, vector<glm::vec3>& pointOfinterestTranslationVec);
 void initPageIndexPosition(vector<int>& pageIndexPosition);
-void initMiniMap(unsigned int& minimapVAO, unsigned int& framebuffer, unsigned int& textureColorBuffer);
+void initMiniMap(unsigned int& minimapVAO, unsigned int& framebuffer, unsigned int& textureColorBuffer, unsigned int& minimapWoodVAO);
 //Privati
 void initDynamicMapForModel(Model& model, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset);
 bool isGoodPointOfInterest(int k, vector<int>& positionsPointOfinterest, int kMax, int numVAOForSide);
@@ -30,7 +30,8 @@ void initScene(
     vector<glm::mat4>& modelPoiMatrices,
     unsigned int& minimapVAO,
     unsigned int& framebuffer, 
-    unsigned int& textureColorBuffer
+    unsigned int& textureColorBuffer,
+    unsigned int& minimapWoodVAO
 ) {
 	initFloor(floorVAO);
     initPage(pageVAO);
@@ -40,7 +41,7 @@ void initScene(
     initPointsOfInterest(positionsPointOfinterest, pointOfinterestTranslationVec);
     initPoiModels(modelPoiMatrices, pointOfinterestTranslationVec);
     initPageIndexPosition(pageIndexPosition);
-    initMiniMap(minimapVAO, framebuffer, textureColorBuffer);
+    initMiniMap(minimapVAO, framebuffer, textureColorBuffer, minimapWoodVAO);
 }
 
 void initFloor(unsigned int& floorVAO) {
@@ -234,16 +235,16 @@ void initPageIndexPosition(vector<int>& pageIndexPosition) {
     }
 }
 
-void initMiniMap(unsigned int& minimapVAO, unsigned int& framebuffer, unsigned int& textureColorBuffer) {
+void initMiniMap(unsigned int& minimapVAO, unsigned int& framebuffer, unsigned int& textureColorBuffer, unsigned int& minimapWoodVAO) {
     float minimapVertices [] = {
      // positions                                                                                           // texCoords
-        1.0f - MAP_W_PROP_DIMENSION - MAP_W_PROP_OFFSET, -(1.0f - MAP_H_PROP_DIMENSION - MAP_H_PROP_OFFSET),  0.0f, 1.0f,
-        1.0f - MAP_W_PROP_DIMENSION - MAP_W_PROP_OFFSET, -1.0 + MAP_H_PROP_OFFSET                          ,  0.0f, 0.0f,
-        1.0f - MAP_W_PROP_OFFSET                       , -1.0 + MAP_H_PROP_OFFSET                          ,  1.0f, 0.0f,
+        1.0f - MAP_W_PROP_DIMENSION - MAP_W_PROP_OFFSET, -(1.0f - MAP_H_PROP_DIMENSION - MAP_H_PROP_OFFSET),  1.0f, 0.0f,
+        1.0f - MAP_W_PROP_DIMENSION - MAP_W_PROP_OFFSET, -1.0 + MAP_H_PROP_OFFSET                          ,  1.0f, 1.0f,
+        1.0f - MAP_W_PROP_OFFSET                       , -1.0 + MAP_H_PROP_OFFSET                          ,  0.0f, 1.0f,
 
-        1.0f - MAP_W_PROP_DIMENSION - MAP_W_PROP_OFFSET, -(1.0f - MAP_H_PROP_DIMENSION - MAP_H_PROP_OFFSET),  0.0f, 1.0f,
-        1.0f - MAP_W_PROP_OFFSET                       , -1.0 + MAP_H_PROP_OFFSET                          ,  1.0f, 0.0f,
-        1.0f - MAP_W_PROP_OFFSET                       , -(1.0f - MAP_H_PROP_DIMENSION - MAP_H_PROP_OFFSET),  1.0f, 1.0f
+        1.0f - MAP_W_PROP_DIMENSION - MAP_W_PROP_OFFSET, -(1.0f - MAP_H_PROP_DIMENSION - MAP_H_PROP_OFFSET),  1.0f, 0.0f,
+        1.0f - MAP_W_PROP_OFFSET                       , -1.0 + MAP_H_PROP_OFFSET                          ,  0.0f, 1.0f,
+        1.0f - MAP_W_PROP_OFFSET                       , -(1.0f - MAP_H_PROP_DIMENSION - MAP_H_PROP_OFFSET),  0.0f, 0.0f
     };
     unsigned int minimapVBO;
     glGenVertexArrays(1, &minimapVAO);
@@ -278,6 +279,29 @@ void initMiniMap(unsigned int& minimapVAO, unsigned int& framebuffer, unsigned i
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // Inizializza il VAO per riempire la minimappa
+    float minimapWoodVertices[] = { 
+        // positions   // texCoords
+        -1.0f,  1.0f,  0.0f, 1.0f,
+        -1.0f, -1.0f,  0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+
+        -1.0f,  1.0f,  0.0f, 1.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f, 1.0f
+    };
+
+    unsigned int minimapWoodVBO;
+    glGenVertexArrays(1, &minimapWoodVAO);
+    glGenBuffers(1, &minimapWoodVBO);
+    glBindVertexArray(minimapWoodVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, minimapWoodVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(minimapWoodVertices), &minimapWoodVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 }
 
 void initDynamicMapForModel(Model& modelObj, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset) {

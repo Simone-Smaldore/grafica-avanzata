@@ -47,6 +47,8 @@ int main() {
   Shader pointsOfInterestShader("multiple_lights.vs", "multiple_lights.fs");
   Shader minimapShader("minimap_shader.vs", "minimap_shader.fs");
 
+  Shader minimapWoodShader("minimap_shader.vs", "minimap_shader.fs");
+
   //minimapShader.use();
   //minimapShader.setInt("texture1", 0);
 
@@ -66,6 +68,7 @@ int main() {
       std::string path = "resources/models/Points of interest/" + std::to_string(i) + "/" + std::to_string(i) + ".jpg";
       pointOfInterestTextures.push_back(loadTexture(path.c_str()));
   }
+  unsigned int woodMinimapTexture = loadTexture("resources/textures/minimappa/bosco.jpg");
 
 
   // Caricamento modelli
@@ -102,8 +105,9 @@ int main() {
   unsigned int minimapVAO;
   unsigned int framebuffer; 
   unsigned int textureColorBuffer;
+  unsigned int minimapWoodVAO;
 
-  initScene(floorVAO, pageVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest, pageIndexPosition, pointOfinterestTranslationVec, modelPoiMatrices, minimapVAO, framebuffer, textureColorBuffer);
+  initScene(floorVAO, pageVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest, pageIndexPosition, pointOfinterestTranslationVec, modelPoiMatrices, minimapVAO, framebuffer, textureColorBuffer, minimapWoodVAO);
   float deltaTime = 0.0f;
   float lastFrame = 0.0f;
   int fps = 0;
@@ -176,7 +180,7 @@ int main() {
     }
     renderer.renderPageMessage(actualCollectedPages);
 
-    renderer.buildMiniMap(framebuffer, minimapVAO, shaderSingleColor);
+    renderer.buildMiniMap(framebuffer, minimapWoodShader, minimapWoodVAO, woodMinimapTexture);
     renderer.renderMiniMap(minimapShader, minimapVAO, textureColorBuffer);
     
     if (DEBUG) renderer.renderInfo(camera, fps);

@@ -34,7 +34,7 @@ public:
 	void renderInfo(Camera& camera, int fps);
 	void findLookingPage(Camera& camera, vector<int> pageIndexPosition);
 	void renderPageMessage(int& actualPage);
-	void buildMiniMap(unsigned int& framebuffer, unsigned int& minimapVAO, Shader& shaderSingleColor);
+	void buildMiniMap(unsigned int& framebuffer, Shader& shaderSingleColor, unsigned int& minimapWoodVAO, unsigned int& woodMinimapTexture);
 	void renderMiniMap(Shader& minimapShader, unsigned int& minimapVAO, unsigned int& textureColorBuffer);
 
 private:
@@ -370,15 +370,21 @@ void Renderer::renderPageMessage(int& actualPage) {
 	}
 }
 
-void Renderer::buildMiniMap(unsigned int& framebuffer, unsigned int& minimapVAO, Shader& shaderSingleColor) {
+void Renderer::buildMiniMap(unsigned int& framebuffer, Shader& minimapWoodShader, unsigned int& minimapWoodVAO, unsigned int& woodMinimapTexture) {
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-	glEnable(GL_DEPTH_TEST); 
+	glDisable(GL_DEPTH_TEST);
 	glClearColor(0.137f, 0.09f, 0.035f, 0.8f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
+
+	minimapWoodShader.use();
+	glBindTexture(GL_TEXTURE_2D, woodMinimapTexture);
+	glBindVertexArray(minimapWoodVAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	//TODO Disegnare mappa
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 }
 
 void Renderer::renderMiniMap(Shader& minimapShader, unsigned int& minimapVAO, unsigned int& textureColorBuffer) {
