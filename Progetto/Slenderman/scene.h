@@ -12,6 +12,7 @@ void initGrass(Model& grassModel);
 void initPointsOfInterest(vector<int>& positionsPointOfinterest, vector<glm::vec3>& pointOfinterestTranslationVec);
 void initPoiModels(vector<glm::mat4>& modelPoiMatrices, vector<glm::vec3>& pointOfinterestTranslationVec);
 void initPageIndexPosition(vector<int>& pageIndexPosition);
+void initMiniMap(unsigned int& minimapVAO, unsigned int& framebuffer, unsigned int& textureColorBuffer);
 //Privati
 void initDynamicMapForModel(Model& model, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset);
 bool isGoodPointOfInterest(int k, vector<int>& positionsPointOfinterest, int kMax, int numVAOForSide);
@@ -26,7 +27,10 @@ void initScene(
     vector<int>& positionsPointOfinterest,
     vector<int>& pageIndexPosition,
     vector<glm::vec3>& pointOfinterestTranslationVec,
-    vector<glm::mat4>& modelPoiMatrices
+    vector<glm::mat4>& modelPoiMatrices,
+    unsigned int& minimapVAO,
+    unsigned int& framebuffer, 
+    unsigned int& textureColorBuffer
 ) {
 	initFloor(floorVAO);
     initPage(pageVAO);
@@ -36,6 +40,7 @@ void initScene(
     initPointsOfInterest(positionsPointOfinterest, pointOfinterestTranslationVec);
     initPoiModels(modelPoiMatrices, pointOfinterestTranslationVec);
     initPageIndexPosition(pageIndexPosition);
+    initMiniMap(minimapVAO, framebuffer, textureColorBuffer);
 }
 
 void initFloor(unsigned int& floorVAO) {
@@ -227,6 +232,52 @@ void initPageIndexPosition(vector<int>& pageIndexPosition) {
         }
         pageIndexPosition.push_back(ranIndex);
     }
+}
+
+void initMiniMap(unsigned int& minimapVAO, unsigned int& framebuffer, unsigned int& textureColorBuffer) {
+    float minimapVertices [] = {
+     // positions                                                                                           // texCoords
+        1.0f - MAP_W_PROP_DIMENSION - MAP_W_PROP_OFFSET, -(1.0f - MAP_H_PROP_DIMENSION - MAP_H_PROP_OFFSET),  0.0f, 1.0f,
+        1.0f - MAP_W_PROP_DIMENSION - MAP_W_PROP_OFFSET, -1.0 + MAP_H_PROP_OFFSET                          ,  0.0f, 0.0f,
+        1.0f - MAP_W_PROP_OFFSET                       , -1.0 + MAP_H_PROP_OFFSET                          ,  1.0f, 0.0f,
+
+        1.0f - MAP_W_PROP_DIMENSION - MAP_W_PROP_OFFSET, -(1.0f - MAP_H_PROP_DIMENSION - MAP_H_PROP_OFFSET),  0.0f, 1.0f,
+        1.0f - MAP_W_PROP_OFFSET                       , -1.0 + MAP_H_PROP_OFFSET                          ,  1.0f, 0.0f,
+        1.0f - MAP_W_PROP_OFFSET                       , -(1.0f - MAP_H_PROP_DIMENSION - MAP_H_PROP_OFFSET),  1.0f, 1.0f
+    };
+    unsigned int minimapVBO;
+    glGenVertexArrays(1, &minimapVAO);
+    glGenBuffers(1, &minimapVBO);
+    glBindVertexArray(minimapVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, minimapVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(minimapVertices), &minimapVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+
+
+    // framebuffer
+    glGenFramebuffers(1, &framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    // create a color attachment texture
+    
+    glGenTextures(1, &textureColorBuffer);
+    glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffer, 0);
+    // create a renderbuffer object for depth and stencil attachment 
+    unsigned int rbo;
+    glGenRenderbuffers(1, &rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT); 
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); 
+    // check funzionamento
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void initDynamicMapForModel(Model& modelObj, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset) {

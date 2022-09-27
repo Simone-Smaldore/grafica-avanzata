@@ -34,6 +34,9 @@ public:
 	void renderInfo(Camera& camera, int fps);
 	void findLookingPage(Camera& camera, vector<int> pageIndexPosition);
 	void renderPageMessage(int& actualPage);
+	void buildMiniMap(unsigned int& framebuffer, unsigned int& minimapVAO, Shader& shaderSingleColor);
+	void renderMiniMap(Shader& minimapShader, unsigned int& minimapVAO, unsigned int& textureColorBuffer);
+
 private:
 	void renderDynamicMap(Shader& shader, Model& modelObj, vector<int>& VAO_indexes, int quadSide, int vaoObjectSide);
 	vector<int> getVaoIndexesFromCamera(Camera& camera, float offset, int quadSide, int vaoObjectSide);
@@ -365,6 +368,27 @@ void Renderer::renderPageMessage(int& actualPage) {
 		std::string ssPageInfoStr = ssPageInfo.str();
 		RenderText(ssPageInfoStr, (SCR_WIDTH / 2) - 150.0f, SCR_HEIGHT - 200.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 	}
+}
+
+void Renderer::buildMiniMap(unsigned int& framebuffer, unsigned int& minimapVAO, Shader& shaderSingleColor) {
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glEnable(GL_DEPTH_TEST); 
+	glClearColor(0.137f, 0.09f, 0.035f, 0.8f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+
+	//TODO Disegnare mappa
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Renderer::renderMiniMap(Shader& minimapShader, unsigned int& minimapVAO, unsigned int& textureColorBuffer) {
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glDisable(GL_DEPTH_TEST);
+	minimapShader.use();
+	glBindVertexArray(minimapVAO);
+	glBindTexture(GL_TEXTURE_2D ,textureColorBuffer);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glEnable(GL_DEPTH_TEST);
 }
 
 void Renderer::renderDynamicMap(Shader& shader, Model& modelObj, vector<int>& VAO_indexes, int quadSide, int vaoObjectSide) {

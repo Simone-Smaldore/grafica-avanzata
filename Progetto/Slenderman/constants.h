@@ -46,5 +46,17 @@ const float PAGE_SELECTION_DISTANCE = 10.0f;
 
 const float PAGE_COLLECTED_MESSAGE_SECONDS = 3.0f;
 
+// COSTANTI PER LA GENERAZIONE DELLA MINI MAPPA
+// -------------------------------------------------------------------------------------------
+
+float MAP_DIMENSION = 300.0f;
+float MAP_W_OFFSET = 120.0f;
+float MAP_H_OFFSET = 120.0f;
+
+float MAP_W_PROP_DIMENSION = MAP_DIMENSION * 2 / (float)SCR_WIDTH;
+float MAP_H_PROP_DIMENSION = MAP_DIMENSION * 2 / (float)SCR_HEIGHT;
+float MAP_W_PROP_OFFSET = MAP_W_OFFSET * 2 / (float)SCR_WIDTH;
+float MAP_H_PROP_OFFSET = MAP_H_OFFSET * 2 / (float)SCR_HEIGHT;
+
 
 

@@ -18,6 +18,8 @@
 #include "render_text.h"
 #include "fps_manager.h"
 
+
+
 int main() {
   // Inizializza Glfw
   GLFWwindow* window = initGlfw();
@@ -43,6 +45,10 @@ int main() {
   Shader fenceShader("multiple_lights_instancing.vs", "multiple_lights.fs");
   Shader streetlightShader("multiple_lights.vs", "streetlight_shader.fs");
   Shader pointsOfInterestShader("multiple_lights.vs", "multiple_lights.fs");
+  Shader minimapShader("minimap_shader.vs", "minimap_shader.fs");
+
+  //minimapShader.use();
+  //minimapShader.setInt("texture1", 0);
 
   // Caricamento texture
   unsigned int slenderTexture = loadTexture("resources/models/Slenderman/diffuse.png");
@@ -93,7 +99,11 @@ int main() {
   vector<int> pageIndexPosition;
   vector<glm::vec3> pointOfinterestTranslationVec;
 
-  initScene(floorVAO, pageVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest, pageIndexPosition, pointOfinterestTranslationVec, modelPoiMatrices);
+  unsigned int minimapVAO;
+  unsigned int framebuffer; 
+  unsigned int textureColorBuffer;
+
+  initScene(floorVAO, pageVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest, pageIndexPosition, pointOfinterestTranslationVec, modelPoiMatrices, minimapVAO, framebuffer, textureColorBuffer);
   float deltaTime = 0.0f;
   float lastFrame = 0.0f;
   int fps = 0;
@@ -143,6 +153,7 @@ int main() {
     renderer.projection = projection;
 
     renderer.findLookingPage(camera, pageIndexPosition);
+    
 
     //TODO: Aggiungere mappa?
     renderer.renderFloor(floorShader, floorTexture, floorVAO);
@@ -153,6 +164,8 @@ int main() {
     renderer.renderStreetlight(streetlightShader, streetlightTexture, streetlightModel);
     renderer.renderPages(pageShader, shaderSingleColor, pageTextures, pageIndexPosition, collectedPagesIndices, pageVAO);
     renderer.renderPointsOfInterest(pointsOfInterestShader, pointsOfInterestModels, pointOfInterestTextures, modelPoiMatrices);
+    
+    
     // Renderizzare sempre come ultimo
     //renderer.renderFlashlight(flashlightShader, flashlightTexture, flashlightModel);
 
@@ -162,6 +175,9 @@ int main() {
         renderer.renderPageTimer = glfwGetTime();
     }
     renderer.renderPageMessage(actualCollectedPages);
+
+    renderer.buildMiniMap(framebuffer, minimapVAO, shaderSingleColor);
+    renderer.renderMiniMap(minimapShader, minimapVAO, textureColorBuffer);
     
     if (DEBUG) renderer.renderInfo(camera, fps);
 
@@ -175,6 +191,7 @@ int main() {
         cout << "HAI VINTO !!" << endl;
         break;
     }
+
   }
 
   glfwTerminate();
