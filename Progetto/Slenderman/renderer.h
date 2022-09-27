@@ -20,6 +20,7 @@ public:
 	vector<glm::vec3> pointOfinterestTranslationVec;
 	LightUtils lightUtils;
 	int posViewedPage;
+	float renderPageTimer;
 
 	void renderFloor(Shader& floorShader, unsigned int& floorTexture, unsigned int& floorVAO);
 	void renderPages(Shader& pageShader, Shader& shaderSingleColor, vector<unsigned int>& pageTextures, vector<int>& pageIndexPosition, vector<bool>& collectedPagesIndices,  unsigned int& pageVAO);
@@ -32,6 +33,7 @@ public:
 	void renderFlashlight(Shader& flashlightShader, unsigned int& flashlightTexture, Model& flashlightModel);
 	void renderInfo(Camera& camera, int fps);
 	void findLookingPage(Camera& camera, vector<int> pageIndexPosition);
+	void renderPageMessage(int& actualPage);
 private:
 	void renderDynamicMap(Shader& shader, Model& modelObj, vector<int>& VAO_indexes, int quadSide, int vaoObjectSide);
 	vector<int> getVaoIndexesFromCamera(Camera& camera, float offset, int quadSide, int vaoObjectSide);
@@ -73,29 +75,6 @@ void Renderer::renderPages(Shader& pageShader, Shader& shaderSingleColor, vector
 		pageShader.setMat4("model", model);
 		glBindVertexArray(pageVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		/*glEnable(GL_STENCIL_TEST);
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
-		glStencilMask(0xFF);
-		glBindVertexArray(pageVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-		glStencilMask(0x00);
-		glDisable(GL_DEPTH_TEST);
-		shaderSingleColor.use();
-		shaderSingleColor.setMat4("view", view);
-		shaderSingleColor.setMat4("projection", projection);
-		float scale = 1.15f;
-		model = glm::scale(model, glm::vec3(scale, scale, scale));
-		shaderSingleColor.setMat4("model", model);
-		glBindVertexArray(pageVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-
-		glStencilMask(0xFF);
-		glStencilFunc(GL_ALWAYS, 0, 0xFF);
-		glEnable(GL_DEPTH_TEST);
-		glDisable(GL_STENCIL_TEST);*/
 	}
 	//
 	
@@ -149,7 +128,7 @@ void Renderer::renderPages(Shader& pageShader, Shader& shaderSingleColor, vector
 		}
 	}
 	if (posViewedPage != -1 && !collectedPagesIndices[posViewedPage]) {
-		RenderText("Press P to collect the page", (SCR_WIDTH / 2) - 200.0f, 200.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+		RenderText("Click left mouse button to collect the page", (SCR_WIDTH / 2) - 250.0f, 200.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 	}
 }
 
@@ -377,6 +356,15 @@ void Renderer::findLookingPage(Camera& camera, vector<int> pageIndexPosition) {
 		}
 	}
 	posViewedPage = -1;
+}
+
+void Renderer::renderPageMessage(int& actualPage) {
+	if (renderPageTimer + PAGE_COLLECTED_MESSAGE_SECONDS > glfwGetTime()) {
+		std::stringstream ssPageInfo;
+		ssPageInfo << "Collected Page: " << actualPage << "/" << NUM_PAGES;
+		std::string ssPageInfoStr = ssPageInfo.str();
+		RenderText(ssPageInfoStr, (SCR_WIDTH / 2) - 150.0f, SCR_HEIGHT - 200.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+	}
 }
 
 void Renderer::renderDynamicMap(Shader& shader, Model& modelObj, vector<int>& VAO_indexes, int quadSide, int vaoObjectSide) {

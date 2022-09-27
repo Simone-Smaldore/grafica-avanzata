@@ -24,7 +24,7 @@ void processInput(GLFWwindow* window, Camera& camera, float deltaTime, bool& lig
             lightOn = !lightOn;
         }
     }
-    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && posViewedPage != -1) {
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && posViewedPage != -1) {
         collectedPagesIndices[posViewedPage] = true;
     }  
 }

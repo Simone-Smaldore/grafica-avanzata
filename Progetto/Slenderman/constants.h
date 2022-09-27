@@ -44,5 +44,7 @@ const float Y_V_MAX_PAGE = 0.3f;
 const float MAX_ANGLE_PAGE = 0.9f;
 const float PAGE_SELECTION_DISTANCE = 10.0f;
 
+const float PAGE_COLLECTED_MESSAGE_SECONDS = 3.0f;
+
 
 

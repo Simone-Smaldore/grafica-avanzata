@@ -120,6 +120,7 @@ int main() {
     fps = fpsManager->getFps();
 
     // Gestione dell'input
+    int numCollectedPages = count(collectedPagesIndices.begin(), collectedPagesIndices.end(), true);
     processInput(window, camera, deltaTime, lightOn, renderer.posViewedPage, collectedPagesIndices);
 
     // Pulizia dei buffer
@@ -154,13 +155,26 @@ int main() {
     renderer.renderPointsOfInterest(pointsOfInterestShader, pointsOfInterestModels, pointOfInterestTextures, modelPoiMatrices);
     // Renderizzare sempre come ultimo
     //renderer.renderFlashlight(flashlightShader, flashlightTexture, flashlightModel);
-    
+
+    // Renderizza il messaggio di pagina raccolta
+    int actualCollectedPages = count(collectedPagesIndices.begin(), collectedPagesIndices.end(), true);
+    if (numCollectedPages != actualCollectedPages) {
+        renderer.renderPageTimer = glfwGetTime();
+    }
+    renderer.renderPageMessage(actualCollectedPages);
     
     if (DEBUG) renderer.renderInfo(camera, fps);
+
 
     // Swap dei buffer e processamento degli eventi in coda
     glfwSwapBuffers(window);
     glfwPollEvents();
+
+    if (actualCollectedPages == NUM_PAGES) {
+        // TODO: SCHERMO VITTORIA
+        cout << "HAI VINTO !!" << endl;
+        break;
+    }
   }
 
   glfwTerminate();
