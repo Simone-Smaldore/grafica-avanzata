@@ -68,7 +68,7 @@ int main() {
       std::string path = "resources/models/Points of interest/" + std::to_string(i) + "/" + std::to_string(i) + ".jpg";
       pointOfInterestTextures.push_back(loadTexture(path.c_str()));
   }
-  unsigned int woodMinimapTexture = loadTexture("resources/textures/minimappa/bosco.jpg");
+  unsigned int woodMinimapTexture = loadTexture("resources/textures/minimappa/bosco_dark2.jpg");
 
 
   // Caricamento modelli

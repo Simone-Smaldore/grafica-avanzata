@@ -49,9 +49,9 @@ const float PAGE_COLLECTED_MESSAGE_SECONDS = 3.0f;
 // COSTANTI PER LA GENERAZIONE DELLA MINI MAPPA
 // -------------------------------------------------------------------------------------------
 
-float MAP_DIMENSION = 300.0f;
-float MAP_W_OFFSET = 120.0f;
-float MAP_H_OFFSET = 120.0f;
+float MAP_DIMENSION = 200.0f;
+float MAP_W_OFFSET = 50.0f;
+float MAP_H_OFFSET = 30.0f;
 
 float MAP_W_PROP_DIMENSION = MAP_DIMENSION * 2 / (float)SCR_WIDTH;
 float MAP_H_PROP_DIMENSION = MAP_DIMENSION * 2 / (float)SCR_HEIGHT;
