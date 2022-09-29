@@ -49,14 +49,19 @@ const float PAGE_COLLECTED_MESSAGE_SECONDS = 3.0f;
 // COSTANTI PER LA GENERAZIONE DELLA MINI MAPPA
 // -------------------------------------------------------------------------------------------
 
-float MAP_DIMENSION = 200.0f;
-float MAP_W_OFFSET = 50.0f;
-float MAP_H_OFFSET = 30.0f;
+const float MAP_DIMENSION = 300.0f;
+const float MAP_W_OFFSET = 50.0f;
+const float MAP_H_OFFSET = 30.0f;
 
-float MAP_W_PROP_DIMENSION = MAP_DIMENSION * 2 / (float)SCR_WIDTH;
-float MAP_H_PROP_DIMENSION = MAP_DIMENSION * 2 / (float)SCR_HEIGHT;
-float MAP_W_PROP_OFFSET = MAP_W_OFFSET * 2 / (float)SCR_WIDTH;
-float MAP_H_PROP_OFFSET = MAP_H_OFFSET * 2 / (float)SCR_HEIGHT;
+const float MAP_W_PROP_DIMENSION = MAP_DIMENSION * 2 / (float)SCR_WIDTH;
+const float MAP_H_PROP_DIMENSION = MAP_DIMENSION * 2 / (float)SCR_HEIGHT;
+const float MAP_W_PROP_OFFSET = MAP_W_OFFSET * 2 / (float)SCR_WIDTH;
+const float MAP_H_PROP_OFFSET = MAP_H_OFFSET * 2 / (float)SCR_HEIGHT;
+
+// Deve essere multiplo di 3 e pari aumentandolo aumenta la risoluzione del cerchio
+const int NUM_VERTICES_CIRCLE = 120;
+
+const float MAX_W_QUAD_MAP = 1450.0f;
 
 
 

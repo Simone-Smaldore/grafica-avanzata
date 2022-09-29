@@ -48,6 +48,7 @@ int main() {
   Shader minimapShader("minimap_shader.vs", "minimap_shader.fs");
 
   Shader minimapWoodShader("minimap_shader.vs", "minimap_shader.fs");
+  Shader circleMinimapShader("circle_minimap.vs", "circle_minimap.fs");
 
   //minimapShader.use();
   //minimapShader.setInt("texture1", 0);
@@ -106,8 +107,9 @@ int main() {
   unsigned int framebuffer; 
   unsigned int textureColorBuffer;
   unsigned int minimapWoodVAO;
+  unsigned int circleVAO;
 
-  initScene(floorVAO, pageVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest, pageIndexPosition, pointOfinterestTranslationVec, modelPoiMatrices, minimapVAO, framebuffer, textureColorBuffer, minimapWoodVAO);
+  initScene(floorVAO, pageVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest, pageIndexPosition, pointOfinterestTranslationVec, modelPoiMatrices, minimapVAO, framebuffer, textureColorBuffer, minimapWoodVAO, circleVAO);
   float deltaTime = 0.0f;
   float lastFrame = 0.0f;
   int fps = 0;
@@ -180,7 +182,7 @@ int main() {
     }
     renderer.renderPageMessage(actualCollectedPages);
 
-    renderer.buildMiniMap(framebuffer, minimapWoodShader, minimapWoodVAO, woodMinimapTexture);
+    renderer.buildMiniMap(framebuffer, minimapWoodShader, minimapWoodVAO, woodMinimapTexture, circleMinimapShader, circleVAO);
     renderer.renderMiniMap(minimapShader, minimapVAO, textureColorBuffer);
     
     if (DEBUG) renderer.renderInfo(camera, fps);

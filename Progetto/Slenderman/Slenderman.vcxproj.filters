@@ -58,6 +58,12 @@
     <None Include="minimap_shader.vs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="circle_minimap.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="circle_minimap.vs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

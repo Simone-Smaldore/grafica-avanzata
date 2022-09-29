@@ -13,10 +13,12 @@ void initPointsOfInterest(vector<int>& positionsPointOfinterest, vector<glm::vec
 void initPoiModels(vector<glm::mat4>& modelPoiMatrices, vector<glm::vec3>& pointOfinterestTranslationVec);
 void initPageIndexPosition(vector<int>& pageIndexPosition);
 void initMiniMap(unsigned int& minimapVAO, unsigned int& framebuffer, unsigned int& textureColorBuffer, unsigned int& minimapWoodVAO);
+void initCircleMinimap(unsigned int& circleVAO);
 //Privati
 void initDynamicMapForModel(Model& model, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset);
 bool isGoodPointOfInterest(int k, vector<int>& positionsPointOfinterest, int kMax, int numVAOForSide);
 void initRectVAO(unsigned int& rectVAO, float dimension);
+
 
 void initScene(
 	unsigned int& floorVAO,
@@ -31,7 +33,8 @@ void initScene(
     unsigned int& minimapVAO,
     unsigned int& framebuffer, 
     unsigned int& textureColorBuffer,
-    unsigned int& minimapWoodVAO
+    unsigned int& minimapWoodVAO,
+    unsigned int& circleVAO
 ) {
 	initFloor(floorVAO);
     initPage(pageVAO);
@@ -42,6 +45,7 @@ void initScene(
     initPoiModels(modelPoiMatrices, pointOfinterestTranslationVec);
     initPageIndexPosition(pageIndexPosition);
     initMiniMap(minimapVAO, framebuffer, textureColorBuffer, minimapWoodVAO);
+    initCircleMinimap(circleVAO);
 }
 
 void initFloor(unsigned int& floorVAO) {
@@ -302,6 +306,46 @@ void initMiniMap(unsigned int& minimapVAO, unsigned int& framebuffer, unsigned i
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+}
+
+void initCircleMinimap(unsigned int& circleVAO) {
+    int steps = NUM_VERTICES_CIRCLE / 6;
+
+    float circleVertices[NUM_VERTICES_CIRCLE] = {};
+    float PI = 3.1416;
+    float angle = 2 * PI / steps;
+
+    float xPos = 0.0f;
+    float yPos = 0.0f;
+    float radius = 1.0f;
+
+    float prevX = xPos;
+    float prevY = yPos - radius;
+
+    for (int i = 1; i <= steps; i++) {
+        float newX = radius * (sin(angle * i));
+        float newY = -radius * (cos(angle * i));
+
+        int triangleIndex = (i - 1) * 6;
+        circleVertices[triangleIndex] = xPos;
+        circleVertices[triangleIndex + 1] = yPos;
+        circleVertices[triangleIndex + 2] = newX;
+        circleVertices[triangleIndex + 3] = newY;
+        circleVertices[triangleIndex + 4] = prevX;
+        circleVertices[triangleIndex + 5] = prevY;
+
+        prevX = newX;
+        prevY = newY;
+    }
+
+    unsigned int circleVBO;
+    glGenVertexArrays(1, &circleVAO);
+    glGenBuffers(1, &circleVBO);
+    glBindVertexArray(circleVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, circleVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(circleVertices), &circleVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 }
 
 void initDynamicMapForModel(Model& modelObj, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset) {

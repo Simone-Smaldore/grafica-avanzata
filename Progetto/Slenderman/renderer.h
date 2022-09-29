@@ -6,6 +6,8 @@
 #include <sstream>
 #include <string>
 #include "light_utils.h"
+#include <math.h>
+
 class Renderer {
 
 public:
@@ -34,7 +36,7 @@ public:
 	void renderInfo(Camera& camera, int fps);
 	void findLookingPage(Camera& camera, vector<int> pageIndexPosition);
 	void renderPageMessage(int& actualPage);
-	void buildMiniMap(unsigned int& framebuffer, Shader& shaderSingleColor, unsigned int& minimapWoodVAO, unsigned int& woodMinimapTexture);
+	void buildMiniMap(unsigned int& framebuffer, Shader& shaderSingleColor, unsigned int& minimapWoodVAO, unsigned int& woodMinimapTexture, Shader& circleMinimapShader, unsigned int& circleVAO);
 	void renderMiniMap(Shader& minimapShader, unsigned int& minimapVAO, unsigned int& textureColorBuffer);
 
 private:
@@ -370,21 +372,40 @@ void Renderer::renderPageMessage(int& actualPage) {
 	}
 }
 
-void Renderer::buildMiniMap(unsigned int& framebuffer, Shader& minimapWoodShader, unsigned int& minimapWoodVAO, unsigned int& woodMinimapTexture) {
+void Renderer::buildMiniMap(unsigned int& framebuffer, Shader& minimapWoodShader, unsigned int& minimapWoodVAO, unsigned int& woodMinimapTexture, Shader& circleMinimapShader, unsigned int& circleVAO) {
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 	glDisable(GL_DEPTH_TEST);
 	glClearColor(0.137f, 0.09f, 0.035f, 0.8f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
 	minimapWoodShader.use();
 	glBindTexture(GL_TEXTURE_2D, woodMinimapTexture);
-	glBindVertexArray(minimapWoodVAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+	glBindVertexArray(minimapWoodVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
-	//TODO Disegnare mappa
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	circleMinimapShader.use();
+	glm::mat4 transform = glm::mat4(1.0f);
+	for (int i = 0; i < pointOfinterestTranslationVec.size(); i++) {
+		glm::vec3 poitv = pointOfinterestTranslationVec[i];
+		transform = glm::mat4(1.0f);
+		transform = glm::translate(transform, glm::vec3(-poitv.x / MAX_W_QUAD_MAP, -poitv.z / MAX_W_QUAD_MAP, 0.0f));
+		transform = glm::scale(transform, glm::vec3(0.03f, 0.03f, 0.03f));
+		circleMinimapShader.setMat4("transform", transform);
+		circleMinimapShader.setVec3("circleColor", glm::vec3(1.0f, 0.8f, 0.0f));
+		glBindVertexArray(circleVAO);
+		glDrawArrays(GL_TRIANGLES, 0, NUM_VERTICES_CIRCLE / 2);
+	}
 
+	transform = glm::mat4(1.0f);
+	transform = glm::translate(transform, glm::vec3(-camera.Position.x / MAX_W_QUAD_MAP, -camera.Position.z / MAX_W_QUAD_MAP, 0.0f));
+	transform = glm::scale(transform, glm::vec3(0.04f, 0.04f, 0.04f));
+	circleMinimapShader.setMat4("transform", transform);
+	circleMinimapShader.setVec3("circleColor", glm::vec3(1.0f, 0.0f, 0.0f));
+	glBindVertexArray(circleVAO);
+	glDrawArrays(GL_TRIANGLES, 0, NUM_VERTICES_CIRCLE / 2);
+
+	glEnable(GL_DEPTH_TEST);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Renderer::renderMiniMap(Shader& minimapShader, unsigned int& minimapVAO, unsigned int& textureColorBuffer) {
