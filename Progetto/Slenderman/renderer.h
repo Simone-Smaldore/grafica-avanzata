@@ -388,7 +388,7 @@ void Renderer::buildMiniMap(unsigned int& framebuffer, Shader& minimapWoodShader
 	for (int i = 0; i < pointOfinterestTranslationVec.size(); i++) {
 		glm::vec3 poitv = pointOfinterestTranslationVec[i];
 		transform = glm::mat4(1.0f);
-		transform = glm::translate(transform, glm::vec3(-poitv.x / MAX_W_QUAD_MAP, -poitv.z / MAX_W_QUAD_MAP, 0.0f));
+		transform = glm::translate(transform, glm::vec3(-poitv.x / MAX_W_QUAD_MAP, poitv.z / MAX_W_QUAD_MAP, 0.0f));
 		transform = glm::scale(transform, glm::vec3(0.03f, 0.03f, 0.03f));
 		circleMinimapShader.setMat4("transform", transform);
 		circleMinimapShader.setVec3("circleColor", glm::vec3(1.0f, 0.8f, 0.0f));
@@ -397,7 +397,7 @@ void Renderer::buildMiniMap(unsigned int& framebuffer, Shader& minimapWoodShader
 	}
 
 	transform = glm::mat4(1.0f);
-	transform = glm::translate(transform, glm::vec3(-camera.Position.x / MAX_W_QUAD_MAP, -camera.Position.z / MAX_W_QUAD_MAP, 0.0f));
+	transform = glm::translate(transform, glm::vec3(-camera.Position.x / MAX_W_QUAD_MAP, camera.Position.z / MAX_W_QUAD_MAP, 0.0f));
 	transform = glm::scale(transform, glm::vec3(0.04f, 0.04f, 0.04f));
 	circleMinimapShader.setMat4("transform", transform);
 	circleMinimapShader.setVec3("circleColor", glm::vec3(1.0f, 0.0f, 0.0f));

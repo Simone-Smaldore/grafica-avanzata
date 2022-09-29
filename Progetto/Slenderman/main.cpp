@@ -168,9 +168,8 @@ int main() {
     renderer.renderGrass(grassShader, grassModel, camera);
     renderer.renderSlenderman(slenderShader, slenderTexture, slenderModel, slendermanTranslationMatrix);
     renderer.renderStreetlight(streetlightShader, streetlightTexture, streetlightModel);
-    renderer.renderPages(pageShader, shaderSingleColor, pageTextures, pageIndexPosition, collectedPagesIndices, pageVAO);
     renderer.renderPointsOfInterest(pointsOfInterestShader, pointsOfInterestModels, pointOfInterestTextures, modelPoiMatrices);
-    
+    renderer.renderPages(pageShader, shaderSingleColor, pageTextures, pageIndexPosition, collectedPagesIndices, pageVAO);
     
     // Renderizzare sempre come ultimo
     //renderer.renderFlashlight(flashlightShader, flashlightTexture, flashlightModel);

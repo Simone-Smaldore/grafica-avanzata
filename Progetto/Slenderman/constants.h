@@ -1,8 +1,8 @@
 #pragma once
 // COSTANTI DI CONFIGURAZIONE DEL GIOCO
 // -------------------------------------------------------------------------------------------
-const unsigned int SCR_WIDTH = 1280;
-const unsigned int SCR_HEIGHT = 720;
+const unsigned int SCR_WIDTH = 1440;
+const unsigned int SCR_HEIGHT = 900;
 const char* APP_TITLE = "Slenderman";
 const bool DEBUG = true;
 const bool ILLUMINATE_SCENE = true;
@@ -59,7 +59,7 @@ const float MAP_W_PROP_OFFSET = MAP_W_OFFSET * 2 / (float)SCR_WIDTH;
 const float MAP_H_PROP_OFFSET = MAP_H_OFFSET * 2 / (float)SCR_HEIGHT;
 
 // Deve essere multiplo di 3 e pari aumentandolo aumenta la risoluzione del cerchio
-const int NUM_VERTICES_CIRCLE = 120;
+const int NUM_VERTICES_CIRCLE = 60;
 
 const float MAX_W_QUAD_MAP = 1450.0f;
 
