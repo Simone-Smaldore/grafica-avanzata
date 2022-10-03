@@ -26,9 +26,12 @@ CollisionResult CollisionSolver::checkCollision(const Camera& camera, const aabb
     auto cameraPosition = camera.Position;
 
     ray frontRay(cameraPosition, camera.Front);
+    frontRay.direction.y = 0;
     result.n = staticAABB.intersectRay2D(frontRay, maxDistance);
 
-    ray backRay = frontRay.reflect(glm::vec3(1, 0, 0));
+    //TODO: Rendere il vettore UP costante
+    ray backRay = frontRay.rotate(M_PI, glm::vec3(0, 1, 0));
+    backRay.direction.y = 0;
     result.s = staticAABB.intersectRay2D(backRay, maxDistance);
 
     //TODO: Utilizzare rotazioni per ottenere tutti gli otto vettori
@@ -38,7 +41,7 @@ CollisionResult CollisionSolver::checkCollision(const Camera& camera, const aabb
     ray rightRay(cameraPosition, camera.Right);
     result.e = staticAABB.intersectRay2D(rightRay, maxDistance);
 
-    ray leftRay = rightRay.reflect(glm::vec3(0, 1, 0));
+    ray leftRay = rightRay.rotate(M_PI, glm::vec3(0, 1, 0));
     result.w = staticAABB.intersectRay2D(leftRay, maxDistance);
 
     return result;

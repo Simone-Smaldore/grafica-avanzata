@@ -128,15 +128,12 @@ int main() {
       cout << "K " << i << ": " << "X: " << pointOfinterestTranslationVec[i].x << " Z: " << pointOfinterestTranslationVec[i].z << endl;
   }
 
-  // AABB (camera)
-  glm::vec3 cameraVolume = glm::vec3(2, 2, -2);
-  aabb cameraAABB = aabb(camera.Position - cameraVolume, camera.Position + cameraVolume);
   // AABB (es. lampione preso da modello) -> offset di 10.0f (costante) (40 + 10, 40 + 10)
-  glm::vec3 streetLampPosition = glm::vec3(50, 0, 50);
-  glm::vec3 streetLampSize = glm::vec3(2.5, 5, -2.5);
-  aabb streetLampAABB = aabb(streetLampPosition - streetLampSize, streetLampPosition + streetLampSize);
-  unsigned int streetLampAABBVAO = streetLampAABB.bindToVAO();
-  cout << "StreetLampAABBVAO: " << streetLampAABBVAO << endl;
+  //aabb debugAABB = aabb::fromModel(streetlightModel);
+  aabb debugAABB = aabb::fromModel(pointsOfInterestModels[7]);
+  unsigned int debugAABBVAO = debugAABB.bindToVAO();
+  cout << "debugAABBVAO: " << debugAABBVAO << endl;
+
   // AABB alberi -> mini clustering dei vertici
   // Intersezioni -> 8 direzioni da passare alla camera
   
@@ -150,7 +147,7 @@ int main() {
 
     fps = fpsManager->getFps();
 
-    CollisionResult collisionResult = CollisionSolver::checkCollision(camera, streetLampAABB);
+    CollisionResult collisionResult = CollisionSolver::checkCollision(camera, debugAABB);
 
     // Gestione dell'input
     int numCollectedPages = count(collectedPagesIndices.begin(), collectedPagesIndices.end(), true);
@@ -201,7 +198,7 @@ int main() {
     renderer.buildMiniMap(framebuffer, minimapWoodShader, minimapWoodVAO, woodMinimapTexture, circleMinimapShader, circleVAO);
     renderer.renderMiniMap(minimapShader, minimapVAO, textureColorBuffer);
     
-    if (DEBUG) renderer.renderAABB(streetLampAABBVAO, aabbShader, collisionResult.isColliding() ? RED : AABB_COLOR);
+    if (DEBUG) renderer.renderAABB(debugAABBVAO, aabbShader, collisionResult.isColliding() ? RED : AABB_COLOR);
     
     if (DEBUG) renderer.renderInfo(camera, fps);
 

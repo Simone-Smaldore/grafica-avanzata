@@ -23,10 +23,47 @@ public:
 };
 
 aabb aabb::fromModel(const Model& model) {
-    glm::vec3 min(0, 0, 0);
-    glm::vec3 max(0, 0, 0);
+    glm::vec3 min(FLT_MAX, FLT_MAX, FLT_MAX);
+    glm::vec3 max(-FLT_MIN, -FLT_MIN, -FLT_MIN);
 
-    // TODO: Implementare
+    for (auto& const mesh : model.meshes) {
+        for (auto& const vertex : mesh.vertices) {
+            glm::vec3 position = vertex.Position;
+            // TODO: andrebbe scelto in base alla dimesione del modello e al relativo transform (rotazione e scale)
+            // Ok per il lampione, ma non per il POI ad esempio
+            //if (position.y > 500.0f)
+                //continue;
+
+            if (position.x < min.x)
+                min.x = position.x;
+            else if (position.x > max.x)
+                max.x = position.x;
+
+            if (position.y < min.y)
+                min.y = position.y;
+            else if (position.y > max.y)
+                max.y = position.y;
+
+            if (position.z < min.z)
+                min.z = position.z;
+            else if (position.z > max.z)
+                max.z = position.z;
+        }
+    }
+
+    // TODO: il transform andrebbe computato una volta in via preventiva (per tutti i modelli)
+    glm::mat4 transform = glm::mat4(1.0f);
+    // Lampione debug
+    //transform = glm::translate(transform, glm::vec3(50.0f, -4.0f, 50.0f));
+    //transform = glm::scale(transform, glm::vec3(0.015f, 0.015f, 0.015f));
+    // POI debug
+    transform = glm::translate(transform, glm::vec3(40.0f, -4.0f, 40.0f));
+    transform = glm::translate(transform, glm::vec3(-60.0f, 3.8f, 60.0f));
+    transform = glm::scale(transform, glm::vec3(0.008f, 0.008f, 0.008f));
+    transform = glm::rotate(transform, (float)glm::radians(270.0), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    min = glm::vec3(transform * glm::vec4(min, 1.0f));
+    max = glm::vec3(transform * glm::vec4(max, 1.0f));
 
     return aabb(min, max);
 }
