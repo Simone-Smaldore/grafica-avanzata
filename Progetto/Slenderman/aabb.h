@@ -7,29 +7,41 @@
 
 class aabb {
 private:
+    friend class CollisionSolver;
+
     glm::vec3 min;
     glm::vec3 max;
 
+    unsigned int _vao = 0;
+    mutable bool _hasIntersection = false;
+
+    inline void _resetCurrentIntersection() const { _hasIntersection = false; }
+
 public:
+
     aabb(glm::vec3 p_min, glm::vec3 p_max) : min(p_min), max(p_max) {}
 
-    static aabb fromModel(const Model& model);
+    static aabb fromModel(const Model& model, const glm::mat4& transform = glm::mat4(1));
 
     bool intersect(const aabb& other) const;
 
     bool intersectRay2D(const ray& ray, const float& maxDistance = 5.0f) const;
 
-    unsigned int bindToVAO() const;
+    unsigned int bindToVAO();
+
+    inline unsigned int vao() const { return _vao; }
+
+    inline bool hasIntersection() const { return _hasIntersection; }
 };
 
-aabb aabb::fromModel(const Model& model) {
+aabb aabb::fromModel(const Model& model, const glm::mat4& transform) {
     glm::vec3 min(FLT_MAX, FLT_MAX, FLT_MAX);
     glm::vec3 max(-FLT_MIN, -FLT_MIN, -FLT_MIN);
 
     for (auto& const mesh : model.meshes) {
         for (auto& const vertex : mesh.vertices) {
             glm::vec3 position = vertex.Position;
-            // TODO: andrebbe scelto in base alla dimesione del modello e al relativo transform (rotazione e scale)
+            // TODO: troncare le y in base alla dimesione del modello e al relativo transform (rotazione e scale)
             // Ok per il lampione, ma non per il POI ad esempio
             //if (position.y > 500.0f)
                 //continue;
@@ -52,16 +64,7 @@ aabb aabb::fromModel(const Model& model) {
     }
 
     // TODO: il transform andrebbe computato una volta in via preventiva (per tutti i modelli)
-    glm::mat4 transform = glm::mat4(1.0f);
-    // Lampione debug
-    //transform = glm::translate(transform, glm::vec3(50.0f, -4.0f, 50.0f));
-    //transform = glm::scale(transform, glm::vec3(0.015f, 0.015f, 0.015f));
-    // POI debug
-    transform = glm::translate(transform, glm::vec3(40.0f, -4.0f, 40.0f));
-    transform = glm::translate(transform, glm::vec3(-60.0f, 3.8f, 60.0f));
-    transform = glm::scale(transform, glm::vec3(0.008f, 0.008f, 0.008f));
-    transform = glm::rotate(transform, (float)glm::radians(270.0), glm::vec3(1.0f, 0.0f, 0.0f));
-
+    // Al momento viene ricalcolato volta dopo volta nel renderer
     min = glm::vec3(transform * glm::vec4(min, 1.0f));
     max = glm::vec3(transform * glm::vec4(max, 1.0f));
 
@@ -69,13 +72,14 @@ aabb aabb::fromModel(const Model& model) {
 }
 
 bool aabb::intersect(const aabb& other) const {
-    return min.x <= other.max.x &&
+    _hasIntersection = min.x <= other.max.x &&
         max.x >= other.min.x &&
         min.y <= other.max.y &&
         max.y >= other.min.y &&
         // L'asse z è invertita
         min.z >= other.max.z &&
         max.z <= other.min.z;
+    return _hasIntersection;
 }
 
 bool aabb::intersectRay2D(const ray& ray, const float& maxDistance) const {
@@ -104,10 +108,11 @@ bool aabb::intersectRay2D(const ray& ray, const float& maxDistance) const {
     if ((txMin > tzMax) || (tzMin > txMax))
         return false;
 
+    _hasIntersection = true;
     return true;
 }
 
-unsigned int aabb::bindToVAO() const {
+unsigned int aabb::bindToVAO() {
     float vertices[] = {
         min.x, min.y, min.z,
         max.x, min.y, min.z,
@@ -145,5 +150,6 @@ unsigned int aabb::bindToVAO() const {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
+    _vao = VAO;
     return VAO;
 }
