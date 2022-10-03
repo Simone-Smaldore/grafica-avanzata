@@ -1,21 +1,22 @@
 #pragma once
 #include <GLFW/glfw3.h>
 #include "camera.h"
+#include "collision_solver.h"
 
 using namespace std;
 
 double previousTime = glfwGetTime();
 
-void processInput(GLFWwindow* window, Camera& camera, float deltaTime, bool& lightOn, int posViewedPage, vector<bool>& collectedPagesIndices) {
+void processInput(GLFWwindow* window, Camera& camera, float deltaTime, bool& lightOn, int posViewedPage, vector<bool>& collectedPagesIndices, CollisionResult& collisionResult) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && !collisionResult.n)
         camera.ProcessKeyboard(FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && !collisionResult.s)
         camera.ProcessKeyboard(BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && !collisionResult.w)
         camera.ProcessKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && !collisionResult.e)
         camera.ProcessKeyboard(RIGHT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
         double currentTime = glfwGetTime();

@@ -1,4 +1,7 @@
 #pragma once
+
+#include "glm/glm.hpp"
+
 // COSTANTI DI CONFIGURAZIONE DEL GIOCO
 // -------------------------------------------------------------------------------------------
 const unsigned int SCR_WIDTH = 1440;
@@ -63,5 +66,7 @@ const int NUM_VERTICES_CIRCLE = 60;
 
 const float MAX_W_QUAD_MAP = 1450.0f;
 
-
-
+// COLORI
+// -------------------------------------------------------------------------------------------
+const glm::vec4 RED = glm::vec4(1.0, 0.0, 0.0, 1.0);
+const glm::vec4 AABB_COLOR = glm::vec4(0.2, 0.2, 0.2, 1.0);

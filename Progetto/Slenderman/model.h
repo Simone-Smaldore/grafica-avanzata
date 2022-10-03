@@ -225,6 +225,10 @@ unsigned int TextureFromFile(const char* path, const string& directory, bool gam
       format = GL_RGB;
     else if (nrComponents == 4)
       format = GL_RGBA;
+    else {
+        stbi_image_free(data);
+        return textureID;
+    }
 
     glBindTexture(GL_TEXTURE_2D, textureID);
     glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);

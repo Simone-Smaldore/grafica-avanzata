@@ -17,8 +17,8 @@
 #include "renderer.h"
 #include "render_text.h"
 #include "fps_manager.h"
-
-
+#include "aabb.h"
+#include "collision_solver.h"
 
 int main() {
   // Inizializza Glfw
@@ -49,6 +49,8 @@ int main() {
 
   Shader minimapWoodShader("minimap_shader.vs", "minimap_shader.fs");
   Shader circleMinimapShader("circle_minimap.vs", "circle_minimap.fs");
+
+  Shader aabbShader("aabb.vs", "aabb.fs");
 
   //minimapShader.use();
   //minimapShader.setInt("texture1", 0);
@@ -125,6 +127,19 @@ int main() {
   for (int i = 0; i < pointOfinterestTranslationVec.size(); i++) {
       cout << "K " << i << ": " << "X: " << pointOfinterestTranslationVec[i].x << " Z: " << pointOfinterestTranslationVec[i].z << endl;
   }
+
+  // AABB (camera)
+  glm::vec3 cameraVolume = glm::vec3(2, 2, -2);
+  aabb cameraAABB = aabb(camera.Position - cameraVolume, camera.Position + cameraVolume);
+  // AABB (es. lampione preso da modello) -> offset di 10.0f (costante) (40 + 10, 40 + 10)
+  glm::vec3 streetLampPosition = glm::vec3(50, 0, 50);
+  glm::vec3 streetLampSize = glm::vec3(2.5, 5, -2.5);
+  aabb streetLampAABB = aabb(streetLampPosition - streetLampSize, streetLampPosition + streetLampSize);
+  unsigned int streetLampAABBVAO = streetLampAABB.bindToVAO();
+  cout << "StreetLampAABBVAO: " << streetLampAABBVAO << endl;
+  // AABB alberi -> mini clustering dei vertici
+  // Intersezioni -> 8 direzioni da passare alla camera
+  
   // Loop di rendering
   // -----------
   while (!glfwWindowShouldClose(window)){
@@ -135,9 +150,11 @@ int main() {
 
     fps = fpsManager->getFps();
 
+    CollisionResult collisionResult = CollisionSolver::checkCollision(camera, streetLampAABB);
+
     // Gestione dell'input
     int numCollectedPages = count(collectedPagesIndices.begin(), collectedPagesIndices.end(), true);
-    processInput(window, camera, deltaTime, lightOn, renderer.posViewedPage, collectedPagesIndices);
+    processInput(window, camera, deltaTime, lightOn, renderer.posViewedPage, collectedPagesIndices, collisionResult);
 
     // Pulizia dei buffer
     glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
@@ -184,8 +201,9 @@ int main() {
     renderer.buildMiniMap(framebuffer, minimapWoodShader, minimapWoodVAO, woodMinimapTexture, circleMinimapShader, circleVAO);
     renderer.renderMiniMap(minimapShader, minimapVAO, textureColorBuffer);
     
+    if (DEBUG) renderer.renderAABB(streetLampAABBVAO, aabbShader, collisionResult.isColliding() ? RED : AABB_COLOR);
+    
     if (DEBUG) renderer.renderInfo(camera, fps);
-
 
     // Swap dei buffer e processamento degli eventi in coda
     glfwSwapBuffers(window);

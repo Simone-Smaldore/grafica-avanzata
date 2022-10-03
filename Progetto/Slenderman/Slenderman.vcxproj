@@ -164,6 +164,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="aabb.fs" />
+    <None Include="aabb.vs" />
     <None Include="circle_minimap.fs" />
     <None Include="circle_minimap.vs" />
     <None Include="light_shader.fs" />
@@ -187,7 +189,9 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="aabb.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="collision_solver.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="fps_manager.h" />
     <ClInclude Include="input_utils.h" />
@@ -195,6 +199,7 @@
     <ClInclude Include="light_utils.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
+    <ClInclude Include="ray.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="render_text.h" />
     <ClInclude Include="scene.h" />
