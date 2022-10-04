@@ -131,8 +131,6 @@ int main() {
 
     CollisionSolver collisionSolver;
 
-    // AABB (es. lampione preso da modello) -> offset di 10.0f (costante) (40 + 10, 40 + 10)
-    //aabb debugAABB = aabb::fromModel(streetlightModel);
     for (int i = 0; i < modelPoiMatrices.size(); i++) {
         aabb currentModelAABB = aabb::fromModel(pointsOfInterestModels[i], modelPoiMatrices[i]);
         if (DEBUG) {
@@ -160,18 +158,11 @@ int main() {
     for (const auto& treeTransform : treeModels) {
         vector<aabb> aabbs = aabb::fromCompoundModel(treeModel, centroids, treeTransform);
         for (auto& currentTreeAABB : aabbs) {
-            if (DEBUG) {
-                //currentTreeAABB.bindToVAO();
-                // Scommentare questa istruzione rallenta di parecchio lo startup!
-                //cout << "currentTreeAABB - VAO: " << currentTreeAABB.vao() << endl;
-            }
+            if (DEBUG)
+                currentTreeAABB.bindToVAO();
             collisionSolver.registerAABB(currentTreeAABB);
         }
     }
-
-
-    // AABB alberi -> mini clustering dei vertici
-    // Intersezioni -> 8 direzioni da passare alla camera
 
     // Loop di rendering
     // -----------
@@ -236,7 +227,7 @@ int main() {
         renderer.renderMiniMap(minimapShader, minimapVAO, textureColorBuffer);
 
         if (DEBUG) {
-            for (const auto& staticAABB : collisionSolver.registeredAABBs()) {
+            for (const auto& staticAABB : collisionSolver.registeredAABBNear(camera.Position)) {
                 if (staticAABB.vao() > 0)
                     renderer.renderAABB(staticAABB.vao(), aabbShader, staticAABB.hasIntersection() ? RED : AABB_COLOR);
             }

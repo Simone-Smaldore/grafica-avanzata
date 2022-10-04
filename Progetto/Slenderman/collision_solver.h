@@ -2,6 +2,7 @@
 #define _USE_MATH_DEFINES
 
 #include <cmath>
+#include <map>
 #include <vector>
 
 #include "aabb.h"
@@ -19,27 +20,54 @@ struct CollisionResult {
 
 class CollisionSolver {
 private:
-    // TODO: Implementare spatial hashing (basato su k o meno)
-    vector<aabb> _registeredAABBs;
+    static const int kCells = 250;
+
+    map<pair<int, int>, vector<aabb>> _registeredAABBs;
+
+    inline pair<int, int> _hash(int x, int y) const;
+
+    inline glm::ivec2 _indices(const glm::vec3& vector) const;
+
+    inline vector<glm::ivec2> _indices(const aabb& staticAABB) const;
 
     void _processCollision(CollisionResult& collisionResult, const Camera& camera, const aabb& staticAABB, const float& maxDistance = 5.0f) const;
 
 public:
-    inline void registerAABB(aabb staticAABB);
+    void registerAABB(aabb staticAABB);
 
-    inline vector<aabb> registeredAABBs() const;
+    vector<aabb> registeredAABBNear(const glm::vec3& vector) const;
 
     CollisionResult checkCollision(const Camera& camera, aabb& staticAABB, const float& maxDistance = 5.0f) const;
 
     CollisionResult checkCollisionWithRegisteredAABBs(const Camera& camera, const float& maxDistance = 5.0f) const;
 };
 
-inline void CollisionSolver::registerAABB(aabb staticAABB) {
-    _registeredAABBs.push_back(staticAABB);
+inline pair<int, int> CollisionSolver::_hash(int i, int j) const {
+    return { i, j };
 }
 
-inline vector<aabb> CollisionSolver::registeredAABBs() const {
-    return _registeredAABBs;
+inline glm::ivec2 CollisionSolver::_indices(const glm::vec3& vector) const {
+    return glm::ivec2(static_cast<int>(floor(vector.x / kCells)), static_cast<int>(floor(vector.z / kCells)));
+}
+
+inline vector<glm::ivec2> CollisionSolver::_indices(const aabb& staticAABB) const {
+    return vector<glm::ivec2>({ _indices(staticAABB.min), _indices(staticAABB.max) });
+}
+
+void CollisionSolver::registerAABB(aabb staticAABB) {
+    auto indices = _indices(staticAABB);
+    for (int i = indices[0].x; i < indices[1].x + 1; i++) {
+        for (int j = indices[0].y; j < indices[1].y + 1; j++) {
+            pair<int, int> hash = _hash(i, j);
+            _registeredAABBs[hash].push_back(staticAABB);
+        }
+    }
+}
+
+vector<aabb> CollisionSolver::registeredAABBNear(const glm::vec3& vector) const {
+    auto indices = _indices(vector);
+    auto hash = _hash(indices.x, indices.y);
+    return _registeredAABBs.find(hash)->second;
 }
 
 CollisionResult CollisionSolver::checkCollision(const Camera& camera, aabb& staticAABB, const float& maxDistance) const {
@@ -50,7 +78,8 @@ CollisionResult CollisionSolver::checkCollision(const Camera& camera, aabb& stat
 
 CollisionResult CollisionSolver::checkCollisionWithRegisteredAABBs(const Camera& camera, const float& maxDistance) const {
     CollisionResult result;
-    for (const auto& staticAABB : _registeredAABBs) {
+    auto currentAABBs = registeredAABBNear(camera.Position);
+    for (const auto& staticAABB : currentAABBs) {
         staticAABB._resetCurrentIntersection();
         _processCollision(result, camera, staticAABB, maxDistance);
     }
