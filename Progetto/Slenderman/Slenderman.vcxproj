@@ -206,6 +206,7 @@
     <ClInclude Include="shader_m.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="texture_utils.h" />
+    <ClInclude Include="vertex_clusterer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

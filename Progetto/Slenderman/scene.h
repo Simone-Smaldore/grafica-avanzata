@@ -6,7 +6,7 @@
 
 void initFloor(unsigned int& floorVAO);
 void initPage(unsigned int& pageVAO);
-void initTreeForest(Model& treeModel);
+void initTreeForest(Model& treeModel, vector<glm::mat4>* treeModels);
 void initFence(Model& fenceModel);
 void initGrass(Model& grassModel);
 void initPointsOfInterest(vector<int>& positionsPointOfinterest, vector<glm::vec3>& pointOfinterestTranslationVec);
@@ -15,30 +15,31 @@ void initPageIndexPosition(vector<int>& pageIndexPosition);
 void initMiniMap(unsigned int& minimapVAO, unsigned int& framebuffer, unsigned int& textureColorBuffer, unsigned int& minimapWoodVAO);
 void initCircleMinimap(unsigned int& circleVAO);
 //Privati
-void initDynamicMapForModel(Model& model, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset);
+void initDynamicMapForModel(Model& model, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset, vector<glm::mat4>* modelTransforms = nullptr);
 bool isGoodPointOfInterest(int k, vector<int>& positionsPointOfinterest, int kMax, int numVAOForSide);
 void initRectVAO(unsigned int& rectVAO, float dimension);
 
 
 void initScene(
-	unsigned int& floorVAO,
+    unsigned int& floorVAO,
     unsigned int& pageVAO,
-	Model& treeModel,
+    Model& treeModel,
     Model& fenceModel,
     Model& grassModel,
     vector<int>& positionsPointOfinterest,
     vector<int>& pageIndexPosition,
     vector<glm::vec3>& pointOfinterestTranslationVec,
     vector<glm::mat4>& modelPoiMatrices,
+    vector<glm::mat4>* treeModels,
     unsigned int& minimapVAO,
-    unsigned int& framebuffer, 
+    unsigned int& framebuffer,
     unsigned int& textureColorBuffer,
     unsigned int& minimapWoodVAO,
     unsigned int& circleVAO
 ) {
-	initFloor(floorVAO);
+    initFloor(floorVAO);
     initPage(pageVAO);
-	initTreeForest(treeModel);
+    initTreeForest(treeModel, treeModels);
     initFence(fenceModel);
     initGrass(grassModel);
     initPointsOfInterest(positionsPointOfinterest, pointOfinterestTranslationVec);
@@ -56,10 +57,10 @@ void initPage(unsigned int& pageVAO) {
     initRectVAO(pageVAO, 1.0f);
 }
 
-void initTreeForest(Model& treeModel) {
+void initTreeForest(Model& treeModel, vector<glm::mat4>* treeModels) {
     bool useOffset = false;
     glm::vec3 scaleMatrix = glm::vec3(0.08f, 0.08f, 0.08f);
-    initDynamicMapForModel(treeModel, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_TREE, TREE_OFFSET, scaleMatrix, useOffset);   
+    initDynamicMapForModel(treeModel, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_TREE, TREE_OFFSET, scaleMatrix, useOffset, treeModels);
 }
 
 void initFence(Model& fenceModel) {
@@ -78,12 +79,12 @@ void initFence(Model& fenceModel) {
         model = glm::translate(model, glm::vec3(x, y, z));
         model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));
         model = glm::rotate(model, (float)glm::radians(90.0), glm::vec3(0.0f, 1.0f, 0.0f));
-        modelMatrices[i] = model;    
+        modelMatrices[i] = model;
 
         //LEFT
         model = glm::mat4(1.0f);
-        x = -center_distance -9.0f;
-        z = ((i - NUM_FENCES_FOR_SIDE / 2 )) * offset + 10.0f;
+        x = -center_distance - 9.0f;
+        z = ((i - NUM_FENCES_FOR_SIDE / 2)) * offset + 10.0f;
         model = glm::translate(model, glm::vec3(x, y, z));
         model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));
         modelMatrices[NUM_FENCES_FOR_SIDE + i] = model;
@@ -91,15 +92,15 @@ void initFence(Model& fenceModel) {
         //RIGHT
         model = glm::mat4(1.0f);
         x = center_distance - 9.0f;
-        z = ((i - NUM_FENCES_FOR_SIDE / 2)) * offset +10.0f;
+        z = ((i - NUM_FENCES_FOR_SIDE / 2)) * offset + 10.0f;
         model = glm::translate(model, glm::vec3(x, y, z));
         model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));
-        modelMatrices[(2*NUM_FENCES_FOR_SIDE + i)] = model;
+        modelMatrices[(2 * NUM_FENCES_FOR_SIDE + i)] = model;
 
         //BACK
-        model = glm::mat4(1.0f); 
+        model = glm::mat4(1.0f);
         x = (i - NUM_FENCES_FOR_SIDE / 2) * offset;
-        z = center_distance -1.0f;
+        z = center_distance - 1.0f;
         model = glm::translate(model, glm::vec3(x, y, z));
         model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));
         model = glm::rotate(model, (float)glm::radians(90.0), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -166,7 +167,7 @@ void initPointsOfInterest(vector<int>& positionsPointOfinterest, vector<glm::vec
         pointOfinterestTranslationVec.push_back(glm::vec3(x_offset, -4.0f, z_offset));
         positionsPointOfinterest.push_back(k);
     }
-    
+
 }
 
 void initPoiModels(vector<glm::mat4>& modelPoiMatrices, vector<glm::vec3>& pointOfinterestTranslationVec) {
@@ -232,7 +233,7 @@ void initPoiModels(vector<glm::mat4>& modelPoiMatrices, vector<glm::vec3>& point
 void initPageIndexPosition(vector<int>& pageIndexPosition) {
     for (int i = 0; i < NUM_PAGES; i++) {
         int ranIndex = rand() % (NUMBER_POINTS_OF_INTEREST - 1);
-        while(std::count(pageIndexPosition.begin(), pageIndexPosition.end(), ranIndex)) {
+        while (std::count(pageIndexPosition.begin(), pageIndexPosition.end(), ranIndex)) {
             ranIndex = rand() % (NUMBER_POINTS_OF_INTEREST - 1);
         }
         pageIndexPosition.push_back(ranIndex);
@@ -240,15 +241,15 @@ void initPageIndexPosition(vector<int>& pageIndexPosition) {
 }
 
 void initMiniMap(unsigned int& minimapVAO, unsigned int& framebuffer, unsigned int& textureColorBuffer, unsigned int& minimapWoodVAO) {
-    float minimapVertices [] = {
-     // positions                                                                                           // texCoords
-        1.0f - MAP_W_PROP_DIMENSION - MAP_W_PROP_OFFSET, -(1.0f - MAP_H_PROP_DIMENSION - MAP_H_PROP_OFFSET),  1.0f, 0.0f,
-        1.0f - MAP_W_PROP_DIMENSION - MAP_W_PROP_OFFSET, -1.0 + MAP_H_PROP_OFFSET                          ,  1.0f, 1.0f,
-        1.0f - MAP_W_PROP_OFFSET                       , -1.0 + MAP_H_PROP_OFFSET                          ,  0.0f, 1.0f,
+    float minimapVertices[] = {
+        // positions                                                                                           // texCoords
+           1.0f - MAP_W_PROP_DIMENSION - MAP_W_PROP_OFFSET, -(1.0f - MAP_H_PROP_DIMENSION - MAP_H_PROP_OFFSET),  1.0f, 0.0f,
+           1.0f - MAP_W_PROP_DIMENSION - MAP_W_PROP_OFFSET, -1.0 + MAP_H_PROP_OFFSET                          ,  1.0f, 1.0f,
+           1.0f - MAP_W_PROP_OFFSET                       , -1.0 + MAP_H_PROP_OFFSET                          ,  0.0f, 1.0f,
 
-        1.0f - MAP_W_PROP_DIMENSION - MAP_W_PROP_OFFSET, -(1.0f - MAP_H_PROP_DIMENSION - MAP_H_PROP_OFFSET),  1.0f, 0.0f,
-        1.0f - MAP_W_PROP_OFFSET                       , -1.0 + MAP_H_PROP_OFFSET                          ,  0.0f, 1.0f,
-        1.0f - MAP_W_PROP_OFFSET                       , -(1.0f - MAP_H_PROP_DIMENSION - MAP_H_PROP_OFFSET),  0.0f, 0.0f
+           1.0f - MAP_W_PROP_DIMENSION - MAP_W_PROP_OFFSET, -(1.0f - MAP_H_PROP_DIMENSION - MAP_H_PROP_OFFSET),  1.0f, 0.0f,
+           1.0f - MAP_W_PROP_OFFSET                       , -1.0 + MAP_H_PROP_OFFSET                          ,  0.0f, 1.0f,
+           1.0f - MAP_W_PROP_OFFSET                       , -(1.0f - MAP_H_PROP_DIMENSION - MAP_H_PROP_OFFSET),  0.0f, 0.0f
     };
     unsigned int minimapVBO;
     glGenVertexArrays(1, &minimapVAO);
@@ -266,7 +267,7 @@ void initMiniMap(unsigned int& minimapVAO, unsigned int& framebuffer, unsigned i
     glGenFramebuffers(1, &framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     // create a color attachment texture
-    
+
     glGenTextures(1, &textureColorBuffer);
     glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
@@ -277,15 +278,15 @@ void initMiniMap(unsigned int& minimapVAO, unsigned int& framebuffer, unsigned i
     unsigned int rbo;
     glGenRenderbuffers(1, &rbo);
     glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT); 
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); 
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
     // check funzionamento
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // Inizializza il VAO per riempire la minimappa
-    float minimapWoodVertices[] = { 
+    float minimapWoodVertices[] = {
         // positions   // texCoords
         -1.0f,  1.0f,  0.0f, 1.0f,
         -1.0f, -1.0f,  0.0f, 0.0f,
@@ -348,7 +349,7 @@ void initCircleMinimap(unsigned int& circleVAO) {
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 }
 
-void initDynamicMapForModel(Model& modelObj, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset) {
+void initDynamicMapForModel(Model& modelObj, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset, vector<glm::mat4>* modelTransforms) {
     int num_VAO = (quadSide / vaoObjectSide) * (quadSide / vaoObjectSide);
 
     unsigned int amount = quadSide * quadSide;
@@ -382,8 +383,12 @@ void initDynamicMapForModel(Model& modelObj, int quadSide, int vaoObjectSide, fl
             unsigned int vao_i = floor(i / vaoObjectSide);
             unsigned int vao_j = floor(j / vaoObjectSide);
             unsigned int vao_index = (vao_i * (quadSide / vaoObjectSide)) + vao_j;
-            unsigned int matrix_index = ((i % vaoObjectSide) * vaoObjectSide) + (j % vaoObjectSide);   
+            unsigned int matrix_index = ((i % vaoObjectSide) * vaoObjectSide) + (j % vaoObjectSide);
             modelMatrices[vao_index][matrix_index] = model;
+
+            // TODO: Eliminare quel 300 fisso / eliminare anche i transform delle zone con POI
+            if (modelTransforms != nullptr && vao_index != 300)
+                modelTransforms->push_back(model);
         }
     }
 
@@ -425,7 +430,7 @@ void initDynamicMapForModel(Model& modelObj, int quadSide, int vaoObjectSide, fl
 
 bool isGoodPointOfInterest(int k, vector<int>& positionsPointOfinterest, int kMax, int numVAOForSide) {
     // Verifica che il punto non è già stato escluso a priori nella configurazione
-    if(std::find(K_MAP_TO_EXCLUDE.begin(), K_MAP_TO_EXCLUDE.end(), k) != K_MAP_TO_EXCLUDE.end()) {
+    if (std::find(K_MAP_TO_EXCLUDE.begin(), K_MAP_TO_EXCLUDE.end(), k) != K_MAP_TO_EXCLUDE.end()) {
         return false;
     }
     // Esclude i 4 lati esterni

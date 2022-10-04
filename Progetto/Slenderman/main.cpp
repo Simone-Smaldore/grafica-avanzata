@@ -104,6 +104,7 @@ int main() {
     vector<int> positionsPointOfinterest;
     vector<int> pageIndexPosition;
     vector<glm::vec3> pointOfinterestTranslationVec;
+    vector<glm::mat4> treeModels;
 
     unsigned int minimapVAO;
     unsigned int framebuffer;
@@ -111,7 +112,7 @@ int main() {
     unsigned int minimapWoodVAO;
     unsigned int circleVAO;
 
-    initScene(floorVAO, pageVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest, pageIndexPosition, pointOfinterestTranslationVec, modelPoiMatrices, minimapVAO, framebuffer, textureColorBuffer, minimapWoodVAO, circleVAO);
+    initScene(floorVAO, pageVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest, pageIndexPosition, pointOfinterestTranslationVec, modelPoiMatrices, &treeModels, minimapVAO, framebuffer, textureColorBuffer, minimapWoodVAO, circleVAO);
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
     int fps = 0;
@@ -152,6 +153,22 @@ int main() {
         collisionSolver.registerAABB(currentStreetlightAABB);
     }
 
+    vector<glm::vec3> centroids;
+    centroids.push_back(glm::vec3(18.0f, 0.0f, -31.0f));
+    centroids.push_back(glm::vec3(-246.0f, 0.0f, 280.0f));
+    centroids.push_back(glm::vec3(59.0f, 0.0f, 311.0f));
+    for (const auto& treeTransform : treeModels) {
+        vector<aabb> aabbs = aabb::fromCompoundModel(treeModel, centroids, treeTransform);
+        for (auto& currentTreeAABB : aabbs) {
+            if (DEBUG) {
+                //currentTreeAABB.bindToVAO();
+                // Scommentare questa istruzione rallenta di parecchio lo startup!
+                //cout << "currentTreeAABB - VAO: " << currentTreeAABB.vao() << endl;
+            }
+            collisionSolver.registerAABB(currentTreeAABB);
+        }
+    }
+
 
     // AABB alberi -> mini clustering dei vertici
     // Intersezioni -> 8 direzioni da passare alla camera
@@ -166,7 +183,8 @@ int main() {
 
         fps = fpsManager->getFps();
 
-        CollisionResult collisionResult = collisionSolver.checkCollisionWithRegisteredAABBs(camera);
+        // TODO: Eliminare numeri magici
+        CollisionResult collisionResult = collisionSolver.checkCollisionWithRegisteredAABBs(camera, fmaxf(5.0f, (deltaTime * camera.MovementSpeed) + 0.5f));
 
         // Gestione dell'input
         int numCollectedPages = count(collectedPagesIndices.begin(), collectedPagesIndices.end(), true);
@@ -219,7 +237,8 @@ int main() {
 
         if (DEBUG) {
             for (const auto& staticAABB : collisionSolver.registeredAABBs()) {
-                renderer.renderAABB(staticAABB.vao(), aabbShader, staticAABB.hasIntersection() ? RED : AABB_COLOR);
+                if (staticAABB.vao() > 0)
+                    renderer.renderAABB(staticAABB.vao(), aabbShader, staticAABB.hasIntersection() ? RED : AABB_COLOR);
             }
 
             renderer.renderInfo(camera, fps);
