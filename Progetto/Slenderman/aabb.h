@@ -23,6 +23,8 @@ public:
 
     static aabb fromModel(const Model& model, const glm::mat4& transform = glm::mat4(1));
 
+    static aabb fromCompoundModel(const Model& model, const glm::vec3& centroids, const glm::mat4& transform = glm::mat4(1));
+
     bool intersect(const aabb& other) const;
 
     bool intersectRay2D(const ray& ray, const float& maxDistance = 5.0f) const;
@@ -36,7 +38,7 @@ public:
 
 aabb aabb::fromModel(const Model& model, const glm::mat4& transform) {
     glm::vec3 min(FLT_MAX, FLT_MAX, FLT_MAX);
-    glm::vec3 max(-FLT_MIN, -FLT_MIN, -FLT_MIN);
+    glm::vec3 max(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
     for (auto& const mesh : model.meshes) {
         for (auto& const vertex : mesh.vertices) {
@@ -68,6 +70,12 @@ aabb aabb::fromModel(const Model& model, const glm::mat4& transform) {
     min = glm::vec3(transform * glm::vec4(min, 1.0f));
     max = glm::vec3(transform * glm::vec4(max, 1.0f));
 
+    return aabb(min, max);
+}
+
+static aabb fromCompoundModel(const Model& model, const glm::vec3& centroids, const glm::mat4& transform) {
+    glm::vec3 min(1), max(1);
+    // TODO: Implementare algoritmo;
     return aabb(min, max);
 }
 
