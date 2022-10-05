@@ -131,6 +131,8 @@ int main() {
 
     CollisionSolver collisionSolver;
 
+
+    // TODO Spostare codice nella classe di init ?
     for (int i = 0; i < modelPoiMatrices.size(); i++) {
         aabb currentModelAABB = aabb::fromModel(pointsOfInterestModels[i], modelPoiMatrices[i]);
         if (DEBUG) {
@@ -176,6 +178,10 @@ int main() {
 
         // TODO: Eliminare numeri magici
         CollisionResult collisionResult = collisionSolver.checkCollisionWithRegisteredAABBs(camera, fmaxf(5.0f, (deltaTime * camera.MovementSpeed) + 0.5f));
+        if (DEBUG && DISABLE_COLLISIONS) {
+            CollisionResult cleanResult;
+            collisionResult = cleanResult;
+        }
 
         // Gestione dell'input
         int numCollectedPages = count(collectedPagesIndices.begin(), collectedPagesIndices.end(), true);

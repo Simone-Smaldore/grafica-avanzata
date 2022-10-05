@@ -9,6 +9,7 @@ const unsigned int SCR_HEIGHT = 900;
 const char* APP_TITLE = "Slenderman";
 const bool DEBUG = true;
 const bool ILLUMINATE_SCENE = true;
+const bool DISABLE_COLLISIONS = false;
 
 // COSTANTI PER LA GENERAZIONE DELLA MAPPA
 // -------------------------------------------------------------------------------------------
