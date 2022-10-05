@@ -169,6 +169,7 @@ bool aabb::intersectRay2D(const ray& ray, const float& maxDistance) const {
     return true;
 }
 
+// TODO: ottimizzare con instancing sulla base del modello?
 unsigned int aabb::bindToVAO() {
     float vertices[] = {
         min.x, min.y, min.z,
