@@ -47,7 +47,7 @@ inline pair<int, int> CollisionSolver::_hash(int i, int j) const {
 }
 
 inline glm::ivec2 CollisionSolver::_indices(const glm::vec3& vector) const {
-    return glm::ivec2(static_cast<int>(floor(vector.x / kCells)), static_cast<int>(floor(vector.z / kCells)));
+    return glm::ivec2(static_cast<int>(ceil(vector.x / kCells)), static_cast<int>(ceil(vector.z / kCells)));
 }
 
 inline vector<glm::ivec2> CollisionSolver::_indices(const aabb& staticAABB) const {
