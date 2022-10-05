@@ -35,7 +35,7 @@ private:
 public:
     void registerAABB(aabb staticAABB);
 
-    vector<aabb> registeredAABBNear(const glm::vec3& vector) const;
+    const vector<aabb>& registeredAABBNear(const glm::vec3& vector) const;
 
     CollisionResult checkCollision(const Camera& camera, aabb& staticAABB, const float& maxDistance = 5.0f) const;
 
@@ -64,7 +64,7 @@ void CollisionSolver::registerAABB(aabb staticAABB) {
     }
 }
 
-vector<aabb> CollisionSolver::registeredAABBNear(const glm::vec3& vector) const {
+const vector<aabb>& CollisionSolver::registeredAABBNear(const glm::vec3& vector) const {
     auto indices = _indices(vector);
     auto hash = _hash(indices.x, indices.y);
     return _registeredAABBs.find(hash)->second;
@@ -78,7 +78,7 @@ CollisionResult CollisionSolver::checkCollision(const Camera& camera, aabb& stat
 
 CollisionResult CollisionSolver::checkCollisionWithRegisteredAABBs(const Camera& camera, const float& maxDistance) const {
     CollisionResult result;
-    auto currentAABBs = registeredAABBNear(camera.Position);
+    const auto& currentAABBs = registeredAABBNear(camera.Position);
     for (const auto& staticAABB : currentAABBs) {
         staticAABB._resetCurrentIntersection();
         _processCollision(result, camera, staticAABB, maxDistance);
