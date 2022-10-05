@@ -134,5 +134,14 @@
     <ClInclude Include="vertex_clusterer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="scene\test_scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shader_cache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="model_cache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

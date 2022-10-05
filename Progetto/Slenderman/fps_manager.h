@@ -1,30 +1,26 @@
 #pragma once
 #include <GLFW/glfw3.h>
 
-class FpsManager {
-public:
-
+struct FpsManager {
     int fps;
     int frameCount;
     double previousTime;
-    
-    FpsManager() {
-        previousTime = glfwGetTime();
-        fps = 0;
-        frameCount = 0;
-    }
+
+    FpsManager() : previousTime(glfwGetTime()), fps(0), frameCount(0) {}
 
     int getFps() {
-		frameCount++;
-		double currentTime = glfwGetTime();
-		double timeInterval = currentTime - previousTime;
-		if (timeInterval > 1.0f) {
-			fps = frameCount;
-			previousTime = currentTime;
-			frameCount = 0;
-		}
+        double currentTime = glfwGetTime();
+        double timeInterval = currentTime - previousTime;
+
+        frameCount++;
+
+        if (timeInterval > 1.0f) {
+            fps = frameCount;
+            previousTime = currentTime;
+            frameCount = 0;
+        }
+
         return fps;
     }
 
-   
 };

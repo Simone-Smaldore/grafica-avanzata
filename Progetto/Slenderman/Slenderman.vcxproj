@@ -22,7 +22,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{0ab26ef0-59ef-4ba2-abf5-1d80c7fcc6a1}</ProjectGuid>
-    <RootNamespace>AssimpHelloWorld</RootNamespace>
+    <RootNamespace>Slenderman</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>Slenderman</ProjectName>
   </PropertyGroup>
@@ -199,10 +199,13 @@
     <ClInclude Include="light_utils.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
+    <ClInclude Include="model_cache.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="render_text.h" />
     <ClInclude Include="scene.h" />
+    <ClInclude Include="scene\test_scene.h" />
+    <ClInclude Include="shader_cache.h" />
     <ClInclude Include="shader_m.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="texture_utils.h" />

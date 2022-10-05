@@ -1,7 +1,11 @@
 #pragma once
-#include <glad/glad.h>
-#include "stb_image.h"
+
 #include <iostream>
+
+#include <glad/glad.h>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 // utility function for loading a 2D texture from file
 // ---------------------------------------------------
 unsigned int loadTexture(char const* path) {
