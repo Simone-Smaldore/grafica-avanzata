@@ -204,6 +204,7 @@
     <ClInclude Include="render_text.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="shader_m.h" />
+    <ClInclude Include="slender_manager.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="texture_utils.h" />
     <ClInclude Include="vertex_clusterer.h" />

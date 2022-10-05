@@ -29,7 +29,7 @@ public:
     void renderForest(Shader& forestShader, Model& treeModel, Camera& camera, vector<int>& positionsPointOfinterest);
     void renderFence(Shader& fenceShader, unsigned int& fenceTexture, Model& fenceModel);
     void renderGrass(Shader& grassShader, Model& grassModel, Camera& camera);
-    void renderSlenderman(Shader& slenderShader, unsigned int& slenderTexture, Model& slenderModel, glm::vec3& translationMatrix);
+    void renderSlenderman(Shader& slenderShader, unsigned int& slenderTexture, Model& slenderModel, glm::mat4 slendermanShaderModel);
     void renderStreetlight(Shader& streetlightShader, unsigned int& streetlightTexture, Model& streetlightModel);
     void renderPointsOfInterest(Shader& pointOfInterestShader, vector<Model>& pointOfInterestModels, vector<unsigned int>& pointOfInterestTexture, vector<glm::mat4>& modelPoiMatrices);
     void renderFlashlight(Shader& flashlightShader, unsigned int& flashlightTexture, Model& flashlightModel);
@@ -201,17 +201,14 @@ void Renderer::renderGrass(Shader& grassShader, Model& grassModel, Camera& camer
 }
 
 
-void Renderer::renderSlenderman(Shader& slenderShader, unsigned int& slenderTexture, Model& slenderModel, glm::vec3& translationMatrix) {
+void Renderer::renderSlenderman(Shader& slenderShader, unsigned int& slenderTexture, Model& slenderModel, glm::mat4 slendermanShaderModel) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, slenderTexture);
     lightUtils.initLightShader(slenderShader, lightOn, camera);
     slenderShader.use();
     slenderShader.setMat4("view", view);
     slenderShader.setMat4("projection", projection);
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, translationMatrix);
-    model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));
-    slenderShader.setMat4("model", model);
+    slenderShader.setMat4("model", slendermanShaderModel);
     slenderModel.Draw(slenderShader);
 }
 

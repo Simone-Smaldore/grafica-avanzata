@@ -17,6 +17,7 @@
 #include "renderer.h"
 #include "render_text.h"
 #include "fps_manager.h"
+#include "slender_manager.h"
 #include "aabb.h"
 #include "collision_solver.h"
 
@@ -28,6 +29,7 @@ int main() {
     }
 
     FpsManager* fpsManager = new FpsManager();
+    SlenderManager* slenderManager = new SlenderManager();
 
     initRenderText(SCR_WIDTH, SCR_HEIGHT);
 
@@ -200,8 +202,6 @@ int main() {
         }
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, farClippingPlane);
 
-        glm::vec3 slendermanTranslationMatrix = glm::vec3(0.0f, -0.8f, -10.0f);
-
         renderer.lightOn = lightOn;
         renderer.view = view;
         renderer.projection = projection;
@@ -214,7 +214,7 @@ int main() {
         renderer.renderForest(forestShader, treeModel, camera, positionsPointOfinterest);
         renderer.renderFence(fenceShader, fenceTexture, fenceModel);
         renderer.renderGrass(grassShader, grassModel, camera);
-        renderer.renderSlenderman(slenderShader, slenderTexture, slenderModel, slendermanTranslationMatrix);
+        renderer.renderSlenderman(slenderShader, slenderTexture, slenderModel, slenderManager->getSlendemanShaderModel(camera));
         renderer.renderStreetlight(streetlightShader, streetlightTexture, streetlightModel);
         renderer.renderPointsOfInterest(pointsOfInterestShader, pointsOfInterestModels, pointOfInterestTextures, modelPoiMatrices);
         renderer.renderPages(pageShader, shaderSingleColor, pageTextures, pageIndexPosition, collectedPagesIndices, pageVAO);

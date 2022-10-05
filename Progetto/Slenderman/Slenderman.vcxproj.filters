@@ -134,5 +134,8 @@
     <ClInclude Include="vertex_clusterer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="slender_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
