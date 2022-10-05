@@ -6,7 +6,7 @@
 
 void initFloor(unsigned int& floorVAO);
 void initPage(unsigned int& pageVAO);
-void initTreeForest(Model& treeModel, vector<glm::mat4>* treeModels);
+void initTreeForest(Model& treeModel, vector<glm::mat4>* treeModels, const vector<int>& poiIndices);
 void initFence(Model& fenceModel);
 void initGrass(Model& grassModel);
 void initPointsOfInterest(vector<int>& positionsPointOfinterest, vector<glm::vec3>& pointOfinterestTranslationVec);
@@ -14,8 +14,9 @@ void initPoiModels(vector<glm::mat4>& modelPoiMatrices, vector<glm::vec3>& point
 void initPageIndexPosition(vector<int>& pageIndexPosition);
 void initMiniMap(unsigned int& minimapVAO, unsigned int& framebuffer, unsigned int& textureColorBuffer, unsigned int& minimapWoodVAO);
 void initCircleMinimap(unsigned int& circleVAO);
+
 //Privati
-void initDynamicMapForModel(Model& model, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset, vector<glm::mat4>* modelTransforms = nullptr);
+void initDynamicMapForModel(Model& model, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset, vector<glm::mat4>* modelTransforms = nullptr, const vector<int>& poiIndices = {});
 bool isGoodPointOfInterest(int k, vector<int>& positionsPointOfinterest, int kMax, int numVAOForSide);
 void initRectVAO(unsigned int& rectVAO, float dimension);
 
@@ -30,6 +31,7 @@ void initScene(
     vector<int>& pageIndexPosition,
     vector<glm::vec3>& pointOfinterestTranslationVec,
     vector<glm::mat4>& modelPoiMatrices,
+    // TODO: Allineare la strategia per riferimento (vettore vuoto)?
     vector<glm::mat4>* treeModels,
     unsigned int& minimapVAO,
     unsigned int& framebuffer,
@@ -39,10 +41,10 @@ void initScene(
 ) {
     initFloor(floorVAO);
     initPage(pageVAO);
-    initTreeForest(treeModel, treeModels);
     initFence(fenceModel);
     initGrass(grassModel);
     initPointsOfInterest(positionsPointOfinterest, pointOfinterestTranslationVec);
+    initTreeForest(treeModel, treeModels, positionsPointOfinterest);
     initPoiModels(modelPoiMatrices, pointOfinterestTranslationVec);
     initPageIndexPosition(pageIndexPosition);
     initMiniMap(minimapVAO, framebuffer, textureColorBuffer, minimapWoodVAO);
@@ -57,10 +59,10 @@ void initPage(unsigned int& pageVAO) {
     initRectVAO(pageVAO, 1.0f);
 }
 
-void initTreeForest(Model& treeModel, vector<glm::mat4>* treeModels) {
+void initTreeForest(Model& treeModel, vector<glm::mat4>* treeModels, const vector<int>& poiIndices) {
     bool useOffset = false;
     glm::vec3 scaleMatrix = glm::vec3(0.08f, 0.08f, 0.08f);
-    initDynamicMapForModel(treeModel, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_TREE, TREE_OFFSET, scaleMatrix, useOffset, treeModels);
+    initDynamicMapForModel(treeModel, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_TREE, TREE_OFFSET, scaleMatrix, useOffset, treeModels, poiIndices);
 }
 
 void initFence(Model& fenceModel) {
@@ -349,7 +351,7 @@ void initCircleMinimap(unsigned int& circleVAO) {
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 }
 
-void initDynamicMapForModel(Model& modelObj, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset, vector<glm::mat4>* modelTransforms) {
+void initDynamicMapForModel(Model& modelObj, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset, vector<glm::mat4>* modelTransforms, const vector<int>& poiIndices) {
     int num_VAO = (quadSide / vaoObjectSide) * (quadSide / vaoObjectSide);
 
     unsigned int amount = quadSide * quadSide;
@@ -386,8 +388,13 @@ void initDynamicMapForModel(Model& modelObj, int quadSide, int vaoObjectSide, fl
             unsigned int matrix_index = ((i % vaoObjectSide) * vaoObjectSide) + (j % vaoObjectSide);
             modelMatrices[vao_index][matrix_index] = model;
 
-            // TODO: Eliminare quel 300 fisso / eliminare anche i transform delle zone con POI
-            if (modelTransforms != nullptr && vao_index != 300)
+            // TODO: utilizzare i set (set / unordered_set) per conservare gli indici
+            bool shouldPushTransform = modelTransforms != nullptr;
+            shouldPushTransform = shouldPushTransform &&
+                std::find(K_MAP_TO_EXCLUDE.begin(), K_MAP_TO_EXCLUDE.end(), vao_index) == K_MAP_TO_EXCLUDE.end();
+            shouldPushTransform = shouldPushTransform && !poiIndices.empty() &&
+                std::find(poiIndices.begin(), poiIndices.end(), vao_index) == poiIndices.end();
+            if (shouldPushTransform)
                 modelTransforms->push_back(model);
         }
     }
