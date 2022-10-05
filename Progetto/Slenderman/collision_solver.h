@@ -37,6 +37,7 @@ public:
 
     const vector<aabb>& registeredAABBNear(const glm::vec3& vector) const;
 
+    // TODO: fix bug alberi "alla frontiera"
     CollisionResult checkCollision(const Camera& camera, aabb& staticAABB, const float& maxDistance = 5.0f) const;
 
     CollisionResult checkCollisionWithRegisteredAABBs(const Camera& camera, const float& maxDistance = 5.0f) const;
