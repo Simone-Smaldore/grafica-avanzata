@@ -4,60 +4,78 @@
 
 #include "../camera.h"
 #include "../constants.h"
+#include "../floor.h"
 #include "../light_utils.h"
 #include "../model_cache.h"
 #include "../texture_cache.h"
 #include "../scene.h"
 #include "../shader_cache.h"
+#include "../slenderman.h"
 
 class TestScene : public Scene {
 private:
     Camera _camera;
     LightUtils _lightUtils;
 
-public:
+    SlenderMan* _slenderMan;
+    Floor* _floor;
 
+    void _processInput(const float& deltaTime);
+
+public:
     virtual void init() override;
 
-    virtual void process() override;
+    virtual void process(const float& deltaTime) override;
 
     virtual void destroy() override;
 
-    virtual Camera* currentCamera() override;
+    inline virtual Camera* currentCamera() override;
 };
 
-void TestScene::init() { }
+void TestScene::init() {
+    _slenderMan = new SlenderMan(_lightUtils);
+    _floor = new Floor(_lightUtils);
+}
+
+void TestScene::_processInput(const float& deltaTime) {
+    if (InputManager::isKeyPressed(GLFW_KEY_ESCAPE)) {
+        glfwSetWindowShouldClose(_window, true);
+        return;
+    }
+
+    if (InputManager::isKeyPressed(GLFW_KEY_W) /*&& !collisionResult.n*/)
+        _camera.ProcessKeyboard(FORWARD, deltaTime);
+    if (InputManager::isKeyPressed(GLFW_KEY_S) /*&& !collisionResult.s*/)
+        _camera.ProcessKeyboard(BACKWARD, deltaTime);
+    if (InputManager::isKeyPressed(GLFW_KEY_A) /*&& !collisionResult.w*/)
+        _camera.ProcessKeyboard(LEFT, deltaTime);
+    if (InputManager::isKeyPressed(GLFW_KEY_D) /*&& !collisionResult.e*/)
+        _camera.ProcessKeyboard(RIGHT, deltaTime);
+
+    /*if (InputManager::isKeyPressed(GLFW_KEY_F)) {
+        double currentTime = glfwGetTime();
+        if (currentTime - previousTime > 0.3f) {
+            previousTime = currentTime;
+            lightOn = !lightOn;
+        }
+    }
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && posViewedPage != -1) {
+        collectedPagesIndices[posViewedPage] = true;
+    }*/
+}
+
+void TestScene::process(const float& deltaTime) {
+    _processInput(deltaTime);
+
+    _slenderMan->render(_camera);
+    _floor->render(_camera);
+}
+
+void TestScene::destroy() {
+    delete _slenderMan;
+    delete _floor;
+}
 
 Camera* TestScene::currentCamera() {
     return &_camera;
 }
-
-void TestScene::process() {
-    Shader* slenderShader = ShaderCache::getInstance().findShader(EShader::slenderMan);
-    unsigned int slenderTexture = TextureCache::getInstance().findTexture(ETexture::slenderMan);
-    Model* slenderModel = ModelCache::getInstance().findModel(EModel::slenderMan);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, slenderTexture);
-
-    glm::mat4 view = _camera.GetViewMatrix();
-    glm::mat4 flashlightView = glm::mat4(1.0f);
-    float farClippingPlane = 300.0f;
-    if (DEBUG) {
-        farClippingPlane = 2000.0f;
-    }
-    glm::mat4 projection = glm::perspective(glm::radians(_camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, farClippingPlane);
-
-    _lightUtils.initLightShader(*slenderShader, true, _camera);
-
-    slenderShader->use();
-    slenderShader->setMat4("view", view);
-    slenderShader->setMat4("projection", projection);
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, -0.8f, -10.0f));
-    model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));
-    slenderShader->setMat4("model", model);
-    slenderModel->Draw(*slenderShader);
-}
-
-void TestScene::destroy() { }

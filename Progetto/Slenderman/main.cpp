@@ -9,7 +9,7 @@ int main() {
     if (window == nullptr)
         return -1;
 
-    Game game(window);
+    GameLoop game(window);
     
     game.init();
     game.process();

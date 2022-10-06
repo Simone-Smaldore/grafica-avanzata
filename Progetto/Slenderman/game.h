@@ -9,12 +9,11 @@
 #include "model.h"
 #include "model_cache.h"
 #include "texture_cache.h"
-#include "scene.h"
 #include "scene/test_scene.h"
 #include "shader_m.h"
 #include "shader_cache.h"
 
-class Game {
+class GameLoop {
 private:
     FpsManager _fpsManager;
 
@@ -22,7 +21,7 @@ private:
     Scene* _currentScene;
 
 public:
-    Game(GLFWwindow* window) : _window(window) {}
+    GameLoop(GLFWwindow* window) : _window(window) {}
 
     void init();
 
@@ -31,37 +30,50 @@ public:
     void destroy();
 };
 
-void Game::init() {
+void GameLoop::init() {
     _currentScene = new TestScene();
     InputManager::init(_window, _currentScene->currentCamera());
-    
+
     glEnable(GL_DEPTH_TEST);
 
     // nTODO gli Shader / Texture / Modelli possono essere caricati separatamente in una scena "Loading"
-    Shader* slenderShader = new Shader("multiple_lights.vs", "multiple_lights.fs");
-    ShaderCache::getInstance().registerShader(EShader::slenderMan, slenderShader);
+    ShaderCache::getInstance().registerShader(EShader::slenderMan, new Shader("multiple_lights.vs", "multiple_lights.fs"));
+    ShaderCache::getInstance().registerShader(EShader::floor, new Shader("multiple_lights.vs", "multiple_lights.fs"));
 
     TextureCache::getInstance().registerTexture(ETexture::slenderMan, "resources/models/Slenderman/diffuse.png");
+    TextureCache::getInstance().registerTexture(ETexture::floor, "resources/textures/floor/floor.jpg");
 
-    Model* slenderModel = new Model("resources/models/Slenderman/Slenderman.obj");
-    ModelCache::getInstance().registerModel(EModel::slenderMan, slenderModel);
+    ModelCache::getInstance().registerModel(EModel::slenderMan, new Model("resources/models/Slenderman/Slenderman.obj"));
 
     _currentScene->init();
 }
 
-void Game::process() {
-    while (true) {
+void GameLoop::process() {
+    float deltaTime = 0.0f;
+    float lastFrame = 0.0f;
+    int fps = 0;
+
+    while (!glfwWindowShouldClose(_window)) {
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        fps = _fpsManager.getFps();
+
         glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-        _currentScene->process();
+        if (InputManager::isKeyPressed(GLFW_KEY_Q))
+            glfwSetWindowShouldClose(_window, true);
+
+        _currentScene->process(deltaTime);
 
         glfwSwapBuffers(_window);
         glfwPollEvents();
     }
 }
 
-void Game::destroy() {
+void GameLoop::destroy() {
     _currentScene->destroy();
     delete _currentScene;
 

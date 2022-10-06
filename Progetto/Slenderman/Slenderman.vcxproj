@@ -193,6 +193,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="collision_solver.h" />
     <ClInclude Include="constants.h" />
+    <ClInclude Include="floor.h" />
     <ClInclude Include="fps_manager.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="input_manager.h" />
@@ -203,12 +204,14 @@
     <ClInclude Include="model.h" />
     <ClInclude Include="model_cache.h" />
     <ClInclude Include="ray.h" />
+    <ClInclude Include="renderable.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="render_text.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="scene\test_scene.h" />
     <ClInclude Include="shader_cache.h" />
     <ClInclude Include="shader_m.h" />
+    <ClInclude Include="slenderman.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="texture_cache.h" />
     <ClInclude Include="texture_utils.h" />

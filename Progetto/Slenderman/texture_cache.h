@@ -9,7 +9,8 @@
 #include "stb_image.h"
 
 enum class ETexture {
-    slenderMan
+    slenderMan,
+    floor
 };
 
 class TextureCache {

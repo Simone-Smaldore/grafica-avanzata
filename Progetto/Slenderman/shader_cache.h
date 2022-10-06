@@ -5,7 +5,8 @@
 #include "shader_m.h"
 
 enum class EShader {
-    slenderMan
+    slenderMan,
+    floor
 };
 
 class ShaderCache {

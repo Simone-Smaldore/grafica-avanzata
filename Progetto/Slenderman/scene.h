@@ -6,11 +6,11 @@ class Scene {
 public:
     virtual void init() = 0;
 
-    virtual void process() = 0;
+    virtual void process(const float& deltaTime) = 0;
 
     virtual void destroy() = 0;
 
-    virtual Camera* currentCamera() = 0;
+    inline virtual Camera* currentCamera() = 0;
 };
 //#include "constants.h"
 //#include <time.h>

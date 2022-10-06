@@ -13,14 +13,14 @@ class LightUtils {
             lightTranslationVec = translationVec;
         }
         std::vector<glm::vec3> lightTranslationVec;
-        void initLightShader(Shader& shader, bool lightOn, Camera& camera);
+        void initLightShader(Shader& shader, bool lightOn, const Camera& camera);
     private:
-        void initSpotLight(Shader& shader, bool lightOn, Camera& camera);
+        void initSpotLight(Shader& shader, bool lightOn, const Camera& camera);
         void initPointLightForPoi(Shader& shader, glm::vec3 basePosition, int lightIndex);
 };
 
 
-void LightUtils::initLightShader(Shader& shader, bool lightOn, Camera& camera) {
+void LightUtils::initLightShader(Shader& shader, bool lightOn, const Camera& camera) {
     shader.use();
     initSpotLight(shader, lightOn, camera);
     for (int i = 0; i < lightTranslationVec.size(); i++) {
@@ -29,7 +29,7 @@ void LightUtils::initLightShader(Shader& shader, bool lightOn, Camera& camera) {
     shader.setFloat("material.shininess", 32.0f);
 }
 
-void LightUtils::initSpotLight(Shader& shader, bool lightOn, Camera& camera) {
+void LightUtils::initSpotLight(Shader& shader, bool lightOn, const Camera& camera) {
     shader.setVec3("spotLight.position", camera.Position);
     shader.setVec3("spotLight.direction", camera.Front);
     shader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));

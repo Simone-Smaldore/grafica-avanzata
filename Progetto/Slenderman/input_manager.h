@@ -8,6 +8,8 @@
 static float _lastX = 0;
 static float _lastY = 0;
 static bool _mouseMoved = false;
+
+static GLFWwindow* _window = nullptr;
 static Camera* _camera = nullptr;
 
 class InputManager {
@@ -16,6 +18,8 @@ private:
 
 public:
     static void init(GLFWwindow* window, Camera* camera);
+    
+    inline static bool isKeyPressed(int key);
 };
 
 void InputManager::init(GLFWwindow* window, Camera* camera) {
@@ -23,6 +27,7 @@ void InputManager::init(GLFWwindow* window, Camera* camera) {
     _lastY = (float)SCR_HEIGHT / 2.0;
     _mouseMoved = false;
 
+    _window = window;
     _camera = camera;
 
     glfwSetCursorPosCallback(window, InputManager::processMouse);
@@ -43,4 +48,8 @@ void InputManager::processMouse(GLFWwindow* window, double xPos, double yPos) {
 
     _lastX = xPos;
     _lastY = yPos;
+}
+
+bool InputManager::isKeyPressed(int key) {
+    return glfwGetKey(_window, key) == GLFW_PRESS;
 }
