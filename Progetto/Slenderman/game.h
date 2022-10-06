@@ -6,12 +6,14 @@
 #include "fps_manager.h"
 #include "input_manager.h"
 
+#include "constants.h"
 #include "model.h"
 #include "model_cache.h"
-#include "texture_cache.h"
+#include "render_text.h"
 #include "scene/test_scene.h"
 #include "shader_m.h"
 #include "shader_cache.h"
+#include "texture_cache.h"
 
 class GameLoop {
 private:
@@ -19,6 +21,8 @@ private:
 
     GLFWwindow* _window;
     Scene* _currentScene;
+
+    void _renderFPS();
 
 public:
     GameLoop(GLFWwindow* window) : _window(window) {}
@@ -33,6 +37,8 @@ public:
 void GameLoop::init() {
     _currentScene = new TestScene();
     InputManager::init(_window, _currentScene->currentCamera());
+
+    initRenderText(SCR_WIDTH, SCR_HEIGHT);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -65,13 +71,13 @@ void GameLoop::process() {
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        fps = _fpsManager.getFps();
-
         glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         if (InputManager::isKeyPressed(GLFW_KEY_Q))
             glfwSetWindowShouldClose(_window, true);
+
+        _renderFPS();
 
         _currentScene->process(deltaTime);
 
@@ -87,4 +93,11 @@ void GameLoop::destroy() {
     ModelCache::getInstance().clear();
     ShaderCache::getInstance().clear();
     TextureCache::getInstance().clear();
+}
+
+void GameLoop::_renderFPS() {
+    std::stringstream ssfps;
+    ssfps << "fps: " << _fpsManager.getFps();
+    std::string fps_str = ssfps.str();
+    RenderText(fps_str, SCR_WIDTH - 200.0f, SCR_HEIGHT - 50.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
