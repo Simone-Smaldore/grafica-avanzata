@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <vector>
 
 #include "camera.h"
@@ -9,29 +10,33 @@
 class LightUtils {
 public:
     LightUtils() = default;
-    LightUtils(std::vector<glm::vec3> translationVec) {
-        lightTranslationVec = translationVec;
+    LightUtils(std::map<int, glm::vec3> poiInfo) {
+        lightTranslationVec = std::vector<glm::vec3>();
+        for (auto poi : poiInfo)
+            lightTranslationVec.push_back(poi.second);
     }
 
     std::vector<glm::vec3> lightTranslationVec;
-    void initLightShader(Shader* shader, bool lightOn, const Camera& camera) const;
+    bool lightOn = true;
+
+    void initLightShader(Shader* shader, const Camera& camera) const;
 
 private:
-    void initSpotLight(Shader* shader, bool lightOn, const Camera& camera) const;
+    void initSpotLight(Shader* shader, const Camera& camera) const;
     void initPointLightForPoi(Shader* shader, glm::vec3 basePosition, int lightIndex) const;
 };
 
 
-void LightUtils::initLightShader(Shader* shader, bool lightOn, const Camera& camera) const {
+void LightUtils::initLightShader(Shader* shader, const Camera& camera) const {
     shader->use();
-    initSpotLight(shader, lightOn, camera);
+    initSpotLight(shader, camera);
     for (int i = 0; i < lightTranslationVec.size(); i++) {
         initPointLightForPoi(shader, lightTranslationVec[i], i);
     }
     shader->setFloat("material.shininess", 32.0f);
 }
 
-void LightUtils::initSpotLight(Shader* shader, bool lightOn, const Camera& camera) const {
+void LightUtils::initSpotLight(Shader* shader, const Camera& camera) const {
     shader->setVec3("spotLight.position", camera.Position);
     shader->setVec3("spotLight.direction", camera.Front);
     shader->setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));

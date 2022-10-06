@@ -164,5 +164,11 @@
     <ClInclude Include="street_light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="map_initializer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dynamic_map_renderable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

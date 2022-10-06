@@ -6,7 +6,9 @@
 
 enum class EModel {
     slenderMan,
-    streetLight
+    streetLight,
+    tree,
+    grass
 };
 
 class ModelCache {

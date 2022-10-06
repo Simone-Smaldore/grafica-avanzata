@@ -7,7 +7,9 @@
 enum class EShader {
     slenderMan,
     floor,
-    streetLight
+    streetLight,
+    tree,
+    grass
 };
 
 class ShaderCache {

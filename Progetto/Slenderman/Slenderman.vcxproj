@@ -193,6 +193,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="collision_solver.h" />
     <ClInclude Include="constants.h" />
+    <ClInclude Include="dynamic_map_renderable.h" />
     <ClInclude Include="floor.h" />
     <ClInclude Include="fps_manager.h" />
     <ClInclude Include="game.h" />
@@ -200,6 +201,7 @@
     <ClInclude Include="input_utils.h" />
     <ClInclude Include="glfw_utils.h" />
     <ClInclude Include="light_utils.h" />
+    <ClInclude Include="map_initializer.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="model_cache.h" />

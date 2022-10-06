@@ -1,11 +1,17 @@
 #pragma once
 
+#include <unordered_set>
+#include <vector>
+
 #include <glm/glm.hpp>
 
 #include "../camera.h"
 #include "../constants.h"
+#include "../dynamic_map_renderable.h"
 #include "../floor.h"
+#include "../input_manager.h"
 #include "../light_utils.h"
+#include "../map_initializer.h"
 #include "../model_cache.h"
 #include "../texture_cache.h"
 #include "../scene.h"
@@ -15,12 +21,17 @@
 
 class TestScene : public Scene {
 private:
+    vector<Renderable*> _renderables;
+
     Camera _camera;
     LightUtils _lightUtils;
+    double _previousTime = 0.0;
+
+    // { poiKIndex - poiTranslation }
+    std::map<int, glm::vec3> _poiInfo;
+    std::unordered_set<int>* _tabooIndices;
 
     SlenderMan* _slenderMan;
-    Floor* _floor;
-    StreetLight* _streetLight;
 
     void _processInput(const float& deltaTime);
 
@@ -34,12 +45,27 @@ public:
     inline virtual Camera* currentCamera() override;
 };
 
+
+
 void TestScene::init() {
-    _lightUtils = LightUtils({ glm::vec3(40.0f, -4.0f, 40.0f) });
+    _poiInfo = MapInitializer::initPOI();
+
+    _lightUtils = LightUtils(_poiInfo);
 
     _slenderMan = new SlenderMan();
-    _floor = new Floor();
-    _streetLight = new StreetLight();
+    _renderables.push_back(_slenderMan);
+
+    _renderables.push_back(new DynamicMapRenderable(DynamicEntity::grass));
+    
+    _tabooIndices = new unordered_set<int>();
+    for (int index : K_MAP_TO_EXCLUDE)
+        _tabooIndices->insert(index);
+    for (auto poi : _poiInfo)
+        _tabooIndices->insert(poi.first);
+    _renderables.push_back(new DynamicMapRenderable(DynamicEntity::tree, _tabooIndices));
+    
+    _renderables.push_back(new Floor());
+    _renderables.push_back(new StreetLight());
 }
 
 void TestScene::_processInput(const float& deltaTime) {
@@ -57,13 +83,15 @@ void TestScene::_processInput(const float& deltaTime) {
     if (InputManager::isKeyPressed(GLFW_KEY_D) /*&& !collisionResult.e*/)
         _camera.ProcessKeyboard(RIGHT, deltaTime);
 
-    /*if (InputManager::isKeyPressed(GLFW_KEY_F)) {
+    if (InputManager::isKeyPressed(GLFW_KEY_F)) {
         double currentTime = glfwGetTime();
-        if (currentTime - previousTime > 0.3f) {
-            previousTime = currentTime;
-            lightOn = !lightOn;
+        if (currentTime - _previousTime > 0.3f) {
+            _previousTime = currentTime;
+            _lightUtils.lightOn = !_lightUtils.lightOn;
         }
     }
+
+    /*
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && posViewedPage != -1) {
         collectedPagesIndices[posViewedPage] = true;
     }*/
@@ -72,15 +100,14 @@ void TestScene::_processInput(const float& deltaTime) {
 void TestScene::process(const float& deltaTime) {
     _processInput(deltaTime);
 
-    _slenderMan->render(_camera, _lightUtils);
-    _floor->render(_camera, _lightUtils);
-    _streetLight->render(_camera, _lightUtils);
+    for (auto renderable : _renderables)
+        renderable->render(_camera, _lightUtils);
 }
 
 void TestScene::destroy() {
-    delete _slenderMan;
-    delete _floor;
-    delete _streetLight;
+    for (auto renderable : _renderables)
+        delete renderable;
+    _renderables.clear();
 }
 
 Camera* TestScene::currentCamera() {

@@ -40,6 +40,8 @@ void GameLoop::init() {
     ShaderCache::getInstance().registerShader(EShader::slenderMan, new Shader("multiple_lights.vs", "multiple_lights.fs"));
     ShaderCache::getInstance().registerShader(EShader::floor, new Shader("multiple_lights.vs", "multiple_lights.fs"));
     ShaderCache::getInstance().registerShader(EShader::streetLight, new Shader("multiple_lights.vs", "streetlight_shader.fs"));
+    ShaderCache::getInstance().registerShader(EShader::tree, new Shader("multiple_lights_instancing.vs", "multiple_lights.fs"));
+    ShaderCache::getInstance().registerShader(EShader::grass, new Shader("multiple_lights_instancing.vs", "multiple_lights.fs"));
 
     TextureCache::getInstance().registerTexture(ETexture::slenderMan, "resources/models/Slenderman/diffuse.png");
     TextureCache::getInstance().registerTexture(ETexture::floor, "resources/textures/floor/floor.jpg");
@@ -47,6 +49,8 @@ void GameLoop::init() {
 
     ModelCache::getInstance().registerModel(EModel::slenderMan, new Model("resources/models/Slenderman/Slenderman.obj"));
     ModelCache::getInstance().registerModel(EModel::streetLight, new Model("resources/models/Streetlight/streetlight.obj"));
+    ModelCache::getInstance().registerModel(EModel::tree, new Model("resources/models/Tree/oaktrees.obj"));
+    ModelCache::getInstance().registerModel(EModel::grass, new Model("resources/models/Grass/scene.gltf"));
 
     _currentScene->init();
 }
