@@ -1,53 +1,21 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "game.h"
 #include "glfw_utils.h"
-#include "fps_manager.h"
-#include "model.h"
-#include "model_cache.h"
-#include "shader_m.h"
-#include "shader_cache.h"
-#include "scene/test_scene.h"
-
-#include "texture_utils.h"
 
 int main() {
     GLFWwindow* window = initGlfw();
     if (window == nullptr)
         return -1;
 
-    FpsManager fpsManager;
-
-    // nTODO: inserire nell'init della scena
-    glEnable(GL_DEPTH_TEST);
-
-    // nTODO gli Shader / Texture / Modelli possono essere caricati separatamente in una scena "Loading"
-    Shader slenderShader("multiple_lights.vs", "multiple_lights.fs");
-    ShaderCache::getInstance().registerShader(EShader::slenderMan, &slenderShader);
-
-    unsigned int slenderTexture = loadTexture("resources/models/Slenderman/diffuse.png");
-
-    Model slenderModel("resources/models/Slenderman/Slenderman.obj");
-    ModelCache::getInstance().registerModel(EModel::slenderMan, &slenderModel);
-
-    TestScene scene(camera, slenderTexture);
-
-    scene.init();
-
-    while (true) {
-        glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-        scene.process();
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-
-    scene.destroy();
+    Game game(window);
+    
+    game.init();
+    game.process();
+    game.destroy();
 
     glfwTerminate();
-
     return 0;
 }
 

@@ -194,6 +194,8 @@
     <ClInclude Include="collision_solver.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="fps_manager.h" />
+    <ClInclude Include="game.h" />
+    <ClInclude Include="input_manager.h" />
     <ClInclude Include="input_utils.h" />
     <ClInclude Include="glfw_utils.h" />
     <ClInclude Include="light_utils.h" />
@@ -208,6 +210,7 @@
     <ClInclude Include="shader_cache.h" />
     <ClInclude Include="shader_m.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="texture_cache.h" />
     <ClInclude Include="texture_utils.h" />
     <ClInclude Include="vertex_clusterer.h" />
   </ItemGroup>

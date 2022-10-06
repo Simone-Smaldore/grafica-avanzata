@@ -143,5 +143,14 @@
     <ClInclude Include="model_cache.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="texture_cache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="input_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

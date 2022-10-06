@@ -2,7 +2,9 @@
 
 #include <iostream>
 
-#include "camera.h"
+#include <GLFW/glfw3.h>
+
+//#include "camera.h"
 #include "constants.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -11,7 +13,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 float lastX = (float)SCR_WIDTH / 2.0;
 float lastY = (float)SCR_HEIGHT / 2.0;
 bool firstMouse = true;
-Camera camera(glm::vec3(0.0f, 0.0f, 0.0f));
+//Camera camera(glm::vec3(0.0f, 0.0f, 0.0f));
 
 GLFWwindow* initGlfw() {
     glfwInit();
@@ -63,5 +65,5 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     float yoffset = lastY - ypos;
     lastX = xpos;
     lastY = ypos;
-    camera.ProcessMouseMovement(xoffset, yoffset);
+    //camera.ProcessMouseMovement(xoffset, yoffset);
 }

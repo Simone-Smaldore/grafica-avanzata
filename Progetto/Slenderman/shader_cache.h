@@ -23,6 +23,8 @@ public:
     void registerShader(EShader key, Shader* value);
 
     Shader* findShader(EShader key);
+
+    void clear();
 };
 
 ShaderCache& ShaderCache::getInstance() {
@@ -36,4 +38,11 @@ void ShaderCache::registerShader(EShader key, Shader* value) {
 
 Shader* ShaderCache::findShader(EShader key) {
     return _shaderCache[key];
+}
+
+void ShaderCache::clear() {
+    for (auto pair : _shaderCache)
+        delete pair.second;
+     
+     _shaderCache.clear();
 }

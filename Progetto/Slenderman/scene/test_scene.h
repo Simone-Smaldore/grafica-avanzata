@@ -3,42 +3,52 @@
 #include <glm/glm.hpp>
 
 #include "../camera.h"
+#include "../constants.h"
+#include "../light_utils.h"
+#include "../model_cache.h"
+#include "../texture_cache.h"
 #include "../scene.h"
+#include "../shader_cache.h"
 
-class TestScene : Scene {
+class TestScene : public Scene {
+private:
+    Camera _camera;
+    LightUtils _lightUtils;
+
 public:
-    Camera& camera;
-    unsigned int texture;
-
-    TestScene(Camera& c, unsigned int t) : camera{ c }, texture{ t } {}
 
     virtual void init() override;
 
     virtual void process() override;
 
     virtual void destroy() override;
+
+    virtual Camera* currentCamera() override;
 };
 
-void TestScene::init() {
+void TestScene::init() { }
 
+Camera* TestScene::currentCamera() {
+    return &_camera;
 }
 
 void TestScene::process() {
     Shader* slenderShader = ShaderCache::getInstance().findShader(EShader::slenderMan);
+    unsigned int slenderTexture = TextureCache::getInstance().findTexture(ETexture::slenderMan);
     Model* slenderModel = ModelCache::getInstance().findModel(EModel::slenderMan);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(GL_TEXTURE_2D, slenderTexture);
 
-    glm::mat4 view = camera.GetViewMatrix();
+    glm::mat4 view = _camera.GetViewMatrix();
     glm::mat4 flashlightView = glm::mat4(1.0f);
     float farClippingPlane = 300.0f;
     if (DEBUG) {
         farClippingPlane = 2000.0f;
     }
-    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, farClippingPlane);
+    glm::mat4 projection = glm::perspective(glm::radians(_camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, farClippingPlane);
 
-    //lightUtils.initLightShader(slenderShader, lightOn, camera);
+    _lightUtils.initLightShader(*slenderShader, true, _camera);
 
     slenderShader->use();
     slenderShader->setMat4("view", view);
@@ -50,6 +60,4 @@ void TestScene::process() {
     slenderModel->Draw(*slenderShader);
 }
 
-void TestScene::destroy() {
-
-}
+void TestScene::destroy() { }

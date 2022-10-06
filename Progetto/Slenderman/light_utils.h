@@ -1,15 +1,18 @@
 #pragma once
-#include "shader_m.h"
+
+#include <vector>
+
 #include "camera.h"
 #include "constants.h"
+#include "shader_m.h"
 
 class LightUtils {
     public:
         LightUtils() = default;
-        LightUtils(vector<glm::vec3> translationVec) {
+        LightUtils(std::vector<glm::vec3> translationVec) {
             lightTranslationVec = translationVec;
         }
-        vector<glm::vec3> lightTranslationVec;
+        std::vector<glm::vec3> lightTranslationVec;
         void initLightShader(Shader& shader, bool lightOn, Camera& camera);
     private:
         void initSpotLight(Shader& shader, bool lightOn, Camera& camera);

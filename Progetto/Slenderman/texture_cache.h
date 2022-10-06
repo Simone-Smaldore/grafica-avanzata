@@ -1,14 +1,57 @@
 #pragma once
 
 #include <iostream>
+#include <map>
 
 #include <glad/glad.h>
 
+#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-// utility function for loading a 2D texture from file
-// ---------------------------------------------------
-unsigned int loadTexture(char const* path) {
+enum class ETexture {
+    slenderMan
+};
+
+class TextureCache {
+private:
+    std::map<ETexture, unsigned int> _textureCache;
+
+    unsigned int _loadTexture(char const* path);
+
+    TextureCache() {}
+
+public:
+    TextureCache(TextureCache const&) = delete;
+    void operator=(TextureCache const&) = delete;
+
+    static TextureCache& getInstance();
+
+    void registerTexture(ETexture key, const char* path);
+
+    unsigned int findTexture(ETexture key);
+
+    void clear();
+};
+
+TextureCache& TextureCache::getInstance() {
+    static TextureCache instance;
+    return instance;
+}
+
+void TextureCache::registerTexture(ETexture key, const char* path) {
+    unsigned int value = _loadTexture(path);
+    _textureCache[key] = value;
+}
+
+unsigned int TextureCache::findTexture(ETexture key) {
+    return _textureCache[key];
+}
+
+void TextureCache::clear() {
+    _textureCache.clear();
+}
+
+unsigned int TextureCache::_loadTexture(char const* path) {
     unsigned int textureID;
     glGenTextures(1, &textureID);
 
@@ -35,7 +78,7 @@ unsigned int loadTexture(char const* path) {
         stbi_image_free(data);
     }
     else {
-        std::cout << "Texture failed to load at path: " << path << std::endl;
+        //std::cout << "Texture failed to load at path: " << path << std::endl;
         stbi_image_free(data);
     }
 

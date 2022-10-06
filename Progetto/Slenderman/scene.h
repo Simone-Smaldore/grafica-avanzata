@@ -1,5 +1,7 @@
 #pragma once
 
+#include "camera.h"
+
 class Scene {
 public:
     virtual void init() = 0;
@@ -7,6 +9,8 @@ public:
     virtual void process() = 0;
 
     virtual void destroy() = 0;
+
+    virtual Camera* currentCamera() = 0;
 };
 //#include "constants.h"
 //#include <time.h>

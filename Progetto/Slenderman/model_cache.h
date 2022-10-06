@@ -23,6 +23,8 @@ public:
     void registerModel(EModel key, Model* value);
 
     Model* findModel(EModel key);
+
+    void clear();
 };
 
 ModelCache& ModelCache::getInstance() {
@@ -36,4 +38,11 @@ void ModelCache::registerModel(EModel key, Model* value) {
 
 Model* ModelCache::findModel(EModel key) {
     return _modelCache[key];
+}
+
+void ModelCache::clear() {
+    for (auto pair : _modelCache)
+        delete pair.second;
+
+    _modelCache.clear();
 }
