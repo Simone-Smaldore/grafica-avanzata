@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 
 #include "camera.h"
+#include "light_utils.h"
 #include "model.h";
 #include "shader_m.h";
 
@@ -13,7 +14,7 @@ protected:
     glm::mat4 _transform;
 
 public:
-    virtual void render(const Camera& camera) = 0;
+    virtual void render(const Camera& camera, const LightUtils& lightUtils) = 0;
 };
 
 class VAORenderable : public Renderable {

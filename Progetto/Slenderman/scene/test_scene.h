@@ -37,9 +37,9 @@ public:
 void TestScene::init() {
     _lightUtils = LightUtils({ glm::vec3(40.0f, -4.0f, 40.0f) });
 
-    _slenderMan = new SlenderMan(_lightUtils);
-    _floor = new Floor(_lightUtils);
-    _streetLight = new StreetLight(_lightUtils);
+    _slenderMan = new SlenderMan();
+    _floor = new Floor();
+    _streetLight = new StreetLight();
 }
 
 void TestScene::_processInput(const float& deltaTime) {
@@ -72,9 +72,9 @@ void TestScene::_processInput(const float& deltaTime) {
 void TestScene::process(const float& deltaTime) {
     _processInput(deltaTime);
 
-    _slenderMan->render(_camera);
-    _floor->render(_camera);
-    _streetLight->render(_camera);
+    _slenderMan->render(_camera, _lightUtils);
+    _floor->render(_camera, _lightUtils);
+    _streetLight->render(_camera, _lightUtils);
 }
 
 void TestScene::destroy() {

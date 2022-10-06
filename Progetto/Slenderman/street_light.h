@@ -8,16 +8,13 @@
 #include "texture_cache.h"
 
 class StreetLight : public ModelRenderable {
-private:
-    LightUtils& _lightUtils;
-
 public:
-    StreetLight(LightUtils& lightUtils);
+    StreetLight();
 
-    virtual void render(const Camera& camera) override;
+    virtual void render(const Camera& camera, const LightUtils& lightUtils) override;
 };
 
-StreetLight::StreetLight(LightUtils& lightUtils) : _lightUtils(lightUtils) {
+StreetLight::StreetLight() {
     _shader = ShaderCache::getInstance().findShader(EShader::streetLight);
     _model = ModelCache::getInstance().findModel(EModel::streetLight);
     _texture = TextureCache::getInstance().findTexture(ETexture::streetLight);
@@ -26,12 +23,12 @@ StreetLight::StreetLight(LightUtils& lightUtils) : _lightUtils(lightUtils) {
     transform = glm::translate(transform, glm::vec3(STREETLIGHT_POI_OFFSET, 0.0f, STREETLIGHT_POI_OFFSET));
     transform = glm::translate(transform, glm::vec3(40.0f, -4.0f, 40.0f));
     transform = glm::scale(transform, glm::vec3(0.015f, 0.015f, 0.015f));
-    _transform = transform
+    _transform = transform;
 }
 
-void StreetLight::render(const Camera& camera) {
+void StreetLight::render(const Camera& camera, const LightUtils& lightUtils) {
     //nTODO: _lightUtils.initLightShader(_shader, lightOn, camera);
-    _lightUtils.initLightShader(_shader, false, camera);
+    lightUtils.initLightShader(_shader, false, camera);
 
     _shader->use();
 

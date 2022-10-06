@@ -7,16 +7,13 @@
 #include "texture_cache.h"
 
 class SlenderMan : public ModelRenderable {
-private:
-    LightUtils& _lightUtils;
-
 public:
-    SlenderMan(LightUtils& lightUtils);
+    SlenderMan();
 
-    virtual void render(const Camera& camera) override;
+    virtual void render(const Camera& camera, const LightUtils& lightUtils) override;
 };
 
-SlenderMan::SlenderMan(LightUtils& lightUtils) : _lightUtils(lightUtils) {
+SlenderMan::SlenderMan(){
     _shader = ShaderCache::getInstance().findShader(EShader::slenderMan);
     _model = ModelCache::getInstance().findModel(EModel::slenderMan);
     _texture = TextureCache::getInstance().findTexture(ETexture::slenderMan);
@@ -27,9 +24,9 @@ SlenderMan::SlenderMan(LightUtils& lightUtils) : _lightUtils(lightUtils) {
     _transform = transform;
 }
 
-void SlenderMan::render(const Camera& camera) {
+void SlenderMan::render(const Camera& camera, const LightUtils& lightUtils) {
     //nTODO: _lightUtils.initLightShader(_shader, lightOn, camera);
-    _lightUtils.initLightShader(_shader, false, camera);
+    lightUtils.initLightShader(_shader, false, camera);
 
     _shader->use();
 

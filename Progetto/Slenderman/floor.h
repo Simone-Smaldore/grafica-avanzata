@@ -6,16 +6,13 @@
 #include "texture_cache.h"
 
 class Floor : public VAORenderable {
-private:
-    LightUtils& _lightUtils;
-
 public:
-    Floor(LightUtils& lightUtils);
+    Floor();
 
-    virtual void render(const Camera& camera) override;
+    virtual void render(const Camera& camera, const LightUtils& lightUtils) override;
 };
 
-Floor::Floor(LightUtils& lightUtils) : _lightUtils(lightUtils) {
+Floor::Floor(){
     _shader = ShaderCache::getInstance().findShader(EShader::floor);
     _VAO = VAORenderable::_initRectVAO(2000.0f);
     _texture = TextureCache::getInstance().findTexture(ETexture::floor);
@@ -25,9 +22,9 @@ Floor::Floor(LightUtils& lightUtils) : _lightUtils(lightUtils) {
     _transform = transform;
 }
 
-void Floor::render(const Camera& camera) {
+void Floor::render(const Camera& camera, const LightUtils& lightUtils) {
     //nTODO: _lightUtils.initLightShader(_shader, lightOn, camera);
-    _lightUtils.initLightShader(_shader, false, camera);
+    lightUtils.initLightShader(_shader, false, camera);
     _shader->use();
 
     glActiveTexture(GL_TEXTURE0);

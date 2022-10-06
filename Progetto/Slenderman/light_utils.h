@@ -14,15 +14,15 @@ public:
     }
 
     std::vector<glm::vec3> lightTranslationVec;
-    void initLightShader(Shader* shader, bool lightOn, const Camera& camera);
+    void initLightShader(Shader* shader, bool lightOn, const Camera& camera) const;
 
 private:
-    void initSpotLight(Shader* shader, bool lightOn, const Camera& camera);
-    void initPointLightForPoi(Shader* shader, glm::vec3 basePosition, int lightIndex);
+    void initSpotLight(Shader* shader, bool lightOn, const Camera& camera) const;
+    void initPointLightForPoi(Shader* shader, glm::vec3 basePosition, int lightIndex) const;
 };
 
 
-void LightUtils::initLightShader(Shader* shader, bool lightOn, const Camera& camera) {
+void LightUtils::initLightShader(Shader* shader, bool lightOn, const Camera& camera) const {
     shader->use();
     initSpotLight(shader, lightOn, camera);
     for (int i = 0; i < lightTranslationVec.size(); i++) {
@@ -31,7 +31,7 @@ void LightUtils::initLightShader(Shader* shader, bool lightOn, const Camera& cam
     shader->setFloat("material.shininess", 32.0f);
 }
 
-void LightUtils::initSpotLight(Shader* shader, bool lightOn, const Camera& camera) {
+void LightUtils::initSpotLight(Shader* shader, bool lightOn, const Camera& camera) const {
     shader->setVec3("spotLight.position", camera.Position);
     shader->setVec3("spotLight.direction", camera.Front);
     shader->setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
@@ -64,7 +64,7 @@ void LightUtils::initSpotLight(Shader* shader, bool lightOn, const Camera& camer
     }
 }
 
-void LightUtils::initPointLightForPoi(Shader* shader, glm::vec3 basePosition, int lightIndex) {
+void LightUtils::initPointLightForPoi(Shader* shader, glm::vec3 basePosition, int lightIndex) const {
     glm::vec3 lightPos = basePosition + glm::vec3(STREETLIGHT_POI_OFFSET, 9.0f, STREETLIGHT_POI_OFFSET);
     shader->setVec3("pointLights[" + std::to_string(lightIndex) + "].position", lightPos);
     shader->setVec3("pointLights[" + std::to_string(lightIndex) + "].ambient", 1.0, 0.8, 0.0);
