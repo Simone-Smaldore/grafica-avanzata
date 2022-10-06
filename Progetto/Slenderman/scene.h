@@ -14,6 +14,7 @@ void initPoiModels(vector<glm::mat4>& modelPoiMatrices, vector<glm::vec3>& point
 void initPageIndexPosition(vector<int>& pageIndexPosition);
 void initMiniMap(unsigned int& minimapVAO, unsigned int& framebuffer, unsigned int& textureColorBuffer, unsigned int& minimapWoodVAO);
 void initCircleMinimap(unsigned int& circleVAO);
+void initSlenderman(vector<glm::vec3>& slendermanSpawnPoints, vector<int>& positionsPointOfinterest);
 
 //Privati
 void initDynamicMapForModel(Model& model, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset, vector<glm::mat4>* modelTransforms = nullptr, const vector<int>& poiIndices = {});
@@ -37,7 +38,8 @@ void initScene(
     unsigned int& framebuffer,
     unsigned int& textureColorBuffer,
     unsigned int& minimapWoodVAO,
-    unsigned int& circleVAO
+    unsigned int& circleVAO,
+    vector<glm::vec3>& slendermanSpawnPoints
 ) {
     initFloor(floorVAO);
     initPage(pageVAO);
@@ -49,6 +51,7 @@ void initScene(
     initPageIndexPosition(pageIndexPosition);
     initMiniMap(minimapVAO, framebuffer, textureColorBuffer, minimapWoodVAO);
     initCircleMinimap(circleVAO);
+    initSlenderman(slendermanSpawnPoints, positionsPointOfinterest);
 }
 
 void initFloor(unsigned int& floorVAO) {
@@ -349,6 +352,39 @@ void initCircleMinimap(unsigned int& circleVAO) {
     glBufferData(GL_ARRAY_BUFFER, sizeof(circleVertices), &circleVertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+}
+
+void initSlenderman(vector<glm::vec3>& slendermanSpawnPoints, vector<int>& positionsPointOfinterest) {
+    int numVaoForSide = TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_TREE;
+    for (int i = 0; i < TREE_QUAD_SIDE; i++) {
+        for (int j = 0; j < TREE_QUAD_SIDE; j++) {
+
+            unsigned int vao_i = floor(i / VAO_OBJECTS_SIDE_TREE);
+            unsigned int vao_j = floor(j / VAO_OBJECTS_SIDE_TREE);
+            unsigned int vao_index = (vao_i * (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_TREE)) + vao_j;
+
+            // Esclude i POI
+            auto valueIndex = find(positionsPointOfinterest.begin(), positionsPointOfinterest.end(), vao_index);
+            if (valueIndex != positionsPointOfinterest.end()) {
+                continue;
+            }
+
+            // Esclude i 4 lati esterni
+            int kMax = numVaoForSide * numVaoForSide - 1;
+            if (vao_index < numVaoForSide || vao_index >(kMax - numVaoForSide)) {
+                continue;
+            }
+            if (vao_index % numVaoForSide == 0 || (vao_index + 1) % numVaoForSide == 0) {
+                continue;
+            }
+
+            float x_slender = (i - TREE_QUAD_SIDE / 2) * TREE_OFFSET;
+            float y_slender = -0.8f;
+            float z_slender = (j - TREE_QUAD_SIDE / 2) * TREE_OFFSET;
+
+            slendermanSpawnPoints.push_back(glm::vec3(x_slender, y_slender, z_slender));
+        }
+    }
 }
 
 void initDynamicMapForModel(Model& modelObj, int quadSide, int vaoObjectSide, float offset, glm::vec3& scaleMatrix, bool useRandomOffset, vector<glm::mat4>* modelTransforms, const vector<int>& poiIndices) {

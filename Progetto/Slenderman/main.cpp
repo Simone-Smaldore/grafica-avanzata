@@ -107,6 +107,7 @@ int main() {
     vector<int> pageIndexPosition;
     vector<glm::vec3> pointOfinterestTranslationVec;
     vector<glm::mat4> treeModels;
+    vector<glm::vec3> slendermanSpawnPoints;
 
     unsigned int minimapVAO;
     unsigned int framebuffer;
@@ -114,7 +115,7 @@ int main() {
     unsigned int minimapWoodVAO;
     unsigned int circleVAO;
 
-    initScene(floorVAO, pageVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest, pageIndexPosition, pointOfinterestTranslationVec, modelPoiMatrices, &treeModels, minimapVAO, framebuffer, textureColorBuffer, minimapWoodVAO, circleVAO);
+    initScene(floorVAO, pageVAO, treeModel, fenceModel, grassModel, positionsPointOfinterest, pageIndexPosition, pointOfinterestTranslationVec, modelPoiMatrices, &treeModels, minimapVAO, framebuffer, textureColorBuffer, minimapWoodVAO, circleVAO, slendermanSpawnPoints);
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
     int fps = 0;
@@ -167,7 +168,7 @@ int main() {
             collisionSolver.registerAABB(currentTreeAABB);
         }
     }
-
+    
     // Loop di rendering
     // -----------
     while (!glfwWindowShouldClose(window)) {
@@ -188,6 +189,7 @@ int main() {
         // Gestione dell'input
         int numCollectedPages = count(collectedPagesIndices.begin(), collectedPagesIndices.end(), true);
         processInput(window, camera, deltaTime, lightOn, renderer.posViewedPage, collectedPagesIndices, collisionResult);
+
 
         // Pulizia dei buffer
         glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
