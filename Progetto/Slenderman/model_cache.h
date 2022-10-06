@@ -5,7 +5,8 @@
 #include "model.h"
 
 enum class EModel {
-    slenderMan
+    slenderMan,
+    streetLight
 };
 
 class ModelCache {

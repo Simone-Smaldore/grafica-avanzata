@@ -161,5 +161,8 @@
     <ClInclude Include="floor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="street_light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

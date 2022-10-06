@@ -10,7 +10,8 @@
 
 enum class ETexture {
     slenderMan,
-    floor
+    floor,
+    streetLight
 };
 
 class TextureCache {

@@ -27,7 +27,7 @@ Floor::Floor(LightUtils& lightUtils) : _lightUtils(lightUtils) {
 
 void Floor::render(const Camera& camera) {
     //nTODO: _lightUtils.initLightShader(_shader, lightOn, camera);
-    _lightUtils.initLightShader(*_shader, false, camera);
+    _lightUtils.initLightShader(_shader, false, camera);
     _shader->use();
 
     glActiveTexture(GL_TEXTURE0);

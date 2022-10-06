@@ -213,6 +213,7 @@
     <ClInclude Include="shader_m.h" />
     <ClInclude Include="slenderman.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="street_light.h" />
     <ClInclude Include="texture_cache.h" />
     <ClInclude Include="texture_utils.h" />
     <ClInclude Include="vertex_clusterer.h" />

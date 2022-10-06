@@ -29,7 +29,7 @@ SlenderMan::SlenderMan(LightUtils& lightUtils) : _lightUtils(lightUtils) {
 
 void SlenderMan::render(const Camera& camera) {
     //nTODO: _lightUtils.initLightShader(_shader, lightOn, camera);
-    _lightUtils.initLightShader(*_shader, false, camera);
+    _lightUtils.initLightShader(_shader, false, camera);
 
     _shader->use();
 

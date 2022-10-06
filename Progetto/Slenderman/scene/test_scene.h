@@ -11,6 +11,7 @@
 #include "../scene.h"
 #include "../shader_cache.h"
 #include "../slenderman.h"
+#include "../street_light.h"
 
 class TestScene : public Scene {
 private:
@@ -19,6 +20,7 @@ private:
 
     SlenderMan* _slenderMan;
     Floor* _floor;
+    StreetLight* _streetLight;
 
     void _processInput(const float& deltaTime);
 
@@ -33,8 +35,11 @@ public:
 };
 
 void TestScene::init() {
+    _lightUtils = LightUtils({ glm::vec3(40.0f, -4.0f, 40.0f) });
+
     _slenderMan = new SlenderMan(_lightUtils);
     _floor = new Floor(_lightUtils);
+    _streetLight = new StreetLight(_lightUtils);
 }
 
 void TestScene::_processInput(const float& deltaTime) {
@@ -69,11 +74,13 @@ void TestScene::process(const float& deltaTime) {
 
     _slenderMan->render(_camera);
     _floor->render(_camera);
+    _streetLight->render(_camera);
 }
 
 void TestScene::destroy() {
     delete _slenderMan;
     delete _floor;
+    delete _streetLight;
 }
 
 Camera* TestScene::currentCamera() {
