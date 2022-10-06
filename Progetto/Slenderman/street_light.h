@@ -9,20 +9,16 @@
 
 class StreetLight : public ModelRenderable {
 public:
-    StreetLight();
+    StreetLight(glm::mat4 transform);
 
     virtual void render(const Camera& camera, const LightUtils& lightUtils) override;
 };
 
-StreetLight::StreetLight() {
+StreetLight::StreetLight(glm::mat4 transform) {
     _shader = ShaderCache::getInstance().findShader(EShader::streetLight);
     _model = ModelCache::getInstance().findModel(EModel::streetLight);
     _texture = TextureCache::getInstance().findTexture(ETexture::streetLight);
 
-    glm::mat4 transform = glm::mat4(1.0f);
-    transform = glm::translate(transform, glm::vec3(STREETLIGHT_POI_OFFSET, 0.0f, STREETLIGHT_POI_OFFSET));
-    transform = glm::translate(transform, glm::vec3(40.0f, -4.0f, 40.0f));
-    transform = glm::scale(transform, glm::vec3(0.015f, 0.015f, 0.015f));
     _transform = transform;
 }
 
