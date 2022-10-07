@@ -3,11 +3,13 @@
 #include <map>
 #include <time.h>
 #include <stdexcept>
+#include <vector>
 
 #include "glm/glm.hpp"
 
 #include "constants.h"
 #include "model_cache.h"
+#include "page.h"
 #include "renderable.h"
 #include "renderable_poi.h"
 #include "street_light.h"
@@ -21,7 +23,7 @@ private:
 public:
     static std::map<int, glm::vec3> initPOI();
 
-    static void addPOIRenderablesAndStreetLights(const std::map<int, glm::vec3>& poiInfo, vector<Renderable*>& renderables);
+    static void addPOIRenderablesAndStreetLights(const std::map<int, glm::vec3>& poiInfo, std::vector<Page*>& pages, vector<Renderable*>& renderables);
 };
 
 bool MapInitializer::_isGoodPOI(const int k, const std::map<int, glm::vec3>& poi, const int kMax, const int numVAOForSide) {
@@ -139,11 +141,10 @@ glm::mat4 MapInitializer::_computePOITransformForModel(EModel model, const glm::
     return transform;
 }
 
-void MapInitializer::addPOIRenderablesAndStreetLights(const std::map<int, glm::vec3>& poiInfo, vector<Renderable*>& renderables) {
+void MapInitializer::addPOIRenderablesAndStreetLights(const std::map<int, glm::vec3>& poiInfo, std::vector<Page*>& pages, vector<Renderable*>& renderables) {
     int i = 0;
     
     for (auto poi : poiInfo) {
-
         ETexture texture = static_cast<ETexture>(i + static_cast<int>(ETexture::poi1));
         EModel model = static_cast<EModel>(i + static_cast<int>(EModel::poi1));
 
@@ -155,6 +156,11 @@ void MapInitializer::addPOIRenderablesAndStreetLights(const std::map<int, glm::v
         transform = glm::translate(transform, poi.second);
         transform = glm::scale(transform, glm::vec3(0.015f, 0.015f, 0.015f));
         renderables.push_back(new StreetLight(transform));
+
+        ETexture pageTexture = static_cast<ETexture>(i + static_cast<int>(ETexture::page1));
+        Page* page = new Page(pageTexture, poi.second);
+        pages.push_back(page);
+        renderables.push_back(page);
 
         i += 1;
     }

@@ -179,5 +179,8 @@
     <ClInclude Include="fence.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="page.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

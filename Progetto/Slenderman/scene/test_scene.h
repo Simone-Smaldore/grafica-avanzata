@@ -33,14 +33,17 @@ private:
     LightUtils _lightUtils;
     CollisionSolver _collisionSolver;
     double _previousTime = 0.0;
+    Page* _pageFramed = nullptr;
 
     // { poiKIndex - poiTranslation }
     std::map<int, glm::vec3> _poiInfo;
     std::unordered_set<int>* _tabooIndices;
 
     SlenderMan* _slenderMan;
+    vector<Page*> _pages;
 
     void _processInput(const float& deltaTime);
+    void _findFramedPage();
 
 public:
     virtual void init() override;
@@ -71,11 +74,11 @@ void TestScene::init() {
     for (auto poi : _poiInfo)
         _tabooIndices->insert(poi.first);
 
-    MapInitializer::addPOIRenderablesAndStreetLights(_poiInfo, _renderables);
+    MapInitializer::addPOIRenderablesAndStreetLights(_poiInfo, _pages, _renderables);
 
     _renderables.push_back(new DynamicMapRenderable(DynamicEntity::tree, _tabooIndices));
-    _renderables.push_back(new Minimap(_poiInfo));
     _renderables.push_back(new Fence());
+    _renderables.push_back(new Minimap(_poiInfo));
 }
 
 void TestScene::_processInput(const float& deltaTime) {
@@ -101,14 +104,44 @@ void TestScene::_processInput(const float& deltaTime) {
         }
     }
 
-    /*
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && posViewedPage != -1) {
-        collectedPagesIndices[posViewedPage] = true;
-    }*/
+    if (InputManager::isLeftMouseButtonPressed() && _pageFramed != nullptr) {
+        _pageFramed->setCollected(true);
+        // nTODO: Aumentare il numero di pagine collezionate / messaggio pagina collezionata
+    }
+}
+
+void TestScene::_findFramedPage() {
+    for (auto page : _pages) {
+        page->setFramed(false);
+
+        const glm::vec3& translationVec = page->getRelatedPOITranslation();
+        float streetlampX = translationVec.x + STREETLIGHT_POI_OFFSET;
+        float streetlightZ = translationVec.z + STREETLIGHT_POI_OFFSET;
+
+        float streetlightDistance = sqrt(pow(streetlampX - _camera.Position.x, 2) + pow(streetlightZ - _camera.Position.z, 2));
+        bool collectPosition = (_camera.Position.x > streetlampX && streetlightDistance <= PAGE_SELECTION_DISTANCE);
+
+        float z = streetlightZ - _camera.Position.z;
+        float alpha = z / streetlightDistance;
+        bool collectVision = (_camera.Front.x > X_V_MIN_PAGE && _camera.Front.x < X_V_MAX_PAGE)
+            && (_camera.Front.y > Y_V_MIN_PAGE && _camera.Front.y < Y_V_MAX_PAGE)
+            && (_camera.Front.z > (Z_V_MIN_PAGE + alpha) && _camera.Front.z < (Z_V_MAX_PAGE + alpha))
+            && (abs(alpha) < MAX_ANGLE_PAGE);
+
+        if (collectPosition && collectVision) {
+            page->setFramed(true);
+            _pageFramed = page;
+            return;
+        }
+    }
+
+    _pageFramed = nullptr;
 }
 
 void TestScene::process(const float& deltaTime) {
     _processInput(deltaTime);
+
+    _findFramedPage();
 
     for (auto renderable : _renderables)
         renderable->render(_camera, _lightUtils);

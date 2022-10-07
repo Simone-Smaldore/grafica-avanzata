@@ -33,7 +33,6 @@ public:
 
 Minimap::Minimap(const std::map<int, glm::vec3>& poiInfo) {
     for (auto poi : poiInfo) {
-        std::cout << poi.second.x << " " << poi.second.y << " " << poi.second.z << std::endl;
         glm::mat4 transform = glm::mat4(1.0f);
         transform = glm::translate(transform, glm::vec3(-poi.second.x / MAX_W_QUAD_MAP, poi.second.z / MAX_W_QUAD_MAP, 0.0f));
         transform = glm::scale(transform, glm::vec3(0.03f, 0.03f, 0.03f));

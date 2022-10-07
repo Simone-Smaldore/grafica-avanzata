@@ -207,6 +207,7 @@
     <ClInclude Include="minimap.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="model_cache.h" />
+    <ClInclude Include="page.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="renderable.h" />
     <ClInclude Include="renderable_poi.h" />

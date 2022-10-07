@@ -20,6 +20,8 @@ public:
     static void init(GLFWwindow* window, Camera* camera);
     
     inline static bool isKeyPressed(int key);
+
+    inline static bool isLeftMouseButtonPressed();
 };
 
 void InputManager::init(GLFWwindow* window, Camera* camera) {
@@ -52,4 +54,8 @@ void InputManager::processMouse(GLFWwindow* window, double xPos, double yPos) {
 
 bool InputManager::isKeyPressed(int key) {
     return glfwGetKey(_window, key) == GLFW_PRESS;
+}
+
+bool InputManager::isLeftMouseButtonPressed() {
+    return glfwGetMouseButton(_window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 }

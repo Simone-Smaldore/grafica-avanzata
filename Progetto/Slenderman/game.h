@@ -54,6 +54,8 @@ void GameLoop::init() {
     ShaderCache::getInstance().registerShader(EShader::minimapWood, new Shader("minimap_shader.vs", "minimap_shader.fs"));
     ShaderCache::getInstance().registerShader(EShader::minimapCircle, new Shader("circle_minimap.vs", "circle_minimap.fs"));
     ShaderCache::getInstance().registerShader(EShader::fence, new Shader("multiple_lights_instancing.vs", "multiple_lights.fs"));
+    ShaderCache::getInstance().registerShader(EShader::page, new Shader("multiple_lights.vs", "multiple_lights.fs"));
+    ShaderCache::getInstance().registerShader(EShader::singleColor, new Shader("stencil_single_color.vs", "stencil_single_color.fs"));
 
     TextureCache::getInstance().registerTexture(ETexture::slenderMan, "resources/models/Slenderman/diffuse.png");
     TextureCache::getInstance().registerTexture(ETexture::floor, "resources/textures/floor/floor.jpg");
@@ -82,6 +84,14 @@ void GameLoop::init() {
         int poiIndex = (poiEnumIndex - poi1ModelEnumIndex) + 1;
         std::string modelPath = "resources/models/Points of interest/" + std::to_string(poiIndex) + "/" + std::to_string(poiIndex) + extensions[poiIndex - 1];
         ModelCache::getInstance().registerModel(static_cast<EModel>(poiEnumIndex), new Model(modelPath));
+    }
+
+    int page1TextureEnumIndex = static_cast<int>(ETexture::page1);
+    int page8TextureEnumIndex = static_cast<int>(ETexture::page8);
+    for (int pageEnumIndex = page1TextureEnumIndex; pageEnumIndex <= page8TextureEnumIndex; pageEnumIndex++) {
+        int pageIndex = (pageEnumIndex - page1TextureEnumIndex) + 1;
+        std::string texturePath = "resources/textures/Pages/page_" + std::to_string(pageIndex) + ".jpg";;
+        TextureCache::getInstance().registerTexture(static_cast<ETexture>(pageEnumIndex), texturePath.c_str());
     }
 
     _currentScene->init();

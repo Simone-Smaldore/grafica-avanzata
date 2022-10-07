@@ -14,7 +14,9 @@ enum class EShader {
     minimap,
     minimapWood,
     minimapCircle,
-    fence
+    fence,
+    page,
+    singleColor
 };
 
 class ShaderCache {
