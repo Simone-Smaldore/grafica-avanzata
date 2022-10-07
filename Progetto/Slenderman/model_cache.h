@@ -8,7 +8,15 @@ enum class EModel {
     slenderMan,
     streetLight,
     tree,
-    grass
+    grass,
+    poi1,
+    poi2,
+    poi3,
+    poi4,
+    poi5,
+    poi6,
+    poi7,
+    poi8
 };
 
 class ModelCache {

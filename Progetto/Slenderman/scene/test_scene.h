@@ -14,6 +14,7 @@
 #include "../map_initializer.h"
 #include "../model_cache.h"
 #include "../texture_cache.h"
+#include "../renderable_poi.h"
 #include "../scene.h"
 #include "../shader_cache.h"
 #include "../slenderman.h"
@@ -58,18 +59,13 @@ void TestScene::init() {
     _renderables.push_back(new DynamicMapRenderable(DynamicEntity::grass));
 
     _tabooIndices = new unordered_set<int>();
-    for (int index : K_MAP_TO_EXCLUDE)
+    for (int index : K_SET_TO_EXCLUDE)
         _tabooIndices->insert(index);
 
-    for (auto poi : _poiInfo) {
+    for (auto poi : _poiInfo)
         _tabooIndices->insert(poi.first);
 
-        glm::mat4 transform = glm::mat4(1.0f);
-        transform = glm::translate(transform, glm::vec3(STREETLIGHT_POI_OFFSET, 0.0f, STREETLIGHT_POI_OFFSET));
-        transform = glm::translate(transform, poi.second);
-        transform = glm::scale(transform, glm::vec3(0.015f, 0.015f, 0.015f));
-        _renderables.push_back(new StreetLight(transform));
-    }
+    MapInitializer::addPOIRenderablesAndStreetLights(_poiInfo, _renderables);
 
     _renderables.push_back(new DynamicMapRenderable(DynamicEntity::tree, _tabooIndices));
 }

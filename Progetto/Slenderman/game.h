@@ -48,6 +48,7 @@ void GameLoop::init() {
     ShaderCache::getInstance().registerShader(EShader::streetLight, new Shader("multiple_lights.vs", "streetlight_shader.fs"));
     ShaderCache::getInstance().registerShader(EShader::tree, new Shader("multiple_lights_instancing.vs", "multiple_lights.fs"));
     ShaderCache::getInstance().registerShader(EShader::grass, new Shader("multiple_lights_instancing.vs", "multiple_lights.fs"));
+    ShaderCache::getInstance().registerShader(EShader::poi, new Shader("multiple_lights.vs", "multiple_lights.fs"));
 
     TextureCache::getInstance().registerTexture(ETexture::slenderMan, "resources/models/Slenderman/diffuse.png");
     TextureCache::getInstance().registerTexture(ETexture::floor, "resources/textures/floor/floor.jpg");
@@ -57,6 +58,23 @@ void GameLoop::init() {
     ModelCache::getInstance().registerModel(EModel::streetLight, new Model("resources/models/Streetlight/streetlight.obj"));
     ModelCache::getInstance().registerModel(EModel::tree, new Model("resources/models/Tree/oaktrees.obj"));
     ModelCache::getInstance().registerModel(EModel::grass, new Model("resources/models/Grass/scene.gltf"));
+
+    int poi1TextureEnumIndex = static_cast<int>(ETexture::poi1);
+    int poi8TextureEnumIndex = static_cast<int>(ETexture::poi8);
+    for (int poiEnumIndex = poi1TextureEnumIndex; poiEnumIndex <= poi8TextureEnumIndex; poiEnumIndex++) {
+        int poiIndex = (poiEnumIndex - poi1TextureEnumIndex) + 1;
+        std::string texturePath = "resources/models/Points of interest/" + std::to_string(poiIndex) + "/" + std::to_string(poiIndex) + ".jpg";
+        TextureCache::getInstance().registerTexture(static_cast<ETexture>(poiEnumIndex), texturePath.c_str());
+    }
+
+    const vector<std::string> extensions = { ".dae", ".gltf", ".gltf", ".gltf", ".gltf", ".gltf", ".gltf", ".gltf", };
+    int poi1ModelEnumIndex = static_cast<int>(EModel::poi1);
+    int poi8ModelEnumIndex = static_cast<int>(EModel::poi8);
+    for (int poiEnumIndex = poi1ModelEnumIndex; poiEnumIndex <= poi8ModelEnumIndex; poiEnumIndex++) {
+        int poiIndex = (poiEnumIndex - poi1ModelEnumIndex) + 1;
+        std::string modelPath = "resources/models/Points of interest/" + std::to_string(poiIndex) + "/" + std::to_string(poiIndex) + extensions[poiIndex - 1];
+        ModelCache::getInstance().registerModel(static_cast<EModel>(poiEnumIndex), new Model(modelPath));
+    }
 
     _currentScene->init();
 }

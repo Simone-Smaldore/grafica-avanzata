@@ -2,22 +2,31 @@
 
 #include <map>
 #include <time.h>
+#include <stdexcept>
 
 #include "glm/glm.hpp"
 
 #include "constants.h"
+#include "model_cache.h"
+#include "renderable.h"
+#include "renderable_poi.h"
+#include "street_light.h"
 
 class MapInitializer {
 private:
-    static bool isGoodPOI(const int k, const std::map<int, glm::vec3>& poi, const int kMax, const int numVAOForSide);
+    static bool _isGoodPOI(const int k, const std::map<int, glm::vec3>& poi, const int kMax, const int numVAOForSide);
+
+    static glm::mat4 _computePOITransformForModel(EModel model, const glm::vec3 poiTranslation);
 
 public:
     static std::map<int, glm::vec3> initPOI();
+
+    static void addPOIRenderablesAndStreetLights(const std::map<int, glm::vec3>& poiInfo, vector<Renderable*>& renderables);
 };
 
-bool MapInitializer::isGoodPOI(const int k, const std::map<int, glm::vec3>& poi, const int kMax, const int numVAOForSide) {
+bool MapInitializer::_isGoodPOI(const int k, const std::map<int, glm::vec3>& poi, const int kMax, const int numVAOForSide) {
     // Verifica che il punto non è già stato escluso a priori nella configurazione
-    if (std::find(K_MAP_TO_EXCLUDE.begin(), K_MAP_TO_EXCLUDE.end(), k) != K_MAP_TO_EXCLUDE.end())
+    if (K_SET_TO_EXCLUDE.find(k) != K_SET_TO_EXCLUDE.end())
         return false;
 
     // Esclude i 4 lati esterni
@@ -52,7 +61,7 @@ std::map<int, glm::vec3> MapInitializer::initPOI() {
 
     for (int i = 0; i < NUMBER_POINTS_OF_INTEREST; i++) {
         int k = static_cast <float> (rand()) / static_cast <float> (RAND_MAX) * kMax;
-        while (!isGoodPOI(k, poiMap, kMax, numVAOForSide)) {
+        while (!_isGoodPOI(k, poiMap, kMax, numVAOForSide)) {
             k = static_cast <float> (rand()) / static_cast <float> (RAND_MAX) * kMax;
         }
 
@@ -67,4 +76,85 @@ std::map<int, glm::vec3> MapInitializer::initPOI() {
     }
 
     return poiMap;
+}
+
+glm::mat4 MapInitializer::_computePOITransformForModel(EModel model, const glm::vec3 poiTranslation) {
+    glm::mat4 transform = glm::mat4(1);
+
+    switch (model) {
+    case EModel::poi1:
+        transform = glm::translate(transform, poiTranslation);
+        transform = glm::scale(transform, glm::vec3(0.008f, 0.008f, 0.008f));
+        break;
+
+    case EModel::poi2:
+        transform = glm::translate(transform, glm::vec3(0.0f, -0.1f, 0.0f));
+        transform = glm::translate(transform, poiTranslation);
+        transform = glm::scale(transform, glm::vec3(0.03f, 0.03f, 0.03f));
+        transform = glm::rotate(transform, (float)glm::radians(270.0), glm::vec3(1.0f, 0.0f, 0.0f));
+        break;
+
+    case EModel::poi3:
+        transform = glm::translate(transform, glm::vec3(0.0f, -0.1f, 0.0f));
+        transform = glm::translate(transform, poiTranslation);
+        transform = glm::scale(transform, glm::vec3(0.05f, 0.05f, 0.05f));
+        transform = glm::rotate(transform, (float)glm::radians(270.0), glm::vec3(1.0f, 0.0f, 0.0f));
+        break;
+
+    case EModel::poi4:
+        transform = glm::translate(transform, glm::vec3(0.0f, -3.1f, 0.0f));
+        transform = glm::translate(transform, poiTranslation);
+        transform = glm::scale(transform, glm::vec3(8.5f, 8.5f, 8.5f));
+        break;
+
+    case EModel::poi5:
+        transform = glm::translate(transform, glm::vec3(0.0f, 1.4f, 0.0f));
+        transform = glm::translate(transform, poiTranslation);
+        transform = glm::scale(transform, glm::vec3(0.05f, 0.05f, 0.05f));
+        break;
+
+    case EModel::poi6:
+        transform = glm::translate(transform, poiTranslation);
+        transform = glm::scale(transform, glm::vec3(0.1f, 0.1f, 0.1f));
+        break;
+
+    case EModel::poi7:
+        transform = glm::translate(transform, glm::vec3(0.0f, -0.8f, 0.0f));
+        transform = glm::translate(transform, poiTranslation);
+        transform = glm::scale(transform, glm::vec3(0.1f, 0.1f, 0.1f));
+        transform = glm::rotate(transform, (float)glm::radians(270.0), glm::vec3(1.0f, 0.0f, 0.0f));
+        break;
+
+    case EModel::poi8:
+        transform = glm::translate(transform, glm::vec3(-60.0f, 3.8f, 60.0f));
+        transform = glm::translate(transform, poiTranslation);
+        transform = glm::scale(transform, glm::vec3(0.008f, 0.008f, 0.008f));
+        transform = glm::rotate(transform, (float)glm::radians(270.0), glm::vec3(1.0f, 0.0f, 0.0f));
+        break;
+
+    default:
+        throw std::runtime_error("Unknown transform for poi index: " + static_cast<int>(model));
+    }
+
+    return transform;
+}
+
+void MapInitializer::addPOIRenderablesAndStreetLights(const std::map<int, glm::vec3>& poiInfo, vector<Renderable*>& renderables) {
+    int i = 0;
+    for (auto poi : poiInfo) {
+
+        ETexture texture = static_cast<ETexture>(i + static_cast<int>(ETexture::poi1));
+        EModel model = static_cast<EModel>(i + static_cast<int>(EModel::poi1));
+
+        glm::mat4 poiTransform = _computePOITransformForModel(model, poi.second);
+        renderables.push_back(new RenderablePOI(texture, model, poiTransform));
+
+        glm::mat4 transform = glm::mat4(1.0f);
+        transform = glm::translate(transform, glm::vec3(STREETLIGHT_POI_OFFSET, 0.0f, STREETLIGHT_POI_OFFSET));
+        transform = glm::translate(transform, poi.second);
+        transform = glm::scale(transform, glm::vec3(0.015f, 0.015f, 0.015f));
+        renderables.push_back(new StreetLight(transform));
+
+        i += 1;
+    }
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <unordered_set>
 
 #include "glm/glm.hpp"
 
@@ -32,7 +32,7 @@ const int NUM_PAGES = 6;
 const int INT_OFFSET_VAO_INDEXES = 1;
 // ATTENZIONE DA CAMBIARE NEL CASO SI CAMBINO LE DIMENSIONI DELLA MAPPA
 // PER ADESSO NON DISEGNA SOLO IL VAO CORRISPONDENTE A (0, 0)
-const std::vector<int> K_MAP_TO_EXCLUDE = { 300 };
+const std::unordered_set<int> K_SET_TO_EXCLUDE = { 300 };
 // Indica l'offset che ha il lampione lungo x e lungo z dal centro del VAO
 const float STREETLIGHT_POI_OFFSET = 10.0f;
 
