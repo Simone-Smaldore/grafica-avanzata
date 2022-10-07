@@ -10,7 +10,9 @@ enum class EShader {
     streetLight,
     tree,
     grass,
-    poi
+    poi,
+    minimap,
+    minimapWood
 };
 
 class ShaderCache {

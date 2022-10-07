@@ -203,6 +203,7 @@
     <ClInclude Include="light_utils.h" />
     <ClInclude Include="map_initializer.h" />
     <ClInclude Include="mesh.h" />
+    <ClInclude Include="minimap.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="model_cache.h" />
     <ClInclude Include="ray.h" />

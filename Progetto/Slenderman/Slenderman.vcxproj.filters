@@ -173,5 +173,8 @@
     <ClInclude Include="renderable_poi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="minimap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

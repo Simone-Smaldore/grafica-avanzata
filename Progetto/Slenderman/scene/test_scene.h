@@ -12,6 +12,7 @@
 #include "../input_manager.h"
 #include "../light_utils.h"
 #include "../map_initializer.h"
+#include "../minimap.h"
 #include "../model_cache.h"
 #include "../texture_cache.h"
 #include "../renderable_poi.h"
@@ -68,6 +69,7 @@ void TestScene::init() {
     MapInitializer::addPOIRenderablesAndStreetLights(_poiInfo, _renderables);
 
     _renderables.push_back(new DynamicMapRenderable(DynamicEntity::tree, _tabooIndices));
+    _renderables.push_back(new Minimap());
 }
 
 void TestScene::_processInput(const float& deltaTime) {

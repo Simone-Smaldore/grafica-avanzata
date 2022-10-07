@@ -19,7 +19,8 @@ enum class ETexture {
     poi5,
     poi6,
     poi7,
-    poi8
+    poi8,
+    minimap
 };
 
 class TextureCache {
