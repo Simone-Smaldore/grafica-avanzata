@@ -10,6 +10,7 @@
 #include "../collision_solver.h"
 #include "../constants.h"
 #include "../dynamic_map_renderable.h"
+#include "../fence.h"
 #include "../floor.h"
 #include "../input_manager.h"
 #include "../light_utils.h"
@@ -74,6 +75,7 @@ void TestScene::init() {
 
     _renderables.push_back(new DynamicMapRenderable(DynamicEntity::tree, _tabooIndices));
     _renderables.push_back(new Minimap(_poiInfo));
+    _renderables.push_back(new Fence());
 }
 
 void TestScene::_processInput(const float& deltaTime) {

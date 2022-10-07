@@ -16,7 +16,8 @@ enum class EModel {
     poi5,
     poi6,
     poi7,
-    poi8
+    poi8,
+    fence
 };
 
 class ModelCache {

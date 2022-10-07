@@ -176,5 +176,8 @@
     <ClInclude Include="minimap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="fence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

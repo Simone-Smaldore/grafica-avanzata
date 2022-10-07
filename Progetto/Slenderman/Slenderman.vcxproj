@@ -194,6 +194,7 @@
     <ClInclude Include="collision_solver.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="dynamic_map_renderable.h" />
+    <ClInclude Include="fence.h" />
     <ClInclude Include="floor.h" />
     <ClInclude Include="fps_manager.h" />
     <ClInclude Include="game.h" />

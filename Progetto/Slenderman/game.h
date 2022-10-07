@@ -53,17 +53,20 @@ void GameLoop::init() {
     ShaderCache::getInstance().registerShader(EShader::minimap, new Shader("minimap_shader.vs", "minimap_shader.fs"));
     ShaderCache::getInstance().registerShader(EShader::minimapWood, new Shader("minimap_shader.vs", "minimap_shader.fs"));
     ShaderCache::getInstance().registerShader(EShader::minimapCircle, new Shader("circle_minimap.vs", "circle_minimap.fs"));
+    ShaderCache::getInstance().registerShader(EShader::fence, new Shader("multiple_lights_instancing.vs", "multiple_lights.fs"));
 
     TextureCache::getInstance().registerTexture(ETexture::slenderMan, "resources/models/Slenderman/diffuse.png");
     TextureCache::getInstance().registerTexture(ETexture::floor, "resources/textures/floor/floor.jpg");
     TextureCache::getInstance().registerTexture(ETexture::streetLight, "resources/models/Streetlight/streetlight_default_color.tga.png");
     TextureCache::getInstance().registerTexture(ETexture::minimap, "resources/textures/minimappa/bosco_dark2.jpg");
+    TextureCache::getInstance().registerTexture(ETexture::fence, "resources/models/Fence/wood-fence/textura_cerca_de_madeira_COLOR.png");
 
     ModelCache::getInstance().registerModel(EModel::slenderMan, new Model("resources/models/Slenderman/Slenderman.obj"));
     ModelCache::getInstance().registerModel(EModel::streetLight, new Model("resources/models/Streetlight/streetlight.obj"));
     ModelCache::getInstance().registerModel(EModel::tree, new Model("resources/models/Tree/oaktrees.obj"));
     ModelCache::getInstance().registerModel(EModel::grass, new Model("resources/models/Grass/scene.gltf"));
-
+    ModelCache::getInstance().registerModel(EModel::fence, new Model("resources/models/Fence/wood-fence/wood-fence.obj"));
+    
     int poi1TextureEnumIndex = static_cast<int>(ETexture::poi1);
     int poi8TextureEnumIndex = static_cast<int>(ETexture::poi8);
     for (int poiEnumIndex = poi1TextureEnumIndex; poiEnumIndex <= poi8TextureEnumIndex; poiEnumIndex++) {
