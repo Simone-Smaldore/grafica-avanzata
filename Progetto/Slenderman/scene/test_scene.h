@@ -1,11 +1,13 @@
 #pragma once
 
+#include <map>
 #include <unordered_set>
 #include <vector>
 
 #include <glm/glm.hpp>
 
 #include "../camera.h"
+#include "../collision_solver.h"
 #include "../constants.h"
 #include "../dynamic_map_renderable.h"
 #include "../floor.h"
@@ -16,6 +18,7 @@
 #include "../model_cache.h"
 #include "../texture_cache.h"
 #include "../renderable_poi.h"
+#include "../render_text.h"
 #include "../scene.h"
 #include "../shader_cache.h"
 #include "../slenderman.h"
@@ -27,6 +30,7 @@ private:
 
     Camera _camera;
     LightUtils _lightUtils;
+    CollisionSolver _collisionSolver;
     double _previousTime = 0.0;
 
     // { poiKIndex - poiTranslation }
@@ -69,7 +73,7 @@ void TestScene::init() {
     MapInitializer::addPOIRenderablesAndStreetLights(_poiInfo, _renderables);
 
     _renderables.push_back(new DynamicMapRenderable(DynamicEntity::tree, _tabooIndices));
-    _renderables.push_back(new Minimap());
+    _renderables.push_back(new Minimap(_poiInfo));
 }
 
 void TestScene::_processInput(const float& deltaTime) {

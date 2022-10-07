@@ -1,5 +1,11 @@
 #pragma once
 
+#include <map>
+#include <vector>
+
+#include "glm/glm.hpp"
+
+#include "constants.h"
 #include "renderable.h"
 #include "texture_cache.h"
 #include "shader_cache.h"
@@ -9,24 +15,39 @@ private:
     unsigned int _framebuffer;
     unsigned int _textureColorBuffer;
     unsigned int _minimapWoodVAO;
+    unsigned int _circleVAO;
     Shader* _minimapWoodShader;
+    Shader* _minimapCircleShader;
+
+    std::vector<glm::mat4> _circleTransforms;
 
     void _initMinimap();
-    void _buildMinimap();
+    void _initMinimapCircle();
+    void _buildMinimap(const Camera& camera);
 
 public:
-    Minimap();
+    Minimap(const std::map<int, glm::vec3>& poiInfo);
 
     virtual void render(const Camera& camera, const LightUtils& lightUtils) override;
 };
 
-Minimap::Minimap() {
+Minimap::Minimap(const std::map<int, glm::vec3>& poiInfo) {
+    for (auto poi : poiInfo) {
+        std::cout << poi.second.x << " " << poi.second.y << " " << poi.second.z << std::endl;
+        glm::mat4 transform = glm::mat4(1.0f);
+        transform = glm::translate(transform, glm::vec3(-poi.second.x / MAX_W_QUAD_MAP, poi.second.z / MAX_W_QUAD_MAP, 0.0f));
+        transform = glm::scale(transform, glm::vec3(0.03f, 0.03f, 0.03f));
+        _circleTransforms.push_back(transform);
+    }
+
     _texture = TextureCache::getInstance().findTexture(ETexture::minimap);
 
     _shader = ShaderCache::getInstance().findShader(EShader::minimap);
     _minimapWoodShader = ShaderCache::getInstance().findShader(EShader::minimapWood);
+    _minimapCircleShader = ShaderCache::getInstance().findShader(EShader::minimapCircle);
 
     _initMinimap();
+    _initMinimapCircle();
 }
 
 void Minimap::_initMinimap() {
@@ -110,7 +131,50 @@ void Minimap::_initMinimap() {
     _framebuffer = framebuffer;
 }
 
-void Minimap::_buildMinimap() {
+void Minimap::_initMinimapCircle() {
+    int steps = NUM_VERTICES_CIRCLE / 6;
+
+    float circleVertices[NUM_VERTICES_CIRCLE] = {};
+    float PI = 3.1416;
+    float angle = 2 * PI / steps;
+
+    float xPos = 0.0f;
+    float yPos = 0.0f;
+    float radius = 1.0f;
+
+    float prevX = xPos;
+    float prevY = yPos - radius;
+
+    for (int i = 1; i <= steps; i++) {
+        float newX = radius * (sin(angle * i));
+        float newY = -radius * (cos(angle * i));
+
+        int triangleIndex = (i - 1) * 6;
+        circleVertices[triangleIndex] = xPos;
+        circleVertices[triangleIndex + 1] = yPos;
+        circleVertices[triangleIndex + 2] = newX;
+        circleVertices[triangleIndex + 3] = newY;
+        circleVertices[triangleIndex + 4] = prevX;
+        circleVertices[triangleIndex + 5] = prevY;
+
+        prevX = newX;
+        prevY = newY;
+    }
+
+    unsigned int circleVAO;
+    unsigned int circleVBO;
+    glGenVertexArrays(1, &circleVAO);
+    glGenBuffers(1, &circleVBO);
+    glBindVertexArray(circleVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, circleVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(circleVertices), &circleVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+
+    _circleVAO = circleVAO;
+}
+
+void Minimap::_buildMinimap(const Camera& camera) {
     glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
     glDisable(GL_DEPTH_TEST);
     glClearColor(0.137f, 0.09f, 0.035f, 0.8f);
@@ -121,34 +185,28 @@ void Minimap::_buildMinimap() {
     glBindVertexArray(_minimapWoodVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    // nTODO: gestire i puntini sulla minimappa
-    /*circleMinimapShader.use();
-    glm::mat4 transform = glm::mat4(1.0f);
-    for (int i = 0; i < pointOfinterestTranslationVec.size(); i++) {
-        glm::vec3 poitv = pointOfinterestTranslationVec[i];
-        transform = glm::mat4(1.0f);
-        transform = glm::translate(transform, glm::vec3(-poitv.x / MAX_W_QUAD_MAP, poitv.z / MAX_W_QUAD_MAP, 0.0f));
-        transform = glm::scale(transform, glm::vec3(0.03f, 0.03f, 0.03f));
-        circleMinimapShader.setMat4("transform", transform);
-        circleMinimapShader.setVec3("circleColor", glm::vec3(1.0f, 0.8f, 0.0f));
-        glBindVertexArray(circleVAO);
+    _minimapCircleShader->use();
+    for (auto& const transform : _circleTransforms) {
+        _minimapCircleShader->setMat4("transform", transform);
+        _minimapCircleShader->setVec3("circleColor", glm::vec3(1.0f, 0.8f, 0.0f));
+        glBindVertexArray(_circleVAO);
         glDrawArrays(GL_TRIANGLES, 0, NUM_VERTICES_CIRCLE / 2);
     }
 
-    transform = glm::mat4(1.0f);
+    glm::mat4 transform = glm::mat4(1.0f);
     transform = glm::translate(transform, glm::vec3(-camera.Position.x / MAX_W_QUAD_MAP, camera.Position.z / MAX_W_QUAD_MAP, 0.0f));
     transform = glm::scale(transform, glm::vec3(0.04f, 0.04f, 0.04f));
-    circleMinimapShader.setMat4("transform", transform);
-    circleMinimapShader.setVec3("circleColor", glm::vec3(1.0f, 0.0f, 0.0f));
-    glBindVertexArray(circleVAO);
-    glDrawArrays(GL_TRIANGLES, 0, NUM_VERTICES_CIRCLE / 2);*/
+    _minimapCircleShader->setMat4("transform", transform);
+    _minimapCircleShader->setVec3("circleColor", glm::vec3(1.0f, 0.0f, 0.0f));
+    glBindVertexArray(_circleVAO);
+    glDrawArrays(GL_TRIANGLES, 0, NUM_VERTICES_CIRCLE / 2);
 
     glEnable(GL_DEPTH_TEST);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Minimap::render(const Camera& camera, const LightUtils& lightUtils) {
-    _buildMinimap();
+    _buildMinimap(camera);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDisable(GL_DEPTH_TEST);

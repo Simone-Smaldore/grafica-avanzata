@@ -12,7 +12,8 @@ enum class EShader {
     grass,
     poi,
     minimap,
-    minimapWood
+    minimapWood,
+    minimapCircle
 };
 
 class ShaderCache {

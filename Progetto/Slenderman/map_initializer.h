@@ -16,7 +16,7 @@ class MapInitializer {
 private:
     static bool _isGoodPOI(const int k, const std::map<int, glm::vec3>& poi, const int kMax, const int numVAOForSide);
 
-    static glm::mat4 _computePOITransformForModel(EModel model, const glm::vec3 poiTranslation);
+    static glm::mat4 _computePOITransformForModel(EModel model, const glm::vec3& poiTranslation);
 
 public:
     static std::map<int, glm::vec3> initPOI();
@@ -78,8 +78,8 @@ std::map<int, glm::vec3> MapInitializer::initPOI() {
     return poiMap;
 }
 
-glm::mat4 MapInitializer::_computePOITransformForModel(EModel model, const glm::vec3 poiTranslation) {
-    glm::mat4 transform = glm::mat4(1);
+glm::mat4 MapInitializer::_computePOITransformForModel(EModel model, const glm::vec3& poiTranslation) {
+    glm::mat4 transform = glm::mat4(1.0f);
 
     switch (model) {
     case EModel::poi1:
@@ -141,6 +141,7 @@ glm::mat4 MapInitializer::_computePOITransformForModel(EModel model, const glm::
 
 void MapInitializer::addPOIRenderablesAndStreetLights(const std::map<int, glm::vec3>& poiInfo, vector<Renderable*>& renderables) {
     int i = 0;
+    
     for (auto poi : poiInfo) {
 
         ETexture texture = static_cast<ETexture>(i + static_cast<int>(ETexture::poi1));

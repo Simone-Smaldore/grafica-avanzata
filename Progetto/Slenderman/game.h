@@ -10,6 +10,7 @@
 #include "model.h"
 #include "model_cache.h"
 #include "render_text.h"
+#include "scene.h"
 #include "scene/test_scene.h"
 #include "shader_m.h"
 #include "shader_cache.h"
@@ -51,6 +52,7 @@ void GameLoop::init() {
     ShaderCache::getInstance().registerShader(EShader::poi, new Shader("multiple_lights.vs", "multiple_lights.fs"));
     ShaderCache::getInstance().registerShader(EShader::minimap, new Shader("minimap_shader.vs", "minimap_shader.fs"));
     ShaderCache::getInstance().registerShader(EShader::minimapWood, new Shader("minimap_shader.vs", "minimap_shader.fs"));
+    ShaderCache::getInstance().registerShader(EShader::minimapCircle, new Shader("circle_minimap.vs", "circle_minimap.fs"));
 
     TextureCache::getInstance().registerTexture(ETexture::slenderMan, "resources/models/Slenderman/diffuse.png");
     TextureCache::getInstance().registerTexture(ETexture::floor, "resources/textures/floor/floor.jpg");
@@ -70,7 +72,7 @@ void GameLoop::init() {
         TextureCache::getInstance().registerTexture(static_cast<ETexture>(poiEnumIndex), texturePath.c_str());
     }
 
-    const vector<std::string> extensions = { ".dae", ".gltf", ".gltf", ".gltf", ".gltf", ".gltf", ".gltf", ".gltf", };
+    const vector<std::string> extensions = { ".dae", ".gltf", ".gltf", ".gltf", ".gltf", ".gltf", ".gltf", ".gltf" };
     int poi1ModelEnumIndex = static_cast<int>(EModel::poi1);
     int poi8ModelEnumIndex = static_cast<int>(EModel::poi8);
     for (int poiEnumIndex = poi1ModelEnumIndex; poiEnumIndex <= poi8ModelEnumIndex; poiEnumIndex++) {

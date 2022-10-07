@@ -36,7 +36,7 @@ protected:
 class InstancedModelRenderable : public Renderable {
 protected:
     Model* _model;
-    std::vector<glm::mat4*> _transforms;
+    std::vector<glm::mat4> _transforms;
 
     void _initUsingDynamicMapAlgorithm(const int quadSide, const int vaoObjectSide, const float offset, const glm::vec3& scaleMatrix, const bool useRandomOffset);
 };
@@ -79,8 +79,9 @@ unsigned int VAORenderable::_initRectVAO(const float dimension) {
 void InstancedModelRenderable::_initUsingDynamicMapAlgorithm(const int quadSide, const int vaoObjectSide, const float offset, const glm::vec3& scaleMatrix, const bool useRandomOffset) {
     int numVAO = (quadSide / vaoObjectSide) * (quadSide / vaoObjectSide);
     unsigned int amount = quadSide * quadSide;
+    vector<glm::mat4*> _transformMatrix;
     for (int k = 0; k < numVAO; k++)
-        _transforms.push_back(new glm::mat4[(amount / numVAO)]);
+        _transformMatrix.push_back(new glm::mat4[(amount / numVAO)]);
 
     srand(glfwGetTime());
 
@@ -112,12 +113,13 @@ void InstancedModelRenderable::_initUsingDynamicMapAlgorithm(const int quadSide,
             unsigned int vaoIndex = (vaoI * (quadSide / vaoObjectSide)) + vaoJ;
 
             unsigned int matrixIndex = ((i % vaoObjectSide) * vaoObjectSide) + (j % vaoObjectSide);
-            _transforms[vaoIndex][matrixIndex] = transform;
+            _transformMatrix[vaoIndex][matrixIndex] = transform;
+            _transforms.push_back(transform);
         }
     }
 
     for (int k = 0; k < numVAO; k++) {
-        glm::mat4* transform = _transforms[k];
+        glm::mat4* transform = _transformMatrix[k];
 
         unsigned int buffer;
         glGenBuffers(1, &buffer);
