@@ -9,6 +9,7 @@
 #include "constants.h"
 #include "model.h"
 #include "model_cache.h"
+#include "raudio/raudio.h"
 #include "render_text.h"
 #include "scene.h"
 #include "scene/test_scene.h"
@@ -22,6 +23,8 @@ private:
 
     GLFWwindow* _window;
     Scene* _currentScene;
+
+    Music backgroundMusic;
 
     void _renderFPS();
 
@@ -94,6 +97,12 @@ void GameLoop::init() {
         TextureCache::getInstance().registerTexture(static_cast<ETexture>(pageEnumIndex), texturePath.c_str());
     }
 
+    InitAudioDevice();
+
+    // nTODO: :) - Aggiungere AudioManager (singleton, gestisce rAudio)
+    backgroundMusic = LoadMusicStream("resources/sounds/creepy-music.mp3");
+    PlayMusicStream(backgroundMusic);
+
     _currentScene->init();
 }
 
@@ -119,6 +128,10 @@ void GameLoop::process() {
 
         glfwSwapBuffers(_window);
         glfwPollEvents();
+
+        UpdateMusicStream(backgroundMusic);
+        if (GetMusicTimePlayed(backgroundMusic) > GetMusicTimeLength(backgroundMusic))
+            SeekMusicStream(backgroundMusic, 0);
     }
 }
 
@@ -129,6 +142,9 @@ void GameLoop::destroy() {
     ModelCache::getInstance().clear();
     ShaderCache::getInstance().clear();
     TextureCache::getInstance().clear();
+
+    UnloadMusicStream(backgroundMusic);
+    CloseAudioDevice();
 }
 
 void GameLoop::_renderFPS() {
