@@ -22,6 +22,7 @@ public:
 
     inline void setFramed(bool framed);
 
+    inline bool isCollected();
     inline void setCollected(bool collected);
 
     inline const glm::vec3& getRelatedPOITranslation() const;
@@ -53,6 +54,10 @@ Page::Page(ETexture texture, glm::vec3 poiTranslation) {
 
 void Page::setFramed(bool framed) {
     _framed = framed;
+}
+
+inline bool Page::isCollected() {
+    return _collected;
 }
 
 void Page::setCollected(bool collected) {

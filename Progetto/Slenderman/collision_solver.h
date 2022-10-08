@@ -22,20 +22,22 @@ class CollisionSolver {
 private:
     static const int kCells = 250;
 
-    map<pair<int, int>, vector<aabb>> _registeredAABBs;
+    map<pair<int, int>, std::vector<aabb>> _registeredAABBs;
 
     inline pair<int, int> _hash(int x, int y) const;
 
     inline glm::ivec2 _indices(const glm::vec3& vector) const;
 
-    inline vector<glm::ivec2> _indices(const aabb& staticAABB) const;
+    inline std::vector<glm::ivec2> _indices(const aabb& staticAABB) const;
 
     void _processCollision(CollisionResult& collisionResult, const Camera& camera, const aabb& staticAABB, const float& maxDistance = 5.0f) const;
 
 public:
     void registerAABB(aabb staticAABB);
 
-    const vector<aabb>& registeredAABBNear(const glm::vec3& vector) const;
+    void registerAABBs(const std::vector<aabb>& staticAABBs);
+
+    std::vector<aabb> registeredAABBNear(const glm::vec3& vector) const;
 
     CollisionResult checkCollision(const Camera& camera, aabb& staticAABB, const float& maxDistance = 5.0f) const;
 
@@ -50,8 +52,8 @@ inline glm::ivec2 CollisionSolver::_indices(const glm::vec3& vector) const {
     return glm::ivec2(static_cast<int>(ceil(vector.x / kCells)), static_cast<int>(ceil(vector.z / kCells)));
 }
 
-inline vector<glm::ivec2> CollisionSolver::_indices(const aabb& staticAABB) const {
-    return vector<glm::ivec2>({ _indices(staticAABB.min), _indices(staticAABB.max) });
+inline std::vector<glm::ivec2> CollisionSolver::_indices(const aabb& staticAABB) const {
+    return std::vector<glm::ivec2>({ _indices(staticAABB.min), _indices(staticAABB.max) });
 }
 
 void CollisionSolver::registerAABB(aabb staticAABB) {
@@ -64,10 +66,16 @@ void CollisionSolver::registerAABB(aabb staticAABB) {
     }
 }
 
-const vector<aabb>& CollisionSolver::registeredAABBNear(const glm::vec3& vector) const {
+void CollisionSolver::registerAABBs(const std::vector<aabb>& staticAABBs) {
+    for (auto staticAABB : staticAABBs)
+        registerAABB(staticAABB);
+}
+
+std::vector<aabb> CollisionSolver::registeredAABBNear(const glm::vec3& vector) const {
     auto indices = _indices(vector);
     auto hash = _hash(indices.x, indices.y);
-    return _registeredAABBs.find(hash)->second;
+    auto registeredAABBs = _registeredAABBs.find(hash);
+    return registeredAABBs == _registeredAABBs.end() ? std::vector<aabb>() : registeredAABBs->second;
 }
 
 CollisionResult CollisionSolver::checkCollision(const Camera& camera, aabb& staticAABB, const float& maxDistance) const {

@@ -7,6 +7,7 @@
 
 #include "glm/glm.hpp"
 
+#include "collision_solver.h"
 #include "constants.h"
 #include "model_cache.h"
 #include "page.h"
@@ -23,7 +24,7 @@ private:
 public:
     static std::map<int, glm::vec3> initPOI();
 
-    static void addPOIRenderablesAndStreetLights(const std::map<int, glm::vec3>& poiInfo, std::vector<Page*>& pages, vector<Renderable*>& renderables);
+    static void addPOIRenderablesAndStreetLights(const std::map<int, glm::vec3>& poiInfo, std::vector<Page*>& pages, vector<Renderable*>& renderables, CollisionSolver& collisionSolver);
 };
 
 bool MapInitializer::_isGoodPOI(const int k, const std::map<int, glm::vec3>& poi, const int kMax, const int numVAOForSide) {
@@ -141,7 +142,7 @@ glm::mat4 MapInitializer::_computePOITransformForModel(EModel model, const glm::
     return transform;
 }
 
-void MapInitializer::addPOIRenderablesAndStreetLights(const std::map<int, glm::vec3>& poiInfo, std::vector<Page*>& pages, vector<Renderable*>& renderables) {
+void MapInitializer::addPOIRenderablesAndStreetLights(const std::map<int, glm::vec3>& poiInfo, std::vector<Page*>& pages, vector<Renderable*>& renderables, CollisionSolver& collisionSolver) {
     int i = 0;
     
     for (auto poi : poiInfo) {
@@ -149,7 +150,9 @@ void MapInitializer::addPOIRenderablesAndStreetLights(const std::map<int, glm::v
         EModel model = static_cast<EModel>(i + static_cast<int>(EModel::poi1));
 
         glm::mat4 poiTransform = _computePOITransformForModel(model, poi.second);
-        renderables.push_back(new RenderablePOI(texture, model, poiTransform));
+        RenderablePOI* renderablePOI = new RenderablePOI(texture, model, poiTransform);
+        renderables.push_back(renderablePOI);
+        collisionSolver.registerAABB(renderablePOI->toAABB());
 
         glm::mat4 transform = glm::mat4(1.0f);
         transform = glm::translate(transform, glm::vec3(STREETLIGHT_POI_OFFSET, 0.0f, STREETLIGHT_POI_OFFSET));

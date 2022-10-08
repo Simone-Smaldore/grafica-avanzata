@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdexcept>
 #include <unordered_set>
 #include <vector>
 
@@ -20,24 +21,26 @@ enum class DynamicEntity {
 class DynamicMapRenderable : public InstancedModelRenderable {
 private:
     const DynamicEntity _entity;
-    const unordered_set<int>* _tabooIndices;
+    const unordered_set<int> _tabooIndices;
 
 private:
     vector<int> getVaoIndexesFromCamera(const Camera& camera, const float offset, const int quadSide, const int vaoObjectSide) const;
     void renderDynamicMap(const vector<int>& VAOIndexes, const int quadSide, const int vaoObjectSide) const;
 
 public:
-    DynamicMapRenderable(const DynamicEntity entity, const unordered_set<int>* tabooIndices = nullptr);
+    DynamicMapRenderable(const DynamicEntity entity, const unordered_set<int> tabooIndices = { });
+
+    inline std::vector<aabb> toAABBs() const;
 
     virtual void render(const Camera& camera, const LightUtils& lightUtils) override;
 };
 
-DynamicMapRenderable::DynamicMapRenderable(const DynamicEntity entity, const unordered_set<int>* tabooIndices) : _entity(entity), _tabooIndices(tabooIndices) {
+DynamicMapRenderable::DynamicMapRenderable(const DynamicEntity entity, const unordered_set<int> tabooIndices) : _entity(entity), _tabooIndices(tabooIndices) {
     switch (_entity) {
     case DynamicEntity::tree:
         _model = ModelCache::getInstance().findModel(EModel::tree);
         _shader = ShaderCache::getInstance().findShader(EShader::tree);
-        _initUsingDynamicMapAlgorithm(TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_TREE, TREE_OFFSET, glm::vec3(0.08f, 0.08f, 0.08f), false);
+        _initUsingDynamicMapAlgorithm(TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_TREE, TREE_OFFSET, glm::vec3(0.08f, 0.08f, 0.08f), false, tabooIndices);
         break;
     case DynamicEntity::grass:
         _model = ModelCache::getInstance().findModel(EModel::grass);
@@ -85,7 +88,7 @@ void DynamicMapRenderable::renderDynamicMap(const vector<int>& VAOIndexes, const
 
     for (unsigned int k = 0; k < VAOIndexes.size(); k++) {
         int vaoIndex = std::max(VAOIndexes[k], 0);
-        if (_tabooIndices != nullptr && _tabooIndices->find(vaoIndex) != _tabooIndices->end())
+        if (_tabooIndices.find(vaoIndex) != _tabooIndices.end())
             continue;
         for (unsigned int i = 0; i < _model->meshes.size(); i++) {
             for (unsigned int j = 0; j < _model->meshes[i].textures.size(); j++) {
@@ -99,6 +102,20 @@ void DynamicMapRenderable::renderDynamicMap(const vector<int>& VAOIndexes, const
             glBindVertexArray(0);
         }
     }
+}
+
+std::vector<aabb> DynamicMapRenderable::toAABBs() const {
+    if (_entity == DynamicEntity::grass)
+        throw std::runtime_error("Cannot compute grass AABBs");
+
+    std::vector<aabb> result;
+    for (auto transform : _transforms) {
+        // nTODO: Eliminare centroidi magici?
+        auto aabbs = aabb::fromCompoundModel(*(_model), { glm::vec3(18.0f, 0.0f, -31.0f), glm::vec3(-246.0f, 0.0f, 280.0f), glm::vec3(59.0f, 0.0f, 311.0f) }, transform);
+        result.insert(result.end(), aabbs.begin(), aabbs.end());
+    }
+
+    return result;
 }
 
 void DynamicMapRenderable::render(const Camera& camera, const LightUtils& lightUtils) {

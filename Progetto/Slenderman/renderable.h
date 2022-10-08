@@ -31,6 +31,11 @@ class ModelRenderable : public Renderable {
 protected:
     Model* _model;
     glm::mat4 _transform;
+
+public:
+    inline const Model* model() const { return _model; }
+
+    inline const glm::mat4& transform() const { return _transform; }
 };
 
 class InstancedModelRenderable : public Renderable {
@@ -38,7 +43,7 @@ protected:
     Model* _model;
     std::vector<glm::mat4> _transforms;
 
-    void _initUsingDynamicMapAlgorithm(const int quadSide, const int vaoObjectSide, const float offset, const glm::vec3& scaleMatrix, const bool useRandomOffset);
+    void _initUsingDynamicMapAlgorithm(const int quadSide, const int vaoObjectSide, const float offset, const glm::vec3& scaleMatrix, const bool useRandomOffset, const std::unordered_set<int>& tabooIndices = { });
 };
 
 unsigned int VAORenderable::_initRectVAO(const float dimension) {
@@ -76,10 +81,10 @@ unsigned int VAORenderable::_initRectVAO(const float dimension) {
     return rectVAO;
 }
 
-void InstancedModelRenderable::_initUsingDynamicMapAlgorithm(const int quadSide, const int vaoObjectSide, const float offset, const glm::vec3& scaleMatrix, const bool useRandomOffset) {
+void InstancedModelRenderable::_initUsingDynamicMapAlgorithm(const int quadSide, const int vaoObjectSide, const float offset, const glm::vec3& scaleMatrix, const bool useRandomOffset, const std::unordered_set<int>& tabooIndices) {
     int numVAO = (quadSide / vaoObjectSide) * (quadSide / vaoObjectSide);
     unsigned int amount = quadSide * quadSide;
-    vector<glm::mat4*> _transformMatrix;
+    std::vector<glm::mat4*> _transformMatrix;
     for (int k = 0; k < numVAO; k++)
         _transformMatrix.push_back(new glm::mat4[(amount / numVAO)]);
 
@@ -113,8 +118,11 @@ void InstancedModelRenderable::_initUsingDynamicMapAlgorithm(const int quadSide,
             unsigned int vaoIndex = (vaoI * (quadSide / vaoObjectSide)) + vaoJ;
 
             unsigned int matrixIndex = ((i % vaoObjectSide) * vaoObjectSide) + (j % vaoObjectSide);
+            if (tabooIndices.find(vaoIndex) == tabooIndices.end()) {
+                _transforms.push_back(transform);
+            }
+
             _transformMatrix[vaoIndex][matrixIndex] = transform;
-            _transforms.push_back(transform);
         }
     }
 

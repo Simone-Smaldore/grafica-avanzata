@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <string>
 #include <unordered_set>
 #include <vector>
 
@@ -33,7 +34,11 @@ private:
     LightUtils _lightUtils;
     CollisionSolver _collisionSolver;
     double _previousTime = 0.0;
+
     Page* _pageFramed = nullptr;
+    int _collectedPages = 0;
+    double _pageCollectedTime = 0.0;
+    std::string _collectedPageMessage;
 
     // { poiKIndex - poiTranslation }
     std::map<int, glm::vec3> _poiInfo;
@@ -42,7 +47,7 @@ private:
     SlenderMan* _slenderMan;
     vector<Page*> _pages;
 
-    void _processInput(const float& deltaTime);
+    void _processInput(const float& deltaTime, const CollisionResult& collisionResult);
     void _findFramedPage();
 
 public:
@@ -67,33 +72,36 @@ void TestScene::init() {
 
     _renderables.push_back(new DynamicMapRenderable(DynamicEntity::grass));
 
-    _tabooIndices = new unordered_set<int>();
+    unordered_set<int> tabooIndices = unordered_set<int>();
     for (int index : K_SET_TO_EXCLUDE)
-        _tabooIndices->insert(index);
+        tabooIndices.insert(index);
 
     for (auto poi : _poiInfo)
-        _tabooIndices->insert(poi.first);
+        tabooIndices.insert(poi.first);
 
-    MapInitializer::addPOIRenderablesAndStreetLights(_poiInfo, _pages, _renderables);
+    MapInitializer::addPOIRenderablesAndStreetLights(_poiInfo, _pages, _renderables, _collisionSolver);
 
-    _renderables.push_back(new DynamicMapRenderable(DynamicEntity::tree, _tabooIndices));
+    DynamicMapRenderable* forest = new DynamicMapRenderable(DynamicEntity::tree, tabooIndices);
+    _renderables.push_back(forest);
+    _collisionSolver.registerAABBs(forest->toAABBs());
+
     _renderables.push_back(new Fence());
     _renderables.push_back(new Minimap(_poiInfo));
 }
 
-void TestScene::_processInput(const float& deltaTime) {
+void TestScene::_processInput(const float& deltaTime, const CollisionResult& collisionResult) {
     if (InputManager::isKeyPressed(GLFW_KEY_ESCAPE)) {
         glfwSetWindowShouldClose(_window, true);
         return;
     }
 
-    if (InputManager::isKeyPressed(GLFW_KEY_W) /*&& !collisionResult.n*/)
+    if (InputManager::isKeyPressed(GLFW_KEY_W) &&!collisionResult.n)
         _camera.ProcessKeyboard(FORWARD, deltaTime);
-    if (InputManager::isKeyPressed(GLFW_KEY_S) /*&& !collisionResult.s*/)
+    if (InputManager::isKeyPressed(GLFW_KEY_S) && !collisionResult.s)
         _camera.ProcessKeyboard(BACKWARD, deltaTime);
-    if (InputManager::isKeyPressed(GLFW_KEY_A) /*&& !collisionResult.w*/)
+    if (InputManager::isKeyPressed(GLFW_KEY_A) && !collisionResult.w)
         _camera.ProcessKeyboard(LEFT, deltaTime);
-    if (InputManager::isKeyPressed(GLFW_KEY_D) /*&& !collisionResult.e*/)
+    if (InputManager::isKeyPressed(GLFW_KEY_D) && !collisionResult.e)
         _camera.ProcessKeyboard(RIGHT, deltaTime);
 
     if (InputManager::isKeyPressed(GLFW_KEY_F)) {
@@ -104,9 +112,16 @@ void TestScene::_processInput(const float& deltaTime) {
         }
     }
 
-    if (InputManager::isLeftMouseButtonPressed() && _pageFramed != nullptr) {
+    if (InputManager::isLeftMouseButtonPressed() && _pageFramed != nullptr && !_pageFramed->isCollected()) {
         _pageFramed->setCollected(true);
-        // nTODO: Aumentare il numero di pagine collezionate / messaggio pagina collezionata
+        _collectedPages++;
+        _pageCollectedTime = glfwGetTime();
+
+        std::stringstream ssPageInfo;
+        ssPageInfo << "Collected Page: " << _collectedPages << "/" << NUM_PAGES;
+        _collectedPageMessage = ssPageInfo.str();
+
+        // nTODO: Vittoria
     }
 }
 
@@ -139,12 +154,16 @@ void TestScene::_findFramedPage() {
 }
 
 void TestScene::process(const float& deltaTime) {
-    _processInput(deltaTime);
+    CollisionResult collisionResult = _collisionSolver.checkCollisionWithRegisteredAABBs(_camera, fmaxf(5.0f, (deltaTime * _camera.MovementSpeed) + 0.5f));
+    _processInput(deltaTime, collisionResult);
 
     _findFramedPage();
 
     for (auto renderable : _renderables)
         renderable->render(_camera, _lightUtils);
+
+    if (!_collectedPageMessage.empty() && _pageCollectedTime + PAGE_COLLECTED_MESSAGE_SECONDS > glfwGetTime())
+        RenderText(_collectedPageMessage, (SCR_WIDTH / 2) - 150.0f, SCR_HEIGHT - 200.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void TestScene::destroy() {
