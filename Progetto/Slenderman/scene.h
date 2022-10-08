@@ -1,6 +1,7 @@
 #pragma once
 
 #include "camera.h"
+#include "input_manager.h"
 
 class Scene {
 public:
@@ -12,6 +13,45 @@ public:
 
     inline virtual Camera* currentCamera() = 0;
 };
+
+class NullScene : public Scene {
+    virtual void init() { };
+
+    virtual void process(const float& deltaTime) override { };
+
+    virtual void destroy() override { };
+
+    inline virtual Camera* currentCamera() override { return nullptr; };
+};
+
+class SceneManager {
+private:
+    NullScene* _nullScene = new NullScene();
+
+    Scene* _currentScene = _nullScene;
+
+public:
+    inline Scene* currentScene() const;
+
+    void changeScene(Scene* scene);
+};
+
+Scene* SceneManager::currentScene() const {
+    return _currentScene;
+}
+
+void SceneManager::changeScene(Scene* scene) {
+    Scene* previousScene = _currentScene;
+    _currentScene = _nullScene;
+
+    previousScene->destroy();
+    if (previousScene != _nullScene)
+        delete previousScene;
+
+    _currentScene = scene;
+    InputManager::bindCamera(_currentScene->currentCamera());
+}
+
 //#include "constants.h"
 //#include <time.h>
 //

@@ -30,6 +30,7 @@ enum class ETexture {
     page6,
     page7,
     page8,
+    loading
 };
 
 class TextureCache {

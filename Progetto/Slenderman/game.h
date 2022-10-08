@@ -11,18 +11,20 @@
 #include "model_cache.h"
 #include "raudio/raudio.h"
 #include "render_text.h"
-#include "scene.h"
+#include "scene/loading_scene.h"
 #include "scene/test_scene.h"
 #include "shader_m.h"
 #include "shader_cache.h"
 #include "texture_cache.h"
+
+class Scene;
 
 class GameLoop {
 private:
     FpsManager _fpsManager;
 
     GLFWwindow* _window;
-    Scene* _currentScene;
+    SceneManager* _sceneManager;
 
     Music backgroundMusic;
 
@@ -39,63 +41,12 @@ public:
 };
 
 void GameLoop::init() {
-    _currentScene = new TestScene();
-    InputManager::init(_window, _currentScene->currentCamera());
+    _sceneManager = new SceneManager();
+    _sceneManager->changeScene(new LoadingScene(_sceneManager, _window));
 
-    initRenderText(SCR_WIDTH, SCR_HEIGHT);
+    InputManager::init(_window, _sceneManager->currentScene()->currentCamera());
 
     glEnable(GL_DEPTH_TEST);
-
-    // nTODO gli Shader / Texture / Modelli possono essere caricati separatamente in una scena "Loading"
-    ShaderCache::getInstance().registerShader(EShader::slenderMan, new Shader("multiple_lights.vs", "multiple_lights.fs"));
-    ShaderCache::getInstance().registerShader(EShader::floor, new Shader("multiple_lights.vs", "multiple_lights.fs"));
-    ShaderCache::getInstance().registerShader(EShader::streetLight, new Shader("multiple_lights.vs", "streetlight_shader.fs"));
-    ShaderCache::getInstance().registerShader(EShader::tree, new Shader("multiple_lights_instancing.vs", "multiple_lights.fs"));
-    ShaderCache::getInstance().registerShader(EShader::grass, new Shader("multiple_lights_instancing.vs", "multiple_lights.fs"));
-    ShaderCache::getInstance().registerShader(EShader::poi, new Shader("multiple_lights.vs", "multiple_lights.fs"));
-    ShaderCache::getInstance().registerShader(EShader::minimap, new Shader("minimap_shader.vs", "minimap_shader.fs"));
-    ShaderCache::getInstance().registerShader(EShader::minimapWood, new Shader("minimap_shader.vs", "minimap_shader.fs"));
-    ShaderCache::getInstance().registerShader(EShader::minimapCircle, new Shader("circle_minimap.vs", "circle_minimap.fs"));
-    ShaderCache::getInstance().registerShader(EShader::fence, new Shader("multiple_lights_instancing.vs", "multiple_lights.fs"));
-    ShaderCache::getInstance().registerShader(EShader::page, new Shader("multiple_lights.vs", "multiple_lights.fs"));
-    ShaderCache::getInstance().registerShader(EShader::singleColor, new Shader("stencil_single_color.vs", "stencil_single_color.fs"));
-
-    TextureCache::getInstance().registerTexture(ETexture::slenderMan, "resources/models/Slenderman/diffuse.png");
-    TextureCache::getInstance().registerTexture(ETexture::floor, "resources/textures/floor/floor.jpg");
-    TextureCache::getInstance().registerTexture(ETexture::streetLight, "resources/models/Streetlight/streetlight_default_color.tga.png");
-    TextureCache::getInstance().registerTexture(ETexture::minimap, "resources/textures/minimappa/bosco_dark2.jpg");
-    TextureCache::getInstance().registerTexture(ETexture::fence, "resources/models/Fence/wood-fence/textura_cerca_de_madeira_COLOR.png");
-
-    ModelCache::getInstance().registerModel(EModel::slenderMan, new Model("resources/models/Slenderman/Slenderman.obj"));
-    ModelCache::getInstance().registerModel(EModel::streetLight, new Model("resources/models/Streetlight/streetlight.obj"));
-    ModelCache::getInstance().registerModel(EModel::tree, new Model("resources/models/Tree/oaktrees.obj"));
-    ModelCache::getInstance().registerModel(EModel::grass, new Model("resources/models/Grass/scene.gltf"));
-    ModelCache::getInstance().registerModel(EModel::fence, new Model("resources/models/Fence/wood-fence/wood-fence.obj"));
-    
-    int poi1TextureEnumIndex = static_cast<int>(ETexture::poi1);
-    int poi8TextureEnumIndex = static_cast<int>(ETexture::poi8);
-    for (int poiEnumIndex = poi1TextureEnumIndex; poiEnumIndex <= poi8TextureEnumIndex; poiEnumIndex++) {
-        int poiIndex = (poiEnumIndex - poi1TextureEnumIndex) + 1;
-        std::string texturePath = "resources/models/Points of interest/" + std::to_string(poiIndex) + "/" + std::to_string(poiIndex) + ".jpg";
-        TextureCache::getInstance().registerTexture(static_cast<ETexture>(poiEnumIndex), texturePath.c_str());
-    }
-
-    const vector<std::string> extensions = { ".dae", ".gltf", ".gltf", ".gltf", ".gltf", ".gltf", ".gltf", ".gltf" };
-    int poi1ModelEnumIndex = static_cast<int>(EModel::poi1);
-    int poi8ModelEnumIndex = static_cast<int>(EModel::poi8);
-    for (int poiEnumIndex = poi1ModelEnumIndex; poiEnumIndex <= poi8ModelEnumIndex; poiEnumIndex++) {
-        int poiIndex = (poiEnumIndex - poi1ModelEnumIndex) + 1;
-        std::string modelPath = "resources/models/Points of interest/" + std::to_string(poiIndex) + "/" + std::to_string(poiIndex) + extensions[poiIndex - 1];
-        ModelCache::getInstance().registerModel(static_cast<EModel>(poiEnumIndex), new Model(modelPath));
-    }
-
-    int page1TextureEnumIndex = static_cast<int>(ETexture::page1);
-    int page8TextureEnumIndex = static_cast<int>(ETexture::page8);
-    for (int pageEnumIndex = page1TextureEnumIndex; pageEnumIndex <= page8TextureEnumIndex; pageEnumIndex++) {
-        int pageIndex = (pageEnumIndex - page1TextureEnumIndex) + 1;
-        std::string texturePath = "resources/textures/Pages/page_" + std::to_string(pageIndex) + ".jpg";;
-        TextureCache::getInstance().registerTexture(static_cast<ETexture>(pageEnumIndex), texturePath.c_str());
-    }
 
     InitAudioDevice();
 
@@ -103,7 +54,7 @@ void GameLoop::init() {
     backgroundMusic = LoadMusicStream("resources/sounds/creepy-music.mp3");
     PlayMusicStream(backgroundMusic);
 
-    _currentScene->init();
+    _sceneManager->currentScene()->init();
 }
 
 void GameLoop::process() {
@@ -124,7 +75,7 @@ void GameLoop::process() {
 
         _renderFPS();
 
-        _currentScene->process(deltaTime);
+        _sceneManager->currentScene()->process(deltaTime);
 
         glfwSwapBuffers(_window);
         glfwPollEvents();
@@ -136,8 +87,9 @@ void GameLoop::process() {
 }
 
 void GameLoop::destroy() {
-    _currentScene->destroy();
-    delete _currentScene;
+    _sceneManager->currentScene()->destroy();
+    delete _sceneManager->currentScene();
+    delete _sceneManager;
 
     ModelCache::getInstance().clear();
     ShaderCache::getInstance().clear();

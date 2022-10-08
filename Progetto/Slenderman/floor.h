@@ -12,7 +12,7 @@ public:
     virtual void render(const Camera& camera, const LightUtils& lightUtils) override;
 };
 
-Floor::Floor(){
+Floor::Floor() {
     _shader = ShaderCache::getInstance().findShader(EShader::floor);
     _VAO = VAORenderable::_initRectVAO(2000.0f);
     _texture = TextureCache::getInstance().findTexture(ETexture::floor);
@@ -28,12 +28,12 @@ void Floor::render(const Camera& camera, const LightUtils& lightUtils) {
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, _texture);
-    
+
     _shader->setMat4("model", _transform);
     // nTODO: view e projection possono essere calcolati una sola volta all'inizio del frame
     _shader->setMat4("view", camera.GetViewMatrix());
     _shader->setMat4("projection", camera.GetProjection());
-    
+
     glBindVertexArray(_VAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }

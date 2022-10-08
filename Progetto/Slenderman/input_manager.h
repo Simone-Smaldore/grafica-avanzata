@@ -18,6 +18,8 @@ private:
 
 public:
     static void init(GLFWwindow* window, Camera* camera);
+
+    inline static void bindCamera(Camera* camera);
     
     inline static bool isKeyPressed(int key);
 
@@ -33,6 +35,10 @@ void InputManager::init(GLFWwindow* window, Camera* camera) {
     _camera = camera;
 
     glfwSetCursorPosCallback(window, InputManager::processMouse);
+}
+
+inline void InputManager::bindCamera(Camera* camera) {
+    _camera = camera;
 }
 
 void InputManager::processMouse(GLFWwindow* window, double xPos, double yPos) {

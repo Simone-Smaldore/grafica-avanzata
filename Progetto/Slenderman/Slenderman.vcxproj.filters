@@ -185,5 +185,8 @@
     <ClInclude Include="page.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="scene\loading_scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

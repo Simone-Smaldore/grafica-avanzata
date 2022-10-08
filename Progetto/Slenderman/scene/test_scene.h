@@ -26,8 +26,13 @@
 #include "../slenderman.h"
 #include "../street_light.h"
 
+typedef void (*initInfoCallback)(std::string info);
+
 class TestScene : public Scene {
 private:
+    SceneManager* _sceneManager;
+    initInfoCallback _infoCallback = nullptr;
+
     vector<Renderable*> _renderables;
 
     Camera _camera;
@@ -47,10 +52,14 @@ private:
     SlenderMan* _slenderMan;
     vector<Page*> _pages;
 
+    void _updateInitInfo(std::string info);
+
     void _processInput(const float& deltaTime, const CollisionResult& collisionResult);
     void _findFramedPage();
 
 public:
+    TestScene(SceneManager* sceneManager, initInfoCallback infoCallback = nullptr) : _sceneManager{ sceneManager }, _infoCallback{ infoCallback } {}
+
     virtual void init() override;
 
     virtual void process(const float& deltaTime) override;
@@ -60,7 +69,13 @@ public:
     inline virtual Camera* currentCamera() override;
 };
 
+void TestScene::_updateInitInfo(std::string info) {
+    if (_infoCallback != nullptr)
+        _infoCallback(info);
+}
+
 void TestScene::init() {
+    _updateInitInfo("Generating POI...");
     _poiInfo = MapInitializer::initPOI();
 
     _lightUtils = LightUtils(_poiInfo);
@@ -70,6 +85,7 @@ void TestScene::init() {
     _slenderMan = new SlenderMan();
     _renderables.push_back(_slenderMan);
 
+    _updateInitInfo("Generating random map...");
     _renderables.push_back(new DynamicMapRenderable(DynamicEntity::grass));
 
     unordered_set<int> tabooIndices = unordered_set<int>();
@@ -81,6 +97,7 @@ void TestScene::init() {
 
     MapInitializer::addPOIRenderablesAndStreetLights(_poiInfo, _pages, _renderables, _collisionSolver);
 
+    _updateInitInfo("Generating random forest...");
     DynamicMapRenderable* forest = new DynamicMapRenderable(DynamicEntity::tree, tabooIndices);
     _renderables.push_back(forest);
     _collisionSolver.registerAABBs(forest->toAABBs());
@@ -95,7 +112,7 @@ void TestScene::_processInput(const float& deltaTime, const CollisionResult& col
         return;
     }
 
-    if (InputManager::isKeyPressed(GLFW_KEY_W) &&!collisionResult.n)
+    if (InputManager::isKeyPressed(GLFW_KEY_W) && !collisionResult.n)
         _camera.ProcessKeyboard(FORWARD, deltaTime);
     if (InputManager::isKeyPressed(GLFW_KEY_S) && !collisionResult.s)
         _camera.ProcessKeyboard(BACKWARD, deltaTime);

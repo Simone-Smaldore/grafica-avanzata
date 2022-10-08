@@ -158,7 +158,9 @@ void MapInitializer::addPOIRenderablesAndStreetLights(const std::map<int, glm::v
         transform = glm::translate(transform, glm::vec3(STREETLIGHT_POI_OFFSET, 0.0f, STREETLIGHT_POI_OFFSET));
         transform = glm::translate(transform, poi.second);
         transform = glm::scale(transform, glm::vec3(0.015f, 0.015f, 0.015f));
-        renderables.push_back(new StreetLight(transform));
+        StreetLight* streetLight = new StreetLight(transform);
+        renderables.push_back(streetLight);
+        collisionSolver.registerAABB(streetLight->toAABB());
 
         ETexture pageTexture = static_cast<ETexture>(i + static_cast<int>(ETexture::page1));
         Page* page = new Page(pageTexture, poi.second);

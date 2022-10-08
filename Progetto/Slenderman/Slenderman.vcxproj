@@ -215,6 +215,7 @@
     <ClInclude Include="renderer.h" />
     <ClInclude Include="render_text.h" />
     <ClInclude Include="scene.h" />
+    <ClInclude Include="scene\loading_scene.h" />
     <ClInclude Include="scene\test_scene.h" />
     <ClInclude Include="shader_cache.h" />
     <ClInclude Include="shader_m.h" />
