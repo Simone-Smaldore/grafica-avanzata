@@ -95,7 +95,6 @@ void TestScene::init() {
     for (auto poi : _poiInfo)
         tabooIndices.insert(poi.first);
 
-    MapInitializer::addPOIRenderablesAndStreetLights(_poiInfo, _pages, _renderables, _collisionSolver);
 
     _updateInitInfo("Generating random forest...");
     DynamicMapRenderable* forest = new DynamicMapRenderable(DynamicEntity::tree, tabooIndices);
@@ -103,6 +102,8 @@ void TestScene::init() {
     _collisionSolver.registerAABBs(forest->toAABBs());
 
     _renderables.push_back(new Fence());
+
+    MapInitializer::addPOIRenderablesAndStreetLights(_poiInfo, _pages, _renderables, _collisionSolver);
     _renderables.push_back(new Minimap(_poiInfo));
 }
 

@@ -80,7 +80,7 @@ void GameLoop::process() {
         glfwSwapBuffers(_window);
         glfwPollEvents();
 
-        UpdateMusicStream(backgroundMusic);
+        //UpdateMusicStream(backgroundMusic);
         if (GetMusicTimePlayed(backgroundMusic) > GetMusicTimeLength(backgroundMusic))
             SeekMusicStream(backgroundMusic, 0);
     }
