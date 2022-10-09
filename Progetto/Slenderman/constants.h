@@ -36,6 +36,11 @@ const std::unordered_set<int> K_SET_TO_EXCLUDE = { 300 };
 // Indica l'offset che ha il lampione lungo x e lungo z dal centro del VAO
 const float STREETLIGHT_POI_OFFSET = 10.0f;
 
+const float MAX_PLAYER_DISTANCE_FRONT = -1340.0f;
+const float MAX_PLAYER_DISTANCE_BACK = 1340.0f;
+const float MAX_PLAYER_DISTANCE_RIGHT = 1330.0f;
+const float MAX_PLAYER_DISTANCE_LEFT = -1350.0f;
+
 // COSTANTI PER LA COLLEZIONE DELLE PAGINE
 // -------------------------------------------------------------------------------------------
 const float Z_V_MIN_PAGE = -0.35f;

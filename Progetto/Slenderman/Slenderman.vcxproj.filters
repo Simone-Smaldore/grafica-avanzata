@@ -188,5 +188,8 @@
     <ClInclude Include="scene\loading_scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="renderable_aabb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

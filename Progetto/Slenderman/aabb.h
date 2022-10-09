@@ -2,6 +2,7 @@
 
 #include "glm/glm.hpp"
 
+#include "collision_solver.h"
 #include "model.h"
 #include "ray.h"
 #include "vertex_clusterer.h"
@@ -36,11 +37,11 @@ public:
 
     bool intersectRay2D(const ray& ray, const float& maxDistance = 5.0f) const;
 
-    unsigned int bindToVAO();
-
-    inline unsigned int vao() const { return _vao; }
-
     inline bool hasIntersection() const { return _hasIntersection; }
+
+    inline glm::vec3 getMin() const { return min; }
+
+    inline glm::vec3 getMax() const { return max; }
 };
 
 void aabb::_updateWithVertex(const Vertex& vertex, glm::vec3& min, glm::vec3& max) {
@@ -112,7 +113,7 @@ vector<aabb> aabb::fromCompoundModel(const Model& model, const vector<glm::vec3>
     vector<aabb> result;
 
     SimpleVertexClusterer simpleVertexClusterer(centroids);
-    auto clusters = simpleVertexClusterer.generateVertexClusters(model, 75.0f);
+    auto clusters = simpleVertexClusterer.generateVertexClusters(model, 8.0f, 24.0f);
 
     for (const auto& cluster : clusters) {
         glm::vec3 min(FLT_MAX, FLT_MAX, FLT_MAX);
@@ -167,47 +168,4 @@ bool aabb::intersectRay2D(const ray& ray, const float& maxDistance) const {
 
     _hasIntersection = true;
     return true;
-}
-
-// TODO: ottimizzare con instancing sulla base del modello?
-unsigned int aabb::bindToVAO() {
-    float vertices[] = {
-        min.x, min.y, min.z,
-        max.x, min.y, min.z,
-        max.x, max.y, min.z,
-        min.x, max.y, min.z,
-        min.x, min.y, max.z,
-        max.x, min.y, max.z,
-        max.x, max.y, max.z,
-        min.x, max.y, max.z,
-    };
-
-    unsigned int indices[] = {
-        0, 1, 1, 2, 2, 3, 3, 0,
-        4, 5, 5, 6, 6, 7, 7, 4,
-        0, 4, 1, 5, 2, 6, 3, 7
-    };
-
-    unsigned int VBO, VAO, EBO;
-
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
-    _vao = VAO;
-    return VAO;
 }

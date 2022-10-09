@@ -61,6 +61,7 @@ void LoadingScene::_loadShaders() {
     ShaderCache::getInstance().registerShader(EShader::fence, new Shader("multiple_lights_instancing.vs", "multiple_lights.fs"));
     ShaderCache::getInstance().registerShader(EShader::page, new Shader("multiple_lights.vs", "multiple_lights.fs"));
     ShaderCache::getInstance().registerShader(EShader::singleColor, new Shader("stencil_single_color.vs", "stencil_single_color.fs"));
+    ShaderCache::getInstance().registerShader(EShader::aabb, new Shader("aabb.vs", "aabb.fs"));
 }
 
 void LoadingScene::_loadTextures() {

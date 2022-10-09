@@ -211,6 +211,7 @@
     <ClInclude Include="page.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="renderable.h" />
+    <ClInclude Include="renderable_aabb.h" />
     <ClInclude Include="renderable_poi.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="render_text.h" />

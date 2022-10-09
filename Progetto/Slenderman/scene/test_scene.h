@@ -1,5 +1,7 @@
+
 #pragma once
 
+#include <cmath>
 #include <map>
 #include <string>
 #include <unordered_set>
@@ -19,6 +21,7 @@
 #include "../minimap.h"
 #include "../model_cache.h"
 #include "../texture_cache.h"
+#include "../renderable_aabb.h"
 #include "../renderable_poi.h"
 #include "../render_text.h"
 #include "../scene.h"
@@ -56,6 +59,8 @@ private:
 
     void _processInput(const float& deltaTime, const CollisionResult& collisionResult);
     void _findFramedPage();
+
+    void _renderInfo();
 
 public:
     TestScene(SceneManager* sceneManager, initInfoCallback infoCallback = nullptr) : _sceneManager{ sceneManager }, _infoCallback{ infoCallback } {}
@@ -100,7 +105,23 @@ void TestScene::init() {
     _updateInitInfo("Generating random forest...");
     DynamicMapRenderable* forest = new DynamicMapRenderable(DynamicEntity::tree, tabooIndices);
     _renderables.push_back(forest);
-    _collisionSolver.registerAABBs(forest->toAABBs());
+    std::vector<aabb> forestAABBs = forest->toAABBs();
+    //_collisionSolver.registerAABBs(forestAABBs);
+    //for (auto forestAABB : forestAABBs)
+        //_renderables.push_back(new RenderableAABB(forestAABB));
+
+    aabb fenceFront = aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT, -4.0f, MAX_PLAYER_DISTANCE_FRONT + 0.25f), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT, 0.0f, MAX_PLAYER_DISTANCE_FRONT - 0.25f));
+    _collisionSolver.registerAABB(fenceFront);
+    _renderables.push_back(new RenderableAABB(fenceFront));
+    aabb fenceBack = aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT, -4.0f, MAX_PLAYER_DISTANCE_BACK + 0.25f), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT, 0.0f, MAX_PLAYER_DISTANCE_BACK - 0.25f));
+    _collisionSolver.registerAABB(fenceBack);
+    _renderables.push_back(new RenderableAABB(fenceBack));
+    aabb fenceRight = aabb(glm::vec3(MAX_PLAYER_DISTANCE_RIGHT - 5.25, -4.0f, MAX_PLAYER_DISTANCE_BACK), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT + 5.25f, 0.0f, MAX_PLAYER_DISTANCE_FRONT));
+    _collisionSolver.registerAABB(fenceRight);
+    _renderables.push_back(new RenderableAABB(fenceRight));
+    aabb fenceLeft = aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT - 5.25, -4.0f, MAX_PLAYER_DISTANCE_BACK), glm::vec3(MAX_PLAYER_DISTANCE_LEFT + 5.25f, 0.0f, MAX_PLAYER_DISTANCE_FRONT));
+    _collisionSolver.registerAABB(fenceLeft);
+    _renderables.push_back(new RenderableAABB(fenceLeft));
 
     _renderables.push_back(new Fence());
     _renderables.push_back(new Minimap(_poiInfo));
@@ -112,14 +133,17 @@ void TestScene::_processInput(const float& deltaTime, const CollisionResult& col
         return;
     }
 
-    if (InputManager::isKeyPressed(GLFW_KEY_W) && !collisionResult.n)
-        _camera.ProcessKeyboard(FORWARD, deltaTime);
-    if (InputManager::isKeyPressed(GLFW_KEY_S) && !collisionResult.s)
-        _camera.ProcessKeyboard(BACKWARD, deltaTime);
-    if (InputManager::isKeyPressed(GLFW_KEY_A) && !collisionResult.w)
-        _camera.ProcessKeyboard(LEFT, deltaTime);
-    if (InputManager::isKeyPressed(GLFW_KEY_D) && !collisionResult.e)
-        _camera.ProcessKeyboard(RIGHT, deltaTime);
+    bool superSayan = InputManager::isKeyPressed(GLFW_KEY_LEFT_SHIFT);
+    float speedIncrement = superSayan ? 150.0f : 0.0f;
+
+    if (InputManager::isKeyPressed(GLFW_KEY_W) && (!collisionResult.n || superSayan))
+        _camera.ProcessKeyboard(FORWARD, deltaTime, speedIncrement);
+    if (InputManager::isKeyPressed(GLFW_KEY_S) && (!collisionResult.s || superSayan))
+        _camera.ProcessKeyboard(BACKWARD, deltaTime, speedIncrement);
+    if (InputManager::isKeyPressed(GLFW_KEY_A) && (!collisionResult.w || superSayan))
+        _camera.ProcessKeyboard(LEFT, deltaTime, speedIncrement);
+    if (InputManager::isKeyPressed(GLFW_KEY_D) && (!collisionResult.e || superSayan))
+        _camera.ProcessKeyboard(RIGHT, deltaTime, speedIncrement);
 
     if (InputManager::isKeyPressed(GLFW_KEY_F)) {
         double currentTime = glfwGetTime();
@@ -181,6 +205,50 @@ void TestScene::process(const float& deltaTime) {
 
     if (!_collectedPageMessage.empty() && _pageCollectedTime + PAGE_COLLECTED_MESSAGE_SECONDS > glfwGetTime())
         RenderText(_collectedPageMessage, (SCR_WIDTH / 2) - 150.0f, SCR_HEIGHT - 200.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+    _renderInfo();
+}
+
+void TestScene::_renderInfo() {
+    std::stringstream ssx;
+    ssx << "x: " << _camera.Position.x;
+    std::string x = ssx.str();
+    RenderText(x, SCR_WIDTH - 200.0f, 50.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+    std::stringstream ssz;
+    ssz << "z: " << _camera.Position.z;
+    std::string z = ssz.str();
+    RenderText(z, SCR_WIDTH - 200.0f, 70.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+    //int numVAOForSide = TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_TREE;
+    //vector<int> indexes = getVaoIndexesFromCamera(camera, TREE_OFFSET, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_TREE);
+    //int k_index = indexes[(indexes.size() - 1) / 2];
+    //int x_index = k_index / numVAOForSide;
+    //int z_index = k_index % numVAOForSide;
+
+    //std::stringstream ssk;
+    //ssk << "k_index: " << k_index;
+    //std::string k = ssk.str();
+    //RenderText(k, SCR_WIDTH - 200.0f, 120.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+    //std::stringstream ssxindex;
+    //ssxindex << "x_index: " << x_index;
+    //std::string x_ind = ssxindex.str();
+    //RenderText(x_ind, SCR_WIDTH - 200.0f, 140.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+    //std::stringstream sszindex;
+    //sszindex << "z_index: " << z_index;
+    //std::string z_ind = sszindex.str();
+    //RenderText(z_ind, SCR_WIDTH - 200.0f, 160.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+    std::stringstream ssfrontinfo;
+    ssfrontinfo << "x_v: " << _camera.Front.x << " y_v: " << _camera.Front.y << " z_v: " << _camera.Front.z;
+    std::string front_info = ssfrontinfo.str();
+    RenderText(front_info, 100.0f, 50.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+    /*std::stringstream ssCollectPage;
+    ssCollectPage << "Viewed Page: " << posViewedPage;
+    std::string collectPage_str = ssCollectPage.str();
+    RenderText(collectPage_str, 50.0f, SCR_HEIGHT - 50.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));*/
 }
 
 void TestScene::destroy() {
