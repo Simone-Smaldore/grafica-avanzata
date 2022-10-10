@@ -23,6 +23,8 @@ private:
     glm::mat4 _getSlendemanShaderModel(Camera camera);
 
     float _calcSlenderRotationAngle(Camera camera);
+
+    vector<glm::vec3> _getNearSpawnPoints(Camera camera, std::vector<glm::vec3> slendermanSpawnPoints);
 };
 
 void SlenderManager::updateSlenderman(Camera camera, SlenderMan& slenderman, std::vector<glm::vec3> slendermanSpawnPoints) {
@@ -30,17 +32,15 @@ void SlenderManager::updateSlenderman(Camera camera, SlenderMan& slenderman, std
     slenderman.setTransform(slenderTransform);
 
     //TODO Eliminare magic numbers (Secondi e distanza)
-    if (glfwGetTime() - _previousTime > 25) {
-        vector<glm::vec3> nearSpawnPoints;
-        for (int i = 0; i < slendermanSpawnPoints.size(); i++) {
-            float pointCameraDistance = sqrt(pow(slendermanSpawnPoints[i].x - camera.Position.x, 2) + pow(slendermanSpawnPoints[i].z - camera.Position.z, 2));
-            if (pointCameraDistance < 80.0f) {
-                nearSpawnPoints.push_back(slendermanSpawnPoints[i]);
-            }        
+    if (glfwGetTime() - _previousTime > 3) {
+        vector<glm::vec3> nearSpawnPoints = _getNearSpawnPoints(camera, slendermanSpawnPoints);
+        if (nearSpawnPoints.empty()) {
+            return;
         }
+        int spawnPointIndex = rand() % nearSpawnPoints.size();
         //Scegliere randomicamente e con la direzione dello sguardo
-        _slendermanTranslationVector = nearSpawnPoints[0];
-        cout << "Slender spawned in x: " << nearSpawnPoints[0].x  << " z: " << nearSpawnPoints[0].z << endl;
+        _slendermanTranslationVector = nearSpawnPoints[spawnPointIndex];
+        cout << "Slender spawned in x: " << nearSpawnPoints[spawnPointIndex].x  << " z: " << nearSpawnPoints[spawnPointIndex].z << endl;
         _previousTime = glfwGetTime();
     }
 }
@@ -68,5 +68,28 @@ float SlenderManager::_calcSlenderRotationAngle(Camera camera) {
         rotationAngle = -rotationAngle;
     }
     return rotationAngle;
+}
+
+vector<glm::vec3> SlenderManager::_getNearSpawnPoints(Camera camera, std::vector<glm::vec3> slendermanSpawnPoints) {
+    vector<glm::vec3> nearSpawnPoints;
+    for (int i = 0; i < slendermanSpawnPoints.size(); i++) {
+        float pointCameraDistance = sqrt(pow(slendermanSpawnPoints[i].x - camera.Position.x, 2) + pow(slendermanSpawnPoints[i].z - camera.Position.z, 2));
+        // Check sulla distanza TODO: Aggiornare in base al numero delle pagine ed aggiungere distanza minima
+        if (pointCameraDistance > 80.0f) {
+            continue;
+        }
+        // Check sull'angolo TODO: Verificare che il cono di 40 gradi vada bene
+        float angle = atan2((slendermanSpawnPoints[i].x - camera.Position.x), (slendermanSpawnPoints[i].z - camera.Position.z)) - atan2(camera.Front.x , camera.Front.z);
+        angle = angle * 180 / M_PI;
+        if (angle < 0) {
+            angle = angle + 360.0f;
+        }
+        if (angle >= 20.0f && angle <= 340.0f) {
+            continue;
+        }
+        //cout << "x: " << slendermanSpawnPoints[i].x << " z: " << slendermanSpawnPoints[i].z << " angle: " << angle << endl;
+        nearSpawnPoints.push_back(slendermanSpawnPoints[i]);
+    }
+    return nearSpawnPoints;
 }
 
