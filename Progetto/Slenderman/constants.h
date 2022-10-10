@@ -35,6 +35,7 @@ const int INT_OFFSET_VAO_INDEXES = 1;
 const std::unordered_set<int> K_SET_TO_EXCLUDE = { 300 };
 // Indica l'offset che ha il lampione lungo x e lungo z dal centro del VAO
 const float STREETLIGHT_POI_OFFSET = 10.0f;
+const float SLENDERMAN_OUT_OF_TREE_OFFSET = 5.0f;
 
 const float MAX_PLAYER_DISTANCE_FRONT = -1340.0f;
 const float MAX_PLAYER_DISTANCE_BACK = 1340.0f;

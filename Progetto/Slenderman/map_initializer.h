@@ -24,6 +24,8 @@ private:
 public:
     static std::map<int, glm::vec3> initPOI();
 
+    static std::vector<glm::vec3> initSlenderSpawnPoints(std::map<int, glm::vec3> poiInfo);
+
     static void addPOIRenderablesAndStreetLights(const std::map<int, glm::vec3>& poiInfo, std::vector<Page*>& pages, vector<Renderable*>& renderables, CollisionSolver& collisionSolver);
 };
 
@@ -79,6 +81,40 @@ std::map<int, glm::vec3> MapInitializer::initPOI() {
     }
 
     return poiMap;
+}
+
+std::vector<glm::vec3> MapInitializer::initSlenderSpawnPoints(std::map<int, glm::vec3> poiInfo) {
+    std::vector<glm::vec3> slendermanSpawnPoints;
+    int numVaoForSide = TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_TREE;
+    for (int i = 0; i < TREE_QUAD_SIDE; i++) {
+        for (int j = 0; j < TREE_QUAD_SIDE; j++) {
+
+            unsigned int vao_i = floor(i / VAO_OBJECTS_SIDE_TREE);
+            unsigned int vao_j = floor(j / VAO_OBJECTS_SIDE_TREE);
+            unsigned int vao_index = (vao_i * (TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_TREE)) + vao_j;
+
+            // Esclude i POI
+            if (poiInfo.find(vao_index) != poiInfo.end()) {
+                continue;
+            }
+
+            // Esclude i 4 lati esterni
+            int kMax = numVaoForSide * numVaoForSide - 1;
+            if (vao_index < numVaoForSide || vao_index >(kMax - numVaoForSide)) {
+                continue;
+            }
+            if (vao_index % numVaoForSide == 0 || (vao_index + 1) % numVaoForSide == 0) {
+                continue;
+            }
+
+            float x_slender = (i - TREE_QUAD_SIDE / 2) * TREE_OFFSET + SLENDERMAN_OUT_OF_TREE_OFFSET;
+            float y_slender = -0.8f;
+            float z_slender = (j - TREE_QUAD_SIDE / 2) * TREE_OFFSET + SLENDERMAN_OUT_OF_TREE_OFFSET;
+
+            slendermanSpawnPoints.push_back(glm::vec3(x_slender, y_slender, z_slender));
+        }
+    }
+    return slendermanSpawnPoints;
 }
 
 glm::mat4 MapInitializer::_computePOITransformForModel(EModel model, const glm::vec3& poiTranslation) {

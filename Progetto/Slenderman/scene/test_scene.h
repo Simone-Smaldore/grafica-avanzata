@@ -55,6 +55,7 @@ private:
 
     SlenderMan* _slenderMan;
     SlenderManager* _slenderManager;
+    vector<glm::vec3> _slendermanSpawnPoints;
     vector<Page*> _pages;
 
     void _updateInitInfo(std::string info);
@@ -84,6 +85,7 @@ void TestScene::_updateInitInfo(std::string info) {
 void TestScene::init() {
     _updateInitInfo("Generating POI...");
     _poiInfo = MapInitializer::initPOI();
+    _slendermanSpawnPoints = MapInitializer::initSlenderSpawnPoints(_poiInfo);
 
     _lightUtils = LightUtils(_poiInfo);
 
@@ -204,7 +206,7 @@ void TestScene::process(const float& deltaTime) {
 
     _findFramedPage();
 
-    _slenderManager->updateSlenderman(_camera, *_slenderMan);
+    _slenderManager->updateSlenderman(_camera, *_slenderMan, _slendermanSpawnPoints);
 
     for (auto renderable : _renderables)
         renderable->render(_camera, _lightUtils);
