@@ -29,6 +29,7 @@
 #include "../slenderman.h"
 #include "../street_light.h"
 #include "../slender_manager.h"
+#include "../model_cache.h"
 
 typedef void (*initInfoCallback)(std::string info);
 
@@ -105,16 +106,15 @@ void TestScene::init() {
     for (auto poi : _poiInfo)
         tabooIndices.insert(poi.first);
 
-
     _updateInitInfo("Generating random forest...");
     DynamicMapRenderable* forest = new DynamicMapRenderable(DynamicEntity::tree, tabooIndices);
     _renderables.push_back(forest);
-    std::vector<aabb> forestAABBs = forest->toAABBs();
-    //_collisionSolver.registerAABBs(forestAABBs);
-    //for (auto forestAABB : forestAABBs)
-        //_renderables.push_back(new RenderableAABB(forestAABB));
+    std::vector<aabb*> forestAABBs = forest->toAABBs();
+    _collisionSolver.registerAABBs(forestAABBs);
+    for (auto forestAABB : forestAABBs)
+        _renderables.push_back(new RenderableAABB(forestAABB));
 
-    aabb fenceFront = aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT, -4.0f, MAX_PLAYER_DISTANCE_FRONT + 0.25f), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT, 0.0f, MAX_PLAYER_DISTANCE_FRONT - 0.25f));
+    /*aabb fenceFront = aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT, -4.0f, MAX_PLAYER_DISTANCE_FRONT + 0.25f), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT, 0.0f, MAX_PLAYER_DISTANCE_FRONT - 0.25f));
     _collisionSolver.registerAABB(fenceFront);
     _renderables.push_back(new RenderableAABB(fenceFront));
     aabb fenceBack = aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT, -4.0f, MAX_PLAYER_DISTANCE_BACK + 0.25f), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT, 0.0f, MAX_PLAYER_DISTANCE_BACK - 0.25f));
@@ -125,7 +125,7 @@ void TestScene::init() {
     _renderables.push_back(new RenderableAABB(fenceRight));
     aabb fenceLeft = aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT - 5.25, -4.0f, MAX_PLAYER_DISTANCE_BACK), glm::vec3(MAX_PLAYER_DISTANCE_LEFT + 5.25f, 0.0f, MAX_PLAYER_DISTANCE_FRONT));
     _collisionSolver.registerAABB(fenceLeft);
-    _renderables.push_back(new RenderableAABB(fenceLeft));
+    _renderables.push_back(new RenderableAABB(fenceLeft));*/
 
     _renderables.push_back(new Fence());
 
@@ -263,6 +263,11 @@ void TestScene::destroy() {
     for (auto renderable : _renderables)
         delete renderable;
     _renderables.clear();
+
+    _collisionSolver.clearRegisteredAABBs();
+    
+    delete _tabooIndices;
+    delete _slenderManager;
 }
 
 Camera* TestScene::currentCamera() {

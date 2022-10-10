@@ -1,33 +1,32 @@
 #pragma once
+#include <cmath>
+
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/detail/type_vec.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
 #include "../camera.h"
 #include "../slenderman.h"
-#include <cmath>
 
 class SlenderManager {
-
 public:
     double _previousTime = glfwGetTime();
     glm::vec3 _slendermanTranslationVector = glm::vec3(0.0f, -15.8f, -10.0f);
 
     SlenderManager() {};
 
-    void updateSlenderman(Camera camera, SlenderMan& slenderman, std::vector<glm::vec3> slendermanSpawnPoints);
-
+    void updateSlenderman(const Camera& camera, SlenderMan& slenderman, const std::vector<glm::vec3>& slendermanSpawnPoints);
 
 private:
+    glm::mat4 _getSlendemanShaderModel(const Camera& camera);
 
-    glm::mat4 _getSlendemanShaderModel(Camera camera);
+    float _calcSlenderRotationAngle(const Camera& camera);
 
-    float _calcSlenderRotationAngle(Camera camera);
-
-    vector<glm::vec3> _getNearSpawnPoints(Camera camera, std::vector<glm::vec3> slendermanSpawnPoints);
+    vector<glm::vec3> _getNearSpawnPoints(const Camera camera, const std::vector<glm::vec3> slendermanSpawnPoints);
 };
 
-void SlenderManager::updateSlenderman(Camera camera, SlenderMan& slenderman, std::vector<glm::vec3> slendermanSpawnPoints) {
+void SlenderManager::updateSlenderman(const Camera& camera, SlenderMan& slenderman, const std::vector<glm::vec3>& slendermanSpawnPoints) {
     glm::mat4 slenderTransform = _getSlendemanShaderModel(camera);
     slenderman.setTransform(slenderTransform);
 
@@ -45,7 +44,7 @@ void SlenderManager::updateSlenderman(Camera camera, SlenderMan& slenderman, std
     }
 }
 
-glm::mat4 SlenderManager::_getSlendemanShaderModel(Camera camera) {
+glm::mat4 SlenderManager::_getSlendemanShaderModel(const Camera& camera) {
     glm::mat4 slendermanShaderModel = glm::mat4(1.0f);
     slendermanShaderModel = glm::translate(slendermanShaderModel, _slendermanTranslationVector);
     float rotationAngle = _calcSlenderRotationAngle(camera);
@@ -54,7 +53,7 @@ glm::mat4 SlenderManager::_getSlendemanShaderModel(Camera camera) {
     return slendermanShaderModel;
 }
 
-float SlenderManager::_calcSlenderRotationAngle(Camera camera) {
+float SlenderManager::_calcSlenderRotationAngle(const Camera& camera) {
     float zProjection = abs(_slendermanTranslationVector.z - camera.Position.z);
     float slenderDistance = sqrt(pow(_slendermanTranslationVector.x - camera.Position.x, 2) + pow(_slendermanTranslationVector.z - camera.Position.z, 2));
     float rotationAngle = acos(zProjection / slenderDistance) * 180.0 / M_PI;

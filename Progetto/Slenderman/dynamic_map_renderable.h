@@ -30,7 +30,7 @@ private:
 public:
     DynamicMapRenderable(const DynamicEntity entity, const unordered_set<int> tabooIndices = { });
 
-    inline std::vector<aabb> toAABBs() const;
+    inline std::vector<aabb*> toAABBs() const;
 
     virtual void render(const Camera& camera, const LightUtils& lightUtils) override;
 };
@@ -104,11 +104,11 @@ void DynamicMapRenderable::renderDynamicMap(const vector<int>& VAOIndexes, const
     }
 }
 
-std::vector<aabb> DynamicMapRenderable::toAABBs() const {
+std::vector<aabb*> DynamicMapRenderable::toAABBs() const {
     if (_entity == DynamicEntity::grass)
         throw std::runtime_error("Cannot compute grass AABBs");
 
-    std::vector<aabb> result;
+    std::vector<aabb*> result;
     for (auto transform : _transforms) {
         // nTODO: Eliminare centroidi magici?
         auto aabbs = aabb::fromCompoundModel(*(_model), { glm::vec3(18.0f, 0.0f, -31.0f), glm::vec3(-246.0f, 0.0f, 280.0f), glm::vec3(59.0f, 0.0f, 311.0f) }, transform);
