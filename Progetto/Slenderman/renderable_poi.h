@@ -11,7 +11,7 @@ class RenderablePOI : public ModelRenderable {
 public:
     RenderablePOI(ETexture texture, EModel model, glm::mat4 transform);
 
-    inline aabb toAABB() const;
+    inline aabb* toAABB() const;
 
     virtual void render(const Camera& camera, const LightUtils& lightUtils) override;
 };
@@ -24,7 +24,7 @@ RenderablePOI::RenderablePOI(ETexture texture, EModel model, glm::mat4 transform
     _transform = transform;
 }
 
-aabb RenderablePOI::toAABB() const {
+aabb* RenderablePOI::toAABB() const {
     return aabb::fromModel(*(_model), _transform);
 }
 

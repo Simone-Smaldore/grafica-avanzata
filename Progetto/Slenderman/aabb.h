@@ -15,34 +15,43 @@ private:
     glm::vec3 max;
 
     unsigned int _vao = 0;
-    mutable bool _hasIntersection = false;
+
+    bool _hasIntersection = false;
+    bool _shouldBeRendered = false;
 
     static void _updateWithVertex(const Vertex& vertex, glm::vec3& min, glm::vec3& max);
 
     static void _updateWithVertex(const glm::vec3& vertex, glm::vec3& min, glm::vec3& max);
 
-    static aabb _applyTransformToMinMax(const glm::mat4& transform, const glm::vec3& currentMin, const glm::vec3& currentMax);
+    static aabb* _applyTransformToMinMax(const glm::mat4& transform, const glm::vec3& currentMin, const glm::vec3& currentMax);
 
-    inline void _resetCurrentIntersection() const { _hasIntersection = false; }
+    void _resetCurrentIntersection();
 
 public:
 
     aabb(glm::vec3 p_min, glm::vec3 p_max) : min(p_min), max(p_max) {}
 
-    static aabb fromModel(const Model& model, const glm::mat4& transform = glm::mat4(1));
+    static aabb* fromModel(const Model& model, const glm::mat4& transform = glm::mat4(1));
 
-    static vector<aabb> fromCompoundModel(const Model& model, const vector<glm::vec3>& centroids, const glm::mat4& transform = glm::mat4(1));
+    static vector<aabb*> fromCompoundModel(const Model& model, const vector<glm::vec3>& centroids, const glm::mat4& transform = glm::mat4(1));
 
-    bool intersect(const aabb& other) const;
-
-    bool intersectRay2D(const ray& ray, const float& maxDistance = 5.0f) const;
+    bool intersectRay2D(const ray& ray, const float& maxDistance = 5.0f);
 
     inline bool hasIntersection() const { return _hasIntersection; }
 
     inline glm::vec3 getMin() const { return min; }
 
     inline glm::vec3 getMax() const { return max; }
+
+    inline bool shouldBeRendered() { return _shouldBeRendered; }
+
+    inline void disableRendering() { _shouldBeRendered = false; }
 };
+
+void aabb::_resetCurrentIntersection() {
+    _hasIntersection = false;
+    _shouldBeRendered = true;
+}
 
 void aabb::_updateWithVertex(const Vertex& vertex, glm::vec3& min, glm::vec3& max) {
     _updateWithVertex(vertex.Position, min, max);
@@ -65,7 +74,7 @@ void aabb::_updateWithVertex(const glm::vec3& vertex, glm::vec3& min, glm::vec3&
         max.z = vertex.z;
 }
 
-aabb aabb::_applyTransformToMinMax(const glm::mat4& transform, const glm::vec3& currentMin, const glm::vec3& currentMax) {
+aabb* aabb::_applyTransformToMinMax(const glm::mat4& transform, const glm::vec3& currentMin, const glm::vec3& currentMax) {
     glm::vec3 min(FLT_MAX, FLT_MAX, FLT_MAX);
     glm::vec3 max(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
@@ -84,10 +93,10 @@ aabb aabb::_applyTransformToMinMax(const glm::mat4& transform, const glm::vec3& 
     for (int i = 0; i < kVertices; i++)
         _updateWithVertex(glm::vec3(transform * glm::vec4(transformedVertices[i], 1.0f)), min, max);
 
-    return aabb(min, max);
+    return new aabb(min, max);
 }
 
-aabb aabb::fromModel(const Model& model, const glm::mat4& transform) {
+aabb* aabb::fromModel(const Model& model, const glm::mat4& transform) {
     glm::vec3 min(FLT_MAX, FLT_MAX, FLT_MAX);
     glm::vec3 max(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
@@ -106,11 +115,11 @@ aabb aabb::fromModel(const Model& model, const glm::mat4& transform) {
     min = glm::vec3(transform * glm::vec4(min, 1.0f));
     max = glm::vec3(transform * glm::vec4(max, 1.0f));
 
-    return aabb(min, max);
+    return new aabb(min, max);
 }
 
-vector<aabb> aabb::fromCompoundModel(const Model& model, const vector<glm::vec3>& centroids, const glm::mat4& transform) {
-    vector<aabb> result;
+vector<aabb*> aabb::fromCompoundModel(const Model& model, const vector<glm::vec3>& centroids, const glm::mat4& transform) {
+    vector<aabb*> result;
 
     SimpleVertexClusterer simpleVertexClusterer(centroids);
     auto clusters = simpleVertexClusterer.generateVertexClusters(model, 8.0f, 24.0f);
@@ -129,18 +138,7 @@ vector<aabb> aabb::fromCompoundModel(const Model& model, const vector<glm::vec3>
     return result;
 }
 
-bool aabb::intersect(const aabb& other) const {
-    _hasIntersection = min.x <= other.max.x &&
-        max.x >= other.min.x &&
-        min.y <= other.max.y &&
-        max.y >= other.min.y &&
-        // L'asse z è invertita
-        min.z >= other.max.z &&
-        max.z <= other.min.z;
-    return _hasIntersection;
-}
-
-bool aabb::intersectRay2D(const ray& ray, const float& maxDistance) const {
+bool aabb::intersectRay2D(const ray& ray, const float& maxDistance) {
     float txMin = (min.x - ray.origin.x) / ray.direction.x;
     float txMax = (max.x - ray.origin.x) / ray.direction.x;
 

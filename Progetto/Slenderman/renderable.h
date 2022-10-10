@@ -84,9 +84,9 @@ unsigned int VAORenderable::_initRectVAO(const float dimension) {
 void InstancedModelRenderable::_initUsingDynamicMapAlgorithm(const int quadSide, const int vaoObjectSide, const float offset, const glm::vec3& scaleMatrix, const bool useRandomOffset, const std::unordered_set<int>& tabooIndices) {
     int numVAO = (quadSide / vaoObjectSide) * (quadSide / vaoObjectSide);
     unsigned int amount = quadSide * quadSide;
-    std::vector<glm::mat4*> _transformMatrix;
+    std::vector<glm::mat4*> transformMatrix;
     for (int k = 0; k < numVAO; k++)
-        _transformMatrix.push_back(new glm::mat4[(amount / numVAO)]);
+        transformMatrix.push_back(new glm::mat4[(amount / numVAO)]);
 
     srand(glfwGetTime());
 
@@ -122,12 +122,12 @@ void InstancedModelRenderable::_initUsingDynamicMapAlgorithm(const int quadSide,
                 _transforms.push_back(transform);
             }
 
-            _transformMatrix[vaoIndex][matrixIndex] = transform;
+            transformMatrix[vaoIndex][matrixIndex] = transform;
         }
     }
 
     for (int k = 0; k < numVAO; k++) {
-        glm::mat4* transform = _transformMatrix[k];
+        glm::mat4* transform = transformMatrix[k];
 
         unsigned int buffer;
         glGenBuffers(1, &buffer);
@@ -163,4 +163,7 @@ void InstancedModelRenderable::_initUsingDynamicMapAlgorithm(const int quadSide,
     for (unsigned int i = 0; i < _model->meshes.size(); i++) {
         _model->meshes[i].setupVAOs();
     }
+
+    for (int k = 0; k < numVAO; k++)
+        delete[] transformMatrix[k];
 }

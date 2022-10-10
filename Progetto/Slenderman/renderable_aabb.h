@@ -7,26 +7,26 @@
 
 class RenderableAABB : public VAORenderable {
 private:
-    const aabb& _staticAABB;
+    aabb* _staticAABB;
 
 public:
-    RenderableAABB(const aabb& staticAABB);
+    RenderableAABB(aabb* staticAABB);
 
     virtual void render(const Camera& camera, const LightUtils& lightUtils) override;
 };
 
-RenderableAABB::RenderableAABB(const aabb& staticAABB) : _staticAABB(staticAABB) {
+RenderableAABB::RenderableAABB(aabb* staticAABB) : _staticAABB(staticAABB) {
     _shader = ShaderCache::getInstance().findShader(EShader::aabb);
 
     float vertices[] = {
-        _staticAABB.getMin().x, _staticAABB.getMin().y, _staticAABB.getMin().z,
-        _staticAABB.getMax().x, _staticAABB.getMin().y, _staticAABB.getMin().z,
-        _staticAABB.getMax().x, _staticAABB.getMax().y, _staticAABB.getMin().z,
-        _staticAABB.getMin().x, _staticAABB.getMax().y, _staticAABB.getMin().z,
-        _staticAABB.getMin().x, _staticAABB.getMin().y, _staticAABB.getMax().z,
-        _staticAABB.getMax().x, _staticAABB.getMin().y, _staticAABB.getMax().z,
-        _staticAABB.getMax().x, _staticAABB.getMax().y, _staticAABB.getMax().z,
-        _staticAABB.getMin().x, _staticAABB.getMax().y, _staticAABB.getMax().z,
+        _staticAABB->getMin().x, _staticAABB->getMin().y, _staticAABB->getMin().z,
+        _staticAABB->getMax().x, _staticAABB->getMin().y, _staticAABB->getMin().z,
+        _staticAABB->getMax().x, _staticAABB->getMax().y, _staticAABB->getMin().z,
+        _staticAABB->getMin().x, _staticAABB->getMax().y, _staticAABB->getMin().z,
+        _staticAABB->getMin().x, _staticAABB->getMin().y, _staticAABB->getMax().z,
+        _staticAABB->getMax().x, _staticAABB->getMin().y, _staticAABB->getMax().z,
+        _staticAABB->getMax().x, _staticAABB->getMax().y, _staticAABB->getMax().z,
+        _staticAABB->getMin().x, _staticAABB->getMax().y, _staticAABB->getMax().z,
     };
 
     unsigned int indices[] = {
@@ -59,16 +59,21 @@ RenderableAABB::RenderableAABB(const aabb& staticAABB) : _staticAABB(staticAABB)
 }
 
 void RenderableAABB::render(const Camera& camera, const LightUtils& lightUtils) {
+    if (!_staticAABB->shouldBeRendered())
+        return;
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glEnable(GL_DEPTH_TEST);
 
     _shader->use();
     _shader->setMat4("view", camera.GetViewMatrix());
     _shader->setMat4("projection", camera.GetProjection());
-    _shader->setVec4("color", _staticAABB.hasIntersection() ? RED : AABB_COLOR);
+    _shader->setVec4("color", _staticAABB->hasIntersection() ? RED : AABB_COLOR);
 
     glBindVertexArray(_VAO);
     glDrawElements(GL_LINES, 24, GL_UNSIGNED_INT, 0);
 
     glBindVertexArray(0);
+
+    _staticAABB->disableRendering();
 }
