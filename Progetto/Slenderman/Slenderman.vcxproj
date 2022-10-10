@@ -221,6 +221,7 @@
     <ClInclude Include="shader_cache.h" />
     <ClInclude Include="shader_m.h" />
     <ClInclude Include="slenderman.h" />
+    <ClInclude Include="slender_manager.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="street_light.h" />
     <ClInclude Include="texture_cache.h" />

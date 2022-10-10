@@ -11,6 +11,10 @@ public:
     SlenderMan();
 
     virtual void render(const Camera& camera, const LightUtils& lightUtils) override;
+
+    void setTransform(glm::mat4 transform) {
+        _transform = transform;
+    }
 };
 
 SlenderMan::SlenderMan(){

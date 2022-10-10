@@ -28,6 +28,7 @@
 #include "../shader_cache.h"
 #include "../slenderman.h"
 #include "../street_light.h"
+#include "../slender_manager.h"
 
 typedef void (*initInfoCallback)(std::string info);
 
@@ -53,6 +54,7 @@ private:
     std::unordered_set<int>* _tabooIndices;
 
     SlenderMan* _slenderMan;
+    SlenderManager* _slenderManager;
     vector<Page*> _pages;
 
     void _updateInitInfo(std::string info);
@@ -88,6 +90,7 @@ void TestScene::init() {
     _renderables.push_back(new Floor());
 
     _slenderMan = new SlenderMan();
+    _slenderManager = new SlenderManager();
     _renderables.push_back(_slenderMan);
 
     _updateInitInfo("Generating random map...");
@@ -200,6 +203,8 @@ void TestScene::process(const float& deltaTime) {
     _processInput(deltaTime, collisionResult);
 
     _findFramedPage();
+
+    _slenderManager->updateSlenderman(_camera, *_slenderMan);
 
     for (auto renderable : _renderables)
         renderable->render(_camera, _lightUtils);
