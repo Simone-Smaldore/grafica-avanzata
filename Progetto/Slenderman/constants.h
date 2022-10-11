@@ -81,7 +81,14 @@ const glm::vec4 AABB_COLOR = glm::vec4(0.2, 0.2, 0.2, 1.0);
 
 // SLENDER SPAWN
 // -------------------------------------------------------------------------------------------
+const float HALF_CONE_OPENING = 20.0f;
 const int TIME_SPAWN_SLENDER_FACTOR = 3;
 const float SPAWN_OFFSET_PER_PAGE = 10.0f;
 const float MAX_EXTERNAL_SPAWN_DISTANCE = 100.0f + SPAWN_OFFSET_PER_PAGE * (NUM_PAGES - 1);
 const float MAX_INTERNAL_SPAWN_DISTANCE = 20.0f + SPAWN_OFFSET_PER_PAGE * (NUM_PAGES - 1);
+
+// SLENDER STRENGTH
+// -------------------------------------------------------------------------------------------
+const float HALF_SLENDER_CONE_OPENING = 30.0f;
+const float DISTANCE_RESET_FEAR = 60.0f;
+const float MEDIUM_TIME_DEATH = 1.2f;

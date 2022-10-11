@@ -23,7 +23,7 @@ SlenderMan::SlenderMan(){
     _texture = TextureCache::getInstance().findTexture(ETexture::slenderMan);
 
     glm::mat4 transform = glm::mat4(1.0f);
-    transform = glm::translate(transform, glm::vec3(0.0f, -0.8f, -10.0f));
+    transform = glm::translate(transform, glm::vec3(0.0f, -0.8f, -10000.0f));
     transform = glm::scale(transform, glm::vec3(0.01f, 0.01f, 0.01f));
     _transform = transform;
 }

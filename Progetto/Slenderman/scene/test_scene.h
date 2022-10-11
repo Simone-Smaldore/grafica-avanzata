@@ -57,6 +57,7 @@ private:
     SlenderMan* _slenderMan;
     SlenderManager* _slenderManager;
     vector<glm::vec3> _slendermanSpawnPoints;
+    float _fearFactor = 0.0f;
     vector<Page*> _pages;
 
     void _updateInitInfo(std::string info);
@@ -206,6 +207,7 @@ void TestScene::process(const float& deltaTime) {
 
     _slenderManager->updateSlenderman(_camera, *_slenderMan, _slendermanSpawnPoints, _collectedPages);
 
+    _fearFactor = _slenderManager->updateFearFactor(_camera);
     for (auto renderable : _renderables)
         renderable->render(_camera, _lightUtils);
 
@@ -228,6 +230,11 @@ void TestScene::_renderInfo() {
     ssz << "z: " << _camera.Position.z;
     std::string z = ssz.str();
     RenderText(z, SCR_WIDTH - 200.0f, 70.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+    std::stringstream ssff;
+    ssff << "ff: " << _fearFactor;
+    std::string ff = ssff.str();
+    RenderText(ff, SCR_WIDTH - 200.0f, 120.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     //int numVAOForSide = TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_TREE;
     //vector<int> indexes = getVaoIndexesFromCamera(camera, TREE_OFFSET, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_TREE);
