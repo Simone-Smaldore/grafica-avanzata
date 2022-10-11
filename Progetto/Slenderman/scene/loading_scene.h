@@ -9,6 +9,7 @@
 #include "glm/glm.hpp"
 
 #include "test_scene.h"
+#include "../audio_manager.h"
 #include "../constants.h"
 #include "../game.h"
 #include "../input_manager.h"
@@ -115,6 +116,9 @@ void LoadingScene::init() {
     _forceRenderText("Loading models...");
     _loadModels();
     _forceRenderText("Generating map...");
+
+    // TODO: load all audio
+    //AudioManager::getInstance().loadMusic(EMusic::background, "resources/audio/creepy-music.mp3", true);
 
     _gameScene = new TestScene(_sceneManager, _forceRenderText);
     _gameScene->init();

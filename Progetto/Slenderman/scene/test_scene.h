@@ -141,16 +141,16 @@ void TestScene::_processInput(const float& deltaTime, const CollisionResult& col
         return;
     }
 
-    bool superSayan = InputManager::isKeyPressed(GLFW_KEY_LEFT_SHIFT);
-    float speedIncrement = superSayan ? 150.0f : 0.0f;
+    bool superSaiyan = InputManager::isKeyPressed(GLFW_KEY_LEFT_SHIFT);
+    float speedIncrement = superSaiyan ? 150.0f : 0.0f;
 
-    if (InputManager::isKeyPressed(GLFW_KEY_W) && (!collisionResult.n || superSayan))
+    if (InputManager::isKeyPressed(GLFW_KEY_W) && (!collisionResult.n || superSaiyan))
         _camera.ProcessKeyboard(FORWARD, deltaTime, speedIncrement);
-    if (InputManager::isKeyPressed(GLFW_KEY_S) && (!collisionResult.s || superSayan))
+    if (InputManager::isKeyPressed(GLFW_KEY_S) && (!collisionResult.s || superSaiyan))
         _camera.ProcessKeyboard(BACKWARD, deltaTime, speedIncrement);
-    if (InputManager::isKeyPressed(GLFW_KEY_A) && (!collisionResult.w || superSayan))
+    if (InputManager::isKeyPressed(GLFW_KEY_A) && (!collisionResult.w || superSaiyan))
         _camera.ProcessKeyboard(LEFT, deltaTime, speedIncrement);
-    if (InputManager::isKeyPressed(GLFW_KEY_D) && (!collisionResult.e || superSayan))
+    if (InputManager::isKeyPressed(GLFW_KEY_D) && (!collisionResult.e || superSaiyan))
         _camera.ProcessKeyboard(RIGHT, deltaTime, speedIncrement);
 
     if (InputManager::isKeyPressed(GLFW_KEY_F)) {

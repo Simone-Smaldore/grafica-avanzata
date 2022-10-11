@@ -6,6 +6,7 @@
 #include "fps_manager.h"
 #include "input_manager.h"
 
+#include "audio_manager.h"
 #include "constants.h"
 #include "model.h"
 #include "model_cache.h"
@@ -26,8 +27,6 @@ private:
     GLFWwindow* _window;
     SceneManager* _sceneManager;
 
-    Music backgroundMusic;
-
     void _renderFPS();
 
 public:
@@ -45,14 +44,9 @@ void GameLoop::init() {
     _sceneManager->changeScene(new LoadingScene(_sceneManager, _window));
 
     InputManager::init(_window, _sceneManager->currentScene()->currentCamera());
+    AudioManager::getInstance().initAudio();
 
     glEnable(GL_DEPTH_TEST);
-
-    InitAudioDevice();
-
-    // nTODO: :) - Aggiungere AudioManager (singleton, gestisce rAudio)
-    backgroundMusic = LoadMusicStream("resources/sounds/creepy-music.mp3");
-    PlayMusicStream(backgroundMusic);
 
     _sceneManager->currentScene()->init();
 }
@@ -79,10 +73,8 @@ void GameLoop::process() {
 
         glfwSwapBuffers(_window);
         glfwPollEvents();
-
-        //UpdateMusicStream(backgroundMusic);
-        if (GetMusicTimePlayed(backgroundMusic) > GetMusicTimeLength(backgroundMusic))
-            SeekMusicStream(backgroundMusic, 0);
+        
+        AudioManager::getInstance().process();
     }
 }
 
@@ -95,8 +87,7 @@ void GameLoop::destroy() {
     ShaderCache::getInstance().clear();
     TextureCache::getInstance().clear();
 
-    UnloadMusicStream(backgroundMusic);
-    CloseAudioDevice();
+    AudioManager::getInstance().destroy();
 }
 
 void GameLoop::_renderFPS() {

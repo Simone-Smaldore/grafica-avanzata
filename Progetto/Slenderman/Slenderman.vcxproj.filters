@@ -194,5 +194,8 @@
     <ClInclude Include="slender_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="audio_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -191,6 +191,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aabb.h" />
+    <ClInclude Include="audio_manager.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="collision_solver.h" />
     <ClInclude Include="constants.h" />
