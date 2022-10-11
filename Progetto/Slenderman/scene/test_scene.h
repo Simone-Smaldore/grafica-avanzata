@@ -204,7 +204,7 @@ void TestScene::process(const float& deltaTime) {
 
     _findFramedPage();
 
-    _slenderManager->updateSlenderman(_camera, *_slenderMan, _slendermanSpawnPoints);
+    _slenderManager->updateSlenderman(_camera, *_slenderMan, _slendermanSpawnPoints, _collectedPages);
 
     for (auto renderable : _renderables)
         renderable->render(_camera, _lightUtils);

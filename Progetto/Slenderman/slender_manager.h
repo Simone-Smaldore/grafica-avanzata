@@ -16,23 +16,23 @@ public:
 
     SlenderManager() {};
 
-    void updateSlenderman(const Camera& camera, SlenderMan& slenderman, const std::vector<glm::vec3>& slendermanSpawnPoints);
+    void updateSlenderman(const Camera& camera, SlenderMan& slenderman, const std::vector<glm::vec3>& slendermanSpawnPoints,const int collectedPages);
 
 private:
     glm::mat4 _getSlendemanShaderModel(const Camera& camera);
 
     float _calcSlenderRotationAngle(const Camera& camera);
 
-    vector<glm::vec3> _getNearSpawnPoints(const Camera camera, const std::vector<glm::vec3> slendermanSpawnPoints);
+    vector<glm::vec3> _getNearSpawnPoints(const Camera camera, const std::vector<glm::vec3> slendermanSpawnPoints, const int collectedPages);
 };
 
-void SlenderManager::updateSlenderman(const Camera& camera, SlenderMan& slenderman, const std::vector<glm::vec3>& slendermanSpawnPoints) {
+void SlenderManager::updateSlenderman(const Camera& camera, SlenderMan& slenderman, const std::vector<glm::vec3>& slendermanSpawnPoints, const int collectedPages) {
     glm::mat4 slenderTransform = _getSlendemanShaderModel(camera);
     slenderman.setTransform(slenderTransform);
 
     //TODO Eliminare magic numbers (Secondi e distanza)
-    if (glfwGetTime() - _previousTime > 3) {
-        vector<glm::vec3> nearSpawnPoints = _getNearSpawnPoints(camera, slendermanSpawnPoints);
+    if (glfwGetTime() - _previousTime > TIME_SPAWN_SLENDER_FACTOR * (NUM_PAGES - collectedPages)) {
+        vector<glm::vec3> nearSpawnPoints = _getNearSpawnPoints(camera, slendermanSpawnPoints, collectedPages);
         if (nearSpawnPoints.empty()) {
             return;
         }
@@ -68,12 +68,15 @@ float SlenderManager::_calcSlenderRotationAngle(const Camera& camera) {
     return rotationAngle;
 }
 
-vector<glm::vec3> SlenderManager::_getNearSpawnPoints(Camera camera, std::vector<glm::vec3> slendermanSpawnPoints) {
+vector<glm::vec3> SlenderManager::_getNearSpawnPoints(Camera camera, std::vector<glm::vec3> slendermanSpawnPoints, const int collectedPages) {
     vector<glm::vec3> nearSpawnPoints;
     for (int i = 0; i < slendermanSpawnPoints.size(); i++) {
         float pointCameraDistance = sqrt(pow(slendermanSpawnPoints[i].x - camera.Position.x, 2) + pow(slendermanSpawnPoints[i].z - camera.Position.z, 2));
         // Check sulla distanza TODO: Aggiornare in base al numero delle pagine ed aggiungere distanza minima
-        if (pointCameraDistance > 80.0f) {
+        if (pointCameraDistance > (MAX_EXTERNAL_SPAWN_DISTANCE - SPAWN_OFFSET_PER_PAGE * collectedPages)) {
+            continue;
+        }
+        if (pointCameraDistance < (MAX_INTERNAL_SPAWN_DISTANCE - SPAWN_OFFSET_PER_PAGE * collectedPages)) {
             continue;
         }
         // Check sull'angolo TODO: Verificare che il cono di 40 gradi vada bene
