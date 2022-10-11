@@ -58,6 +58,7 @@ private:
     SlenderManager* _slenderManager;
     vector<glm::vec3> _slendermanSpawnPoints;
     float _fearFactor = 0.0f;
+    float _loseThreshold = 1.0f;
     vector<Page*> _pages;
 
     void _updateInitInfo(std::string info);
@@ -163,6 +164,7 @@ void TestScene::_processInput(const float& deltaTime, const CollisionResult& col
     if (InputManager::isLeftMouseButtonPressed() && _pageFramed != nullptr && !_pageFramed->isCollected()) {
         _pageFramed->setCollected(true);
         _collectedPages++;
+        _loseThreshold = 1.0f - _collectedPages * THRESHOLD_OFFSET;
         _pageCollectedTime = glfwGetTime();
 
         std::stringstream ssPageInfo;
@@ -208,14 +210,21 @@ void TestScene::process(const float& deltaTime) {
     _slenderManager->updateSlenderman(_camera, *_slenderMan, _slendermanSpawnPoints, _collectedPages);
 
     _fearFactor = _slenderManager->updateFearFactor(_camera);
+
     for (auto renderable : _renderables)
         renderable->render(_camera, _lightUtils);
 
     if (!_collectedPageMessage.empty() && _pageCollectedTime + PAGE_COLLECTED_MESSAGE_SECONDS > glfwGetTime())
         RenderText(_collectedPageMessage, (SCR_WIDTH / 2) - 150.0f, SCR_HEIGHT - 200.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
+
     if (_collectedPages == NUM_PAGES) {
         // VITTORIA TODO: Creare scena per la vittoria; Aspettare un secondo per mostrare il text
+        _sceneManager->changeScene(new NullScene());
+    }
+
+    if (_fearFactor > _loseThreshold) {
+        // SCONFITTA TODO: Creare scena per la sconfitta; 
         _sceneManager->changeScene(new NullScene());
     }
     _renderInfo();
