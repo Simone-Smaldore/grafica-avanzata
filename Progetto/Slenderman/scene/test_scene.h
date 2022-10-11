@@ -90,7 +90,7 @@ void TestScene::init() {
     _poiInfo = MapInitializer::initPOI();
     _slendermanSpawnPoints = MapInitializer::initSlenderSpawnPoints(_poiInfo);
 
-    _lightUtils = LightUtils(_poiInfo);
+    _lightUtils.setLights(_poiInfo);
 
     _renderables.push_back(new Floor());
 
@@ -116,18 +116,18 @@ void TestScene::init() {
     for (auto forestAABB : forestAABBs)
         _renderables.push_back(new RenderableAABB(forestAABB));
 
-    /*aabb fenceFront = aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT, -4.0f, MAX_PLAYER_DISTANCE_FRONT + 0.25f), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT, 0.0f, MAX_PLAYER_DISTANCE_FRONT - 0.25f));
+    aabb* fenceFront = new aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT, -4.0f, MAX_PLAYER_DISTANCE_FRONT + 0.25f), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT, 0.0f, MAX_PLAYER_DISTANCE_FRONT - 0.25f));
     _collisionSolver.registerAABB(fenceFront);
     _renderables.push_back(new RenderableAABB(fenceFront));
-    aabb fenceBack = aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT, -4.0f, MAX_PLAYER_DISTANCE_BACK + 0.25f), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT, 0.0f, MAX_PLAYER_DISTANCE_BACK - 0.25f));
+    aabb* fenceBack = new aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT, -4.0f, MAX_PLAYER_DISTANCE_BACK + 0.25f), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT, 0.0f, MAX_PLAYER_DISTANCE_BACK - 0.25f));
     _collisionSolver.registerAABB(fenceBack);
     _renderables.push_back(new RenderableAABB(fenceBack));
-    aabb fenceRight = aabb(glm::vec3(MAX_PLAYER_DISTANCE_RIGHT - 5.25, -4.0f, MAX_PLAYER_DISTANCE_BACK), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT + 5.25f, 0.0f, MAX_PLAYER_DISTANCE_FRONT));
+    aabb* fenceRight = new aabb(glm::vec3(MAX_PLAYER_DISTANCE_RIGHT - 5.25, -4.0f, MAX_PLAYER_DISTANCE_BACK), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT + 5.25f, 0.0f, MAX_PLAYER_DISTANCE_FRONT));
     _collisionSolver.registerAABB(fenceRight);
     _renderables.push_back(new RenderableAABB(fenceRight));
-    aabb fenceLeft = aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT - 5.25, -4.0f, MAX_PLAYER_DISTANCE_BACK), glm::vec3(MAX_PLAYER_DISTANCE_LEFT + 5.25f, 0.0f, MAX_PLAYER_DISTANCE_FRONT));
+    aabb* fenceLeft = new aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT - 5.25, -4.0f, MAX_PLAYER_DISTANCE_BACK), glm::vec3(MAX_PLAYER_DISTANCE_LEFT + 5.25f, 0.0f, MAX_PLAYER_DISTANCE_FRONT));
     _collisionSolver.registerAABB(fenceLeft);
-    _renderables.push_back(new RenderableAABB(fenceLeft));*/
+    _renderables.push_back(new RenderableAABB(fenceLeft));
 
     _renderables.push_back(new Fence());
 
@@ -157,7 +157,7 @@ void TestScene::_processInput(const float& deltaTime, const CollisionResult& col
         double currentTime = glfwGetTime();
         if (currentTime - _previousTime > 0.3f) {
             _previousTime = currentTime;
-            _lightUtils.lightOn = !_lightUtils.lightOn;
+            _lightUtils.flipLightOn();
         }
     }
 

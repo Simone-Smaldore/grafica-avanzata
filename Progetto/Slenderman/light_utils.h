@@ -1,5 +1,6 @@
 #pragma once
 
+#include <assert.h>
 #include <map>
 #include <vector>
 
@@ -9,23 +10,31 @@
 
 class LightUtils {
 public:
-    LightUtils() = default;
-    LightUtils(std::map<int, glm::vec3> poiInfo) {
-        lightTranslationVec = std::vector<glm::vec3>();
-        for (auto poi : poiInfo)
-            lightTranslationVec.push_back(poi.second);
-    }
+    void setLights(const std::map<int, glm::vec3> poiInfo);
+    
+    void initLightShader(Shader* shader, const Camera& camera) const;
 
+    inline void flipLightOn();
+
+private:
     std::vector<glm::vec3> lightTranslationVec;
     bool lightOn = true;
 
-    void initLightShader(Shader* shader, const Camera& camera) const;
-
-private:
     void initSpotLight(Shader* shader, const Camera& camera) const;
+    
     void initPointLightForPoi(Shader* shader, glm::vec3 basePosition, int lightIndex) const;
 };
 
+void LightUtils::setLights(const std::map<int, glm::vec3> poiInfo) {
+    assert(poiInfo.size() > 0);
+    lightTranslationVec.clear();
+    for (auto poi : poiInfo)
+        lightTranslationVec.push_back(poi.second);
+}
+
+inline void LightUtils::flipLightOn() {
+    lightOn = !lightOn;
+}
 
 void LightUtils::initLightShader(Shader* shader, const Camera& camera) const {
     shader->use();

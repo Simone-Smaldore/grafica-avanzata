@@ -91,6 +91,8 @@ void DynamicMapRenderable::renderDynamicMap(const vector<int>& VAOIndexes, const
         if (_tabooIndices.find(vaoIndex) != _tabooIndices.end())
             continue;
         for (unsigned int i = 0; i < _model->meshes.size(); i++) {
+            if (vaoIndex >= _model->meshes[i].VAOs.size())
+                continue;
             for (unsigned int j = 0; j < _model->meshes[i].textures.size(); j++) {
                 glActiveTexture(GL_TEXTURE0 + j);
                 string name = _model->meshes[i].textures[j].type;
