@@ -39,7 +39,6 @@ void SlenderManager::updateSlenderman(const Camera& camera, SlenderMan& slenderm
         int spawnPointIndex = rand() % nearSpawnPoints.size();
         //Scegliere randomicamente e con la direzione dello sguardo
         _slendermanTranslationVector = nearSpawnPoints[spawnPointIndex];
-        cout << "Slender spawned in x: " << nearSpawnPoints[spawnPointIndex].x  << " z: " << nearSpawnPoints[spawnPointIndex].z << endl;
         _previousTime = glfwGetTime();
     }
 }

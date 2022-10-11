@@ -167,8 +167,6 @@ void TestScene::_processInput(const float& deltaTime, const CollisionResult& col
         std::stringstream ssPageInfo;
         ssPageInfo << "Collected Page: " << _collectedPages << "/" << NUM_PAGES;
         _collectedPageMessage = ssPageInfo.str();
-
-        // nTODO: Vittoria
     }
 }
 
@@ -214,6 +212,10 @@ void TestScene::process(const float& deltaTime) {
     if (!_collectedPageMessage.empty() && _pageCollectedTime + PAGE_COLLECTED_MESSAGE_SECONDS > glfwGetTime())
         RenderText(_collectedPageMessage, (SCR_WIDTH / 2) - 150.0f, SCR_HEIGHT - 200.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
+    if (_collectedPages == NUM_PAGES) {
+        // VITTORIA TODO: Creare scena per la vittoria; Aspettare un secondo per mostrare il text
+        _sceneManager->changeScene(new NullScene());
+    }
     _renderInfo();
 }
 

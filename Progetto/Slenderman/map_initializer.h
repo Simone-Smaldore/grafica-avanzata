@@ -178,9 +178,17 @@ glm::mat4 MapInitializer::_computePOITransformForModel(EModel model, const glm::
     return transform;
 }
 
-void MapInitializer::addPOIRenderablesAndStreetLights(const std::map<int, glm::vec3>& poiInfo, std::vector<Page*>& pages, vector<Renderable*>& renderables, CollisionSolver& collisionSolver) {
-    int i = 0;
+void MapInitializer::addPOIRenderablesAndStreetLights(const std::map<int, glm::vec3>& poiInfo, std::vector<Page*>& pages, vector<Renderable*>& renderables, CollisionSolver& collisionSolver) {   
+    vector<int> excludePageIndices;
+    for (int i = 0; i < NUMBER_POINTS_OF_INTEREST - NUM_PAGES; i++) {
+        int pageIndex = rand() % NUMBER_POINTS_OF_INTEREST;
+        while (std::count(excludePageIndices.begin(), excludePageIndices.end(), pageIndex)) {
+            pageIndex = rand() % NUMBER_POINTS_OF_INTEREST;
+        }
+        excludePageIndices.push_back(pageIndex);
+    }
     
+    int i = 0;
     for (auto poi : poiInfo) {
         ETexture texture = static_cast<ETexture>(i + static_cast<int>(ETexture::poi1));
         EModel model = static_cast<EModel>(i + static_cast<int>(EModel::poi1));
@@ -200,6 +208,9 @@ void MapInitializer::addPOIRenderablesAndStreetLights(const std::map<int, glm::v
 
         ETexture pageTexture = static_cast<ETexture>(i + static_cast<int>(ETexture::page1));
         Page* page = new Page(pageTexture, poi.second);
+        if (std::count(excludePageIndices.begin(), excludePageIndices.end(), i)) {
+            page->setCollected(true);
+        }
         pages.push_back(page);
         renderables.push_back(page);
 
