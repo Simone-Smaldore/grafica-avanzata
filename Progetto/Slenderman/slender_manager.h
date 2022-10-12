@@ -6,6 +6,7 @@
 #include <glm/detail/type_vec.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "../audio_manager.h"
 #include "../camera.h"
 #include "../slenderman.h"
 
@@ -18,9 +19,9 @@ public:
 
     SlenderManager() {};
 
-    void updateSlenderman(const Camera& camera, SlenderMan& slenderman, const std::vector<glm::vec3>& slendermanSpawnPoints,const int collectedPages);
+    void updateSlenderman(const Camera& camera, SlenderMan& slenderman, const std::vector<glm::vec3>& slendermanSpawnPoints, const int collectedPages);
 
-    float updateFearFactor(const Camera& camera);
+    float updateFearFactor(const Camera& camera, const float previousFearFactor);
 
 private:
     glm::mat4 _getSlendemanShaderModel(const Camera& camera);
@@ -34,7 +35,7 @@ private:
     float _calcPositiveFearFactor(float distance, float angle, float timeDifference);
 };
 
-void SlenderManager::updateSlenderman(const Camera& camera, SlenderMan& slenderman, const std::vector<glm::vec3>& slendermanSpawnPoints, const int collectedPages) {            
+void SlenderManager::updateSlenderman(const Camera& camera, SlenderMan& slenderman, const std::vector<glm::vec3>& slendermanSpawnPoints, const int collectedPages) {
     //TODO Eliminare magic numbers (Secondi e distanza)
     if (glfwGetTime() - _previousTime > TIME_SPAWN_SLENDER_FACTOR * (NUM_PAGES - collectedPages) && _fearFactor == 0) {
         vector<glm::vec3> nearSpawnPoints = _getNearSpawnPoints(camera, slendermanSpawnPoints, collectedPages);
@@ -51,10 +52,14 @@ void SlenderManager::updateSlenderman(const Camera& camera, SlenderMan& slenderm
     slenderman.setTransform(slenderTransform);
 }
 
-float SlenderManager::updateFearFactor(const Camera& camera) {
+float SlenderManager::updateFearFactor(const Camera& camera, const float previousFearFactor) {
     float slenderDistance = sqrt(pow(_slendermanTranslationVector.x - camera.Position.x, 2) + pow(_slendermanTranslationVector.z - camera.Position.z, 2));
     if (slenderDistance > DISTANCE_RESET_FEAR) {
-        _fearFactor = 0;
+        // nTODO: Numeri magici...
+        if (previousFearFactor > 0.05)
+            _fearFactor = previousFearFactor - 0.005;
+        else
+            _fearFactor = 0;
     }
     else {
         float slenderAngle = atan2((_slendermanTranslationVector.x - camera.Position.x), (_slendermanTranslationVector.z - camera.Position.z)) - atan2(camera.Front.x, camera.Front.z);
@@ -70,6 +75,7 @@ float SlenderManager::updateFearFactor(const Camera& camera) {
             _fearFactor = std::min(1.0f, _fearFactor + _calcPositiveFearFactor(slenderDistance, slenderAngle, timeDifference));
         }
     }
+    AudioManager::getInstance().setMusicVolume(EMusic::whiteNoise, _fearFactor);
     _fearUpdateTime = glfwGetTime();
     return _fearFactor;
 }
@@ -111,7 +117,7 @@ vector<glm::vec3> SlenderManager::_getNearSpawnPoints(Camera camera, std::vector
             continue;
         }
         // Check sull'angolo TODO: Verificare che il cono di 40 gradi vada bene
-        float angle = atan2((slendermanSpawnPoints[i].x - camera.Position.x), (slendermanSpawnPoints[i].z - camera.Position.z)) - atan2(camera.Front.x , camera.Front.z);
+        float angle = atan2((slendermanSpawnPoints[i].x - camera.Position.x), (slendermanSpawnPoints[i].z - camera.Position.z)) - atan2(camera.Front.x, camera.Front.z);
         angle = angle * 180 / M_PI;
         if (angle < 0) {
             angle = angle + 360.0f;
@@ -126,7 +132,7 @@ vector<glm::vec3> SlenderManager::_getNearSpawnPoints(Camera camera, std::vector
 }
 
 float SlenderManager::_calcNegativeFearFactor(float distance, float angle, float timeDifference) {
-    float fearFactor = (1.0f / (MEDIUM_TIME_DEATH*2)) * (distance) / DISTANCE_RESET_FEAR;
+    float fearFactor = (1.0f / (MEDIUM_TIME_DEATH * 2)) * (distance) / DISTANCE_RESET_FEAR;
     if (angle <= 180.0f) {
         fearFactor -= fearFactor * (180.0f - angle) / 180.0f;
     }

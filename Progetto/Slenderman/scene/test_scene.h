@@ -13,6 +13,7 @@
 #include "../collision_solver.h"
 #include "../constants.h"
 #include "../dynamic_map_renderable.h"
+#include "../fear_renderable.h"
 #include "../fence.h"
 #include "../floor.h"
 #include "../input_manager.h"
@@ -91,7 +92,7 @@ void TestScene::init() {
     _slendermanSpawnPoints = MapInitializer::initSlenderSpawnPoints(_poiInfo);
 
     _lightUtils.setLights(_poiInfo);
-
+    
     _renderables.push_back(new Floor());
 
     _slenderMan = new SlenderMan();
@@ -133,6 +134,8 @@ void TestScene::init() {
 
     MapInitializer::addPOIRenderablesAndStreetLights(_poiInfo, _pages, _renderables, _collisionSolver);
     _renderables.push_back(new Minimap(_poiInfo));
+
+    _renderables.push_back(new FearRenderable(_fearFactor));
 }
 
 void TestScene::_processInput(const float& deltaTime, const CollisionResult& collisionResult) {
@@ -204,7 +207,7 @@ void TestScene::process(const float& deltaTime) {
 
     _slenderManager->updateSlenderman(_camera, *_slenderMan, _slendermanSpawnPoints, _collectedPages);
 
-    _fearFactor = _slenderManager->updateFearFactor(_camera);
+    _fearFactor = _slenderManager->updateFearFactor(_camera, _fearFactor);
 
     for (auto renderable : _renderables)
         renderable->render(_camera, _lightUtils);

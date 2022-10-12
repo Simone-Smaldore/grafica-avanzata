@@ -10,7 +10,8 @@ enum class ESfx {
 };
 
 enum class EMusic {
-    background
+    background,
+    whiteNoise
 };
 
 class AudioManager {
@@ -30,7 +31,13 @@ public:
 
     inline void initAudio() const;
 
-    void loadMusic(EMusic key, std::string filePath, bool autoplay = false);
+    void loadMusic(EMusic key, std::string filePath, bool autoplay = false, float volume = 1.0f);
+
+    void playMusicFromBeginning(EMusic key, float volume = 1.0f) const;
+
+    void pauseMusic(EMusic key) const;
+
+    void setMusicVolume(EMusic key, float volume) const;
 
     void loadSfx(ESfx key, std::string filePath);
 
@@ -50,11 +57,38 @@ inline void AudioManager::initAudio() const {
     InitAudioDevice();
 }
 
-void AudioManager::loadMusic(EMusic key, std::string filePath, bool autoplay) {
+void AudioManager::loadMusic(EMusic key, std::string filePath, bool autoplay, float volume) {
     Music music = LoadMusicStream(filePath.c_str());
-    if (autoplay)
+    if (autoplay) {
+        SetMusicVolume(music, volume);
         PlayMusicStream(music);
+    }
     _musicCache[key] = music;
+}
+
+void AudioManager::playMusicFromBeginning(EMusic key, float volume) const {
+    auto music = _musicCache.find(key);
+    if (music == _musicCache.end())
+        return;
+    if (volume > 1.0)
+        volume = 1.0;
+    SetMusicVolume(music->second, volume);
+    SeekMusicStream(music->second, 0.0f);
+    PlayMusicStream(music->second);
+}
+
+void AudioManager::pauseMusic(EMusic key) const {
+    auto music = _musicCache.find(key);
+    if (music == _musicCache.end())
+        return;
+    PauseMusicStream(music->second);
+}
+
+void AudioManager::setMusicVolume(EMusic key, float volume) const {
+    auto music = _musicCache.find(key);
+    if (music == _musicCache.end())
+        return;
+    SetMusicVolume(music->second, volume);
 }
 
 void AudioManager::loadSfx(ESfx key, std::string filePath) {
@@ -73,11 +107,14 @@ void AudioManager::playSfx(ESfx key, float volume) const {
 }
 
 void AudioManager::process() const {
-    for (const auto& music : _musicCache)
+    for (const auto& music : _musicCache) {
+        if (!IsMusicStreamPlaying(music.second))
+            continue;
+
+        if (GetMusicTimePlayed(music.second) > GetMusicTimeLength(music.second))
+            SeekMusicStream(music.second, 0.0f);
         UpdateMusicStream(music.second);
-    // TODO: Always loop music?
-/*if (GetMusicTimePlayed(backgroundMusic) > GetMusicTimeLength(backgroundMusic))
-    SeekMusicStream(backgroundMusic, 0);*/
+    }
 }
 
 void AudioManager::destroy() {

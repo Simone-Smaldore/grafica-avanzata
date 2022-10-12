@@ -70,6 +70,12 @@
     <None Include="aabb.fs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="fear.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="fear.vs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -195,6 +201,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="audio_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fear_renderable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

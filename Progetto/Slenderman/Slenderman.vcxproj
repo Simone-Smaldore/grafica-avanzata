@@ -168,6 +168,8 @@
     <None Include="aabb.vs" />
     <None Include="circle_minimap.fs" />
     <None Include="circle_minimap.vs" />
+    <None Include="fear.fs" />
+    <None Include="fear.vs" />
     <None Include="light_shader.fs" />
     <None Include="light_shader.vs" />
     <None Include="minimap_shader.fs" />
@@ -196,6 +198,7 @@
     <ClInclude Include="collision_solver.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="dynamic_map_renderable.h" />
+    <ClInclude Include="fear_renderable.h" />
     <ClInclude Include="fence.h" />
     <ClInclude Include="floor.h" />
     <ClInclude Include="fps_manager.h" />

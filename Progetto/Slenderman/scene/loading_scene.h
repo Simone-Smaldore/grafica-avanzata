@@ -67,6 +67,7 @@ void LoadingScene::_loadShaders() {
     ShaderCache::getInstance().registerShader(EShader::page, new Shader("multiple_lights.vs", "multiple_lights.fs"));
     ShaderCache::getInstance().registerShader(EShader::singleColor, new Shader("stencil_single_color.vs", "stencil_single_color.fs"));
     ShaderCache::getInstance().registerShader(EShader::aabb, new Shader("aabb.vs", "aabb.fs"));
+    ShaderCache::getInstance().registerShader(EShader::fear, new Shader("fear.vs", "fear.fs"));
 }
 
 void LoadingScene::_loadTextures() {
@@ -113,6 +114,8 @@ void LoadingScene::_loadModels() {
 void LoadingScene::_loadAudio() {
     // TODO: load all audio
     //AudioManager::getInstance().loadMusic(EMusic::background, "resources/audio/creepy-music.mp3", true);
+    AudioManager::getInstance().loadMusic(EMusic::whiteNoise, "resources/audio/white-noise.wav", true, 0.0f);
+
     AudioManager::getInstance().loadSfx(ESfx::lightOn, "resources/audio/light-on.wav");
 }
 

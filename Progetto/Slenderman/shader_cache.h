@@ -17,7 +17,8 @@ enum class EShader {
     fence,
     page,
     singleColor,
-    aabb
+    aabb,
+    fear,
 };
 
 class ShaderCache {
