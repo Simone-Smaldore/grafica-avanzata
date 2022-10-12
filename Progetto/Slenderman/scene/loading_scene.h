@@ -33,9 +33,13 @@ private:
     GLFWwindow* _window;
     SceneManager* _sceneManager;
 
+    bool _transitionStarted = false;
+    double _transitionStartedTime;
+
     void _loadShaders();
     void _loadTextures();
     void _loadModels();
+    void _loadAudio();
 
 public:
     LoadingScene(SceneManager* sceneManager, GLFWwindow* window) : _sceneManager(sceneManager), _window(window) {}
@@ -106,9 +110,16 @@ void LoadingScene::_loadModels() {
     }
 }
 
+void LoadingScene::_loadAudio() {
+    // TODO: load all audio
+    //AudioManager::getInstance().loadMusic(EMusic::background, "resources/audio/creepy-music.mp3", true);
+    AudioManager::getInstance().loadSfx(ESfx::lightOn, "resources/audio/light-on.wav");
+}
+
 void LoadingScene::init() {
     initRenderText(SCR_WIDTH, SCR_HEIGHT);
-
+    _forceRenderText("Loading audio...");
+    _loadAudio();
     _forceRenderText("Loading shaders...");
     _loadShaders();
     _forceRenderText("Loading textures...");
@@ -117,19 +128,25 @@ void LoadingScene::init() {
     _loadModels();
     _forceRenderText("Generating map...");
 
-    // TODO: load all audio
-    //AudioManager::getInstance().loadMusic(EMusic::background, "resources/audio/creepy-music.mp3", true);
-
     _gameScene = new TestScene(_sceneManager, _forceRenderText);
     _gameScene->init();
 }
 
 void LoadingScene::process(const float& deltaTime) {
-    RenderText("SLENDERMAN", 0, SCR_HEIGHT - 32, 1, glm::vec3(1, 1, 1));
-    RenderText("Loading done: press space to play", 0, SCR_HEIGHT - 72, 0.8, glm::vec3(1, 1, 1));
+    if (InputManager::isKeyPressed(GLFW_KEY_SPACE) && !_transitionStarted) {
+        _transitionStarted = true;
+        _transitionStartedTime = glfwGetTime();
+    }
 
-    if (InputManager::isKeyPressed(GLFW_KEY_SPACE))
+    if (!_transitionStarted) {
+        RenderText("SLENDERMAN", 0, SCR_HEIGHT - 32, 1, glm::vec3(1, 1, 1));
+        RenderText("Loading done: press space to play", 0, SCR_HEIGHT - 72, 0.8, glm::vec3(1, 1, 1));
+    }
+
+    if (_transitionStarted && glfwGetTime() - _transitionStartedTime > 1) {
+        AudioManager::getInstance().playSfx(ESfx::lightOn, 0.33);
         _sceneManager->changeScene(_gameScene);
+    }
 }
 
 void LoadingScene::destroy() { }

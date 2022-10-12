@@ -6,7 +6,7 @@
 #include "raudio/raudio.h"
 
 enum class ESfx {
-
+    lightOn
 };
 
 enum class EMusic {
@@ -32,6 +32,10 @@ public:
 
     void loadMusic(EMusic key, std::string filePath, bool autoplay = false);
 
+    void loadSfx(ESfx key, std::string filePath);
+
+    void playSfx(ESfx key, float volume = 1.0f) const;
+
     void process() const;
 
     void destroy();
@@ -53,17 +57,35 @@ void AudioManager::loadMusic(EMusic key, std::string filePath, bool autoplay) {
     _musicCache[key] = music;
 }
 
+void AudioManager::loadSfx(ESfx key, std::string filePath) {
+    Sound sound = LoadSound(filePath.c_str());
+    _sfxCache[key] = sound;
+}
+
+void AudioManager::playSfx(ESfx key, float volume) const {
+    auto sfx = _sfxCache.find(key);
+    if (sfx == _sfxCache.end())
+        return;
+    if (volume > 1.0)
+        volume = 1.0;
+    SetSoundVolume(sfx->second, volume);
+    PlaySound(sfx->second);
+}
+
 void AudioManager::process() const {
     for (const auto& music : _musicCache)
         UpdateMusicStream(music.second);
-        // TODO: Always loop music?
-    /*if (GetMusicTimePlayed(backgroundMusic) > GetMusicTimeLength(backgroundMusic))
-        SeekMusicStream(backgroundMusic, 0);*/
+    // TODO: Always loop music?
+/*if (GetMusicTimePlayed(backgroundMusic) > GetMusicTimeLength(backgroundMusic))
+    SeekMusicStream(backgroundMusic, 0);*/
 }
 
 void AudioManager::destroy() {
     for (const auto& music : _musicCache)
         UnloadMusicStream(music.second);
-    
+
+    for (const auto& sfx : _sfxCache)
+        UnloadSound(sfx.second);
+
     CloseAudioDevice();
 }

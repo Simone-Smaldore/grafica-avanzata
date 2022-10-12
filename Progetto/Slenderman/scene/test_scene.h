@@ -136,11 +136,6 @@ void TestScene::init() {
 }
 
 void TestScene::_processInput(const float& deltaTime, const CollisionResult& collisionResult) {
-    if (InputManager::isKeyPressed(GLFW_KEY_ESCAPE)) {
-        glfwSetWindowShouldClose(_window, true);
-        return;
-    }
-
     bool superSaiyan = InputManager::isKeyPressed(GLFW_KEY_LEFT_SHIFT);
     float speedIncrement = superSaiyan ? 150.0f : 0.0f;
 
