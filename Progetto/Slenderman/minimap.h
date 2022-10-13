@@ -16,13 +16,14 @@ private:
     unsigned int _textureColorBuffer;
     unsigned int _minimapWoodVAO;
     unsigned int _circleVAO;
+    unsigned int _personVAO;
     Shader* _minimapWoodShader;
     Shader* _minimapCircleShader;
 
     std::vector<glm::mat4> _circleTransforms;
 
     void _initMinimap();
-    void _initMinimapCircle();
+    void _initMinimapMarkers();
     void _buildMinimap(const Camera& camera);
 
 public:
@@ -46,7 +47,7 @@ Minimap::Minimap(const std::map<int, glm::vec3>& poiInfo) {
     _minimapCircleShader = ShaderCache::getInstance().findShader(EShader::minimapCircle);
 
     _initMinimap();
-    _initMinimapCircle();
+    _initMinimapMarkers();
 }
 
 void Minimap::_initMinimap() {
@@ -130,7 +131,7 @@ void Minimap::_initMinimap() {
     _framebuffer = framebuffer;
 }
 
-void Minimap::_initMinimapCircle() {
+void Minimap::_initMinimapMarkers() {
     int steps = NUM_VERTICES_CIRCLE / 6;
 
     float circleVertices[NUM_VERTICES_CIRCLE] = {};
@@ -171,6 +172,25 @@ void Minimap::_initMinimapCircle() {
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 
     _circleVAO = circleVAO;
+
+    float personMarkerVertices[] = {
+        // positions 
+        -0.5f, -0.7f, 
+         0.0f,  0.6f,  
+         0.5f, -0.7f
+    };
+
+    unsigned int personVAO;
+    unsigned int personVBO;
+    glGenVertexArrays(1, &personVAO);
+    glGenBuffers(1, &personVBO);
+    glBindVertexArray(personVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, personVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(personMarkerVertices), &personMarkerVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+
+    _personVAO = personVAO;
 }
 
 void Minimap::_buildMinimap(const Camera& camera) {
@@ -192,13 +212,18 @@ void Minimap::_buildMinimap(const Camera& camera) {
         glDrawArrays(GL_TRIANGLES, 0, NUM_VERTICES_CIRCLE / 2);
     }
 
+    float rotationAngle = atan2(camera.Front.x, camera.Front.z);
+    rotationAngle = rotationAngle * 180 / M_PI;
+
     glm::mat4 transform = glm::mat4(1.0f);
     transform = glm::translate(transform, glm::vec3(-camera.Position.x / MAX_W_QUAD_MAP, camera.Position.z / MAX_W_QUAD_MAP, 0.0f));
-    transform = glm::scale(transform, glm::vec3(0.04f, 0.04f, 0.04f));
+    transform = glm::scale(transform, glm::vec3(0.09f, 0.09f, 0.09f));
+    transform = glm::rotate(transform, (float)glm::radians(rotationAngle), glm::vec3(0.0f, 0.0f, 1.0f));
     _minimapCircleShader->setMat4("transform", transform);
     _minimapCircleShader->setVec3("circleColor", glm::vec3(1.0f, 0.0f, 0.0f));
-    glBindVertexArray(_circleVAO);
-    glDrawArrays(GL_TRIANGLES, 0, NUM_VERTICES_CIRCLE / 2);
+
+    glBindVertexArray(_personVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 
     glEnable(GL_DEPTH_TEST);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
