@@ -37,10 +37,10 @@ const std::unordered_set<int> K_SET_TO_EXCLUDE = { 300 };
 const float STREETLIGHT_POI_OFFSET = 10.0f;
 const float SLENDERMAN_OUT_OF_TREE_OFFSET = 5.0f;
 
-const float MAX_PLAYER_DISTANCE_FRONT = -1340.0f;
-const float MAX_PLAYER_DISTANCE_BACK = 1340.0f;
-const float MAX_PLAYER_DISTANCE_RIGHT = 1330.0f;
-const float MAX_PLAYER_DISTANCE_LEFT = -1350.0f;
+const float MAX_PLAYER_DISTANCE_FRONT = -1343.0f;
+const float MAX_PLAYER_DISTANCE_BACK = 1343.5f;
+const float MAX_PLAYER_DISTANCE_RIGHT = 1333.5f;
+const float MAX_PLAYER_DISTANCE_LEFT = -1353.5f;
 
 // COSTANTI PER LA COLLEZIONE DELLE PAGINE
 // -------------------------------------------------------------------------------------------

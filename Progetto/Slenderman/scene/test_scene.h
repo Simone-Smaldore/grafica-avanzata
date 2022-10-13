@@ -123,10 +123,10 @@ void TestScene::init() {
     aabb* fenceBack = new aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT, -4.0f, MAX_PLAYER_DISTANCE_BACK + 0.25f), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT, 0.0f, MAX_PLAYER_DISTANCE_BACK - 0.25f));
     _collisionSolver.registerAABB(fenceBack);
     _renderables.push_back(new RenderableAABB(fenceBack));
-    aabb* fenceRight = new aabb(glm::vec3(MAX_PLAYER_DISTANCE_RIGHT - 5.25, -4.0f, MAX_PLAYER_DISTANCE_BACK), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT + 5.25f, 0.0f, MAX_PLAYER_DISTANCE_FRONT));
+    aabb* fenceRight = new aabb(glm::vec3(MAX_PLAYER_DISTANCE_RIGHT + 0.25, -4.0f, MAX_PLAYER_DISTANCE_BACK), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT - 0.25f, 0.0f, MAX_PLAYER_DISTANCE_FRONT));
     _collisionSolver.registerAABB(fenceRight);
     _renderables.push_back(new RenderableAABB(fenceRight));
-    aabb* fenceLeft = new aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT - 5.25, -4.0f, MAX_PLAYER_DISTANCE_BACK), glm::vec3(MAX_PLAYER_DISTANCE_LEFT + 5.25f, 0.0f, MAX_PLAYER_DISTANCE_FRONT));
+    aabb* fenceLeft = new aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT - 0.25f, -4.0f, MAX_PLAYER_DISTANCE_BACK), glm::vec3(MAX_PLAYER_DISTANCE_LEFT + 0.25f, 0.0f, MAX_PLAYER_DISTANCE_FRONT));
     _collisionSolver.registerAABB(fenceLeft);
     _renderables.push_back(new RenderableAABB(fenceLeft));
 
