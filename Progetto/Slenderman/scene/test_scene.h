@@ -92,7 +92,7 @@ void TestScene::_updateInitInfo(std::string info) {
 }
 
 void TestScene::init() {
-    _updateInitInfo("Generating POI...");
+    //_updateInitInfo("Generating POI...");
     _poiInfo = MapInitializer::initPOI();
     _slendermanSpawnPoints = MapInitializer::initSlenderSpawnPoints(_poiInfo);
 
@@ -104,7 +104,7 @@ void TestScene::init() {
     _slenderManager = new SlenderManager();
     _renderables.push_back(_slenderMan);
 
-    _updateInitInfo("Generating random map...");
+    //_updateInitInfo("Generating random map...");
     _renderables.push_back(new DynamicMapRenderable(DynamicEntity::grass));
 
     unordered_set<int> tabooIndices = unordered_set<int>();
@@ -114,7 +114,7 @@ void TestScene::init() {
     for (auto poi : _poiInfo)
         tabooIndices.insert(poi.first);
 
-    _updateInitInfo("Generating random forest...");
+    //_updateInitInfo("Generating random forest...");
     DynamicMapRenderable* forest = new DynamicMapRenderable(DynamicEntity::tree, tabooIndices);
     _renderables.push_back(forest);
     std::vector<aabb*> forestAABBs = forest->toAABBs();
@@ -172,7 +172,6 @@ void TestScene::_processInput(const float& deltaTime, const CollisionResult& col
         _camera.ProcessKeyboard(LEFT, deltaTime, speedIncrement);
     if (InputManager::isKeyPressed(GLFW_KEY_D) && (!collisionResult.e || superSaiyan))
         _camera.ProcessKeyboard(RIGHT, deltaTime, speedIncrement);
-
 
     if (InputManager::isKeyPressed(GLFW_KEY_F)) {
         double currentTime = glfwGetTime();

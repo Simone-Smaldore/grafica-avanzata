@@ -17,12 +17,12 @@
 #include "../scene.h"
 #include "../shader_cache.h"
 #include "../texture_cache.h"
+#include "fullscreen_image.h"
 
 static void _forceRenderText(std::string text) {
     glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     RenderText("SLENDERMAN", 0, SCR_HEIGHT - 32, 1, glm::vec3(1, 1, 1));
-
     RenderText(text, 0, SCR_HEIGHT - 72, 0.8, glm::vec3(1, 1, 1));
     glfwSwapBuffers(_window);
 }
@@ -33,6 +33,10 @@ private:
     GLFWwindow* _window;
     SceneManager* _sceneManager;
 
+    FullsceenImage* _menuImage;
+    Camera _camera;
+    LightUtils _lightUtils;
+
     bool _transitionStarted = false;
     double _transitionStartedTime;
 
@@ -40,6 +44,7 @@ private:
     void _loadTextures();
     void _loadModels();
     void _loadAudio();
+    void _renderActualInfo(std::string text);
 
 public:
     LoadingScene(SceneManager* sceneManager, GLFWwindow* window) : _sceneManager(sceneManager), _window(window) {}
@@ -119,17 +124,26 @@ void LoadingScene::_loadAudio() {
     AudioManager::getInstance().loadSfx(ESfx::lightOn, "resources/audio/light-on.wav");
 }
 
+void LoadingScene::_renderActualInfo(std::string text) {
+    glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    _menuImage->render(_camera, _lightUtils);
+    RenderText(text, SCR_WIDTH / 2, SCR_HEIGHT / 3 - 40, 0.8, glm::vec3(1, 1, 1));
+    glfwSwapBuffers(_window);
+}
+
 void LoadingScene::init() {
+    _menuImage = new FullsceenImage(ETexture::menuImage);
     initRenderText(SCR_WIDTH, SCR_HEIGHT);
-    _forceRenderText("Loading audio...");
+    _renderActualInfo("Loading audio...");
     _loadAudio();
-    _forceRenderText("Loading shaders...");
+    _renderActualInfo("Loading shaders...");
     _loadShaders();
-    _forceRenderText("Loading textures...");
+    _renderActualInfo("Loading textures...");
     _loadTextures();
-    _forceRenderText("Loading models...");
+    _renderActualInfo("Loading models...");
     _loadModels();
-    _forceRenderText("Generating map...");
+    _renderActualInfo("Generating map...");
 
     _gameScene = new TestScene(_sceneManager, _forceRenderText);
     _gameScene->init();
@@ -142,8 +156,8 @@ void LoadingScene::process(const float& deltaTime) {
     }
 
     if (!_transitionStarted) {
-        RenderText("SLENDERMAN", 0, SCR_HEIGHT - 32, 1, glm::vec3(1, 1, 1));
-        RenderText("Loading done: press space to play", 0, SCR_HEIGHT - 72, 0.8, glm::vec3(1, 1, 1));
+        _menuImage->render(_camera, _lightUtils);
+        RenderText("Loading done: press space to play", SCR_WIDTH/2 - 400, 80, 0.8, glm::vec3(1, 1, 1));
     }
 
     if (_transitionStarted && glfwGetTime() - _transitionStartedTime > 1) {

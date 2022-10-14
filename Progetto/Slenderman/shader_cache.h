@@ -19,6 +19,7 @@ enum class EShader {
     singleColor,
     aabb,
     fear,
+    fullScreenImage,
 };
 
 class ShaderCache {

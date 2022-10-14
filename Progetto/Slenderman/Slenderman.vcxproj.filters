@@ -209,5 +209,8 @@
     <ClInclude Include="menu_scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="fullscreen_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

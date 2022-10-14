@@ -202,6 +202,7 @@
     <ClInclude Include="fence.h" />
     <ClInclude Include="floor.h" />
     <ClInclude Include="fps_manager.h" />
+    <ClInclude Include="fullscreen_image.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="input_manager.h" />
     <ClInclude Include="input_utils.h" />

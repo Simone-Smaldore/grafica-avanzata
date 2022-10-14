@@ -1,5 +1,6 @@
 #pragma once
 #include "scene/loading_scene.h"
+#include "fullscreen_image.h"
 
 
 class MenuScene : public Scene {
@@ -7,6 +8,7 @@ private:
     LoadingScene* _loadingScene;
     GLFWwindow* _window;
     SceneManager* _sceneManager;
+    FullsceenImage* _menuImage;
 
     bool _transitionStarted = false;
     double _transitionStartedTime;
@@ -27,20 +29,24 @@ public:
 void MenuScene::_renderMenu() {
     glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    RenderText("SLENDERMAN", 0, SCR_HEIGHT - 32, 1, glm::vec3(1, 1, 1));
-    RenderText("[Enter] to Start Game", 0, SCR_HEIGHT - 72, 0.8, glm::vec3(1, 1, 1));
-    RenderText("[Q] or [Esc] to Quit", 0, SCR_HEIGHT - 102, 0.8, glm::vec3(1, 1, 1));
+    Camera camera;
+    LightUtils lightUtils;
+    _menuImage->render(camera, lightUtils);
+    RenderText("[Enter] to Start Game", SCR_WIDTH/2, SCR_HEIGHT/3 , 0.8, glm::vec3(1, 1, 1));
+    RenderText("[Q] or [Esc] to Quit", SCR_WIDTH / 2, SCR_HEIGHT/3 - 40, 0.8, glm::vec3(1, 1, 1));
     glfwSwapBuffers(_window);
     glfwSwapBuffers(_window);
 }
 
 void MenuScene::init() {
     initRenderText(SCR_WIDTH, SCR_HEIGHT);
+    ShaderCache::getInstance().registerShader(EShader::fullScreenImage, new Shader("minimap_shader.vs", "minimap_shader.fs"));
+    TextureCache::getInstance().registerTexture(ETexture::menuImage, "resources/textures/menu_image.jpg");
+    _menuImage = new FullsceenImage(ETexture::menuImage);
 }
 
 void MenuScene::process(const float& deltaTime) {
     _renderMenu();
-
     if (InputManager::isKeyPressed(GLFW_KEY_Q) || InputManager::isKeyPressed(GLFW_KEY_ESCAPE))
         glfwSetWindowShouldClose(_window, true);
 
