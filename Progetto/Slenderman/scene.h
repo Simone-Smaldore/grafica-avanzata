@@ -1,7 +1,15 @@
 #pragma once
 
+#include <map>
+
 #include "camera.h"
 #include "input_manager.h"
+
+enum class EScene {
+    menu,
+    loading,
+    game,
+};
 
 class Scene {
 protected:
@@ -28,22 +36,53 @@ class NullScene : public Scene {
     inline virtual Camera* currentCamera() override { return nullptr; };
 };
 
+class SceneManager;
+
+typedef Scene* SceneBuilder(SceneManager* sceneManager, GLFWwindow* window);
+
 class SceneManager {
 private:
+    GLFWwindow* _window;
+
     NullScene* _nullScene = new NullScene();
     Scene* _currentScene = _nullScene;
 
+    std::map<EScene, SceneBuilder*> _sceneBuilderMap;
+
 public:
+    SceneManager(GLFWwindow* window) : _window(window) {}
+
     inline Scene* currentScene() const;
 
-    void changeScene(Scene* scene);
+    void addSceneBuilder(EScene scene, SceneBuilder* builder);
+
+    void changeScene(EScene scene);
+    
+    void changePreloadedScene(Scene* scene);
 };
 
 Scene* SceneManager::currentScene() const {
     return _currentScene;
 }
 
-void SceneManager::changeScene(Scene* scene) {
+void SceneManager::addSceneBuilder(EScene scene, SceneBuilder* builder) {
+    _sceneBuilderMap[scene] = builder;
+}
+
+void SceneManager::changeScene(EScene scene) {
+    Scene* previousScene = _currentScene;
+
+    _currentScene = (*_sceneBuilderMap[scene])(this, _window);
+    _currentScene->init();
+
+    previousScene->destroy();
+    if (previousScene != _nullScene)
+        delete previousScene;
+
+    InputManager::bindCamera(_currentScene->currentCamera());
+}
+
+void SceneManager::changePreloadedScene(Scene* scene) {
     Scene* previousScene = _currentScene;
     _currentScene = _nullScene;
 

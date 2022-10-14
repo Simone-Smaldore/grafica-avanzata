@@ -39,6 +39,8 @@ public:
     Shader* findShader(EShader key);
 
     void clear();
+
+    inline bool has(EShader key) const { return _shaderCache.find(key) != _shaderCache.end(); }
 };
 
 ShaderCache& ShaderCache::getInstance() {
@@ -47,6 +49,9 @@ ShaderCache& ShaderCache::getInstance() {
 }
 
 void ShaderCache::registerShader(EShader key, Shader* value) {
+    if (_shaderCache.find(key) != _shaderCache.end())
+        return;
+
     _shaderCache[key] = value;
 }
 

@@ -53,6 +53,9 @@ public:
     unsigned int findTexture(ETexture key);
 
     void clear();
+
+    inline bool has(ETexture key) const { return _textureCache.find(key) != _textureCache.end(); }
+
 };
 
 TextureCache& TextureCache::getInstance() {
@@ -61,6 +64,9 @@ TextureCache& TextureCache::getInstance() {
 }
 
 void TextureCache::registerTexture(ETexture key, const char* path) {
+    if (_textureCache.find(key) != _textureCache.end())
+        return;
+
     unsigned int value = _loadTexture(path);
     _textureCache[key] = value;
 }

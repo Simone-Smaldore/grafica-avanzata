@@ -130,8 +130,9 @@ void GameScene::init() {
 }
 
 void GameScene::_processInput(const float& deltaTime, const CollisionResult& collisionResult) {
-    if (_menuOpen && InputManager::isKeyPressed(GLFW_KEY_Q)) {
-        //TODO Andare al menu
+    if (_menuOpen && InputManager::isKeyPressed(GLFW_KEY_M)) {
+        _sceneManager->changeScene(EScene::menu);
+        return;
     }
 
     if (InputManager::isKeyPressed(GLFW_KEY_ESCAPE)) {
@@ -233,13 +234,16 @@ void GameScene::process(const float& deltaTime) {
 
     if (_collectedPages == NUM_PAGES) {
         // VITTORIA TODO: Creare scena per la vittoria; Aspettare un secondo per mostrare il text
-        _sceneManager->changeScene(new NullScene());
+        _sceneManager->changeScene(EScene::menu);
+        return;
     }
 
     if (_fearFactor >= _loseThreshold) {
         // SCONFITTA TODO: Creare scena per la sconfitta; 
-        _sceneManager->changeScene(new NullScene());
+        _sceneManager->changeScene(EScene::menu);
+        return;
     }
+
     _renderInfo();
 }
 
@@ -294,6 +298,7 @@ void GameScene::destroy() {
     for (auto renderable : _renderables)
         delete renderable;
     _renderables.clear();
+    _renderables.shrink_to_fit();
 
     _collisionSolver.clearRegisteredAABBs();
     

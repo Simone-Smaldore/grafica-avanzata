@@ -30,16 +30,18 @@ void MenuScene::_renderMenu() {
     glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     _menuImage->render(_camera, _lightUtils);
-    RenderText("[Enter] to Start Game", SCR_WIDTH/2, SCR_HEIGHT/3 , 0.8, glm::vec3(1, 1, 1));
-    RenderText("[Q] or [Esc] to Quit", SCR_WIDTH / 2, SCR_HEIGHT/3 - 40, 0.8, glm::vec3(1, 1, 1));
+    RenderText("[Enter] to Start Game", SCR_WIDTH / 2, SCR_HEIGHT / 3, 0.8, glm::vec3(1, 1, 1));
+    RenderText("[Q] or [Esc] to Quit", SCR_WIDTH / 2, SCR_HEIGHT / 3 - 40, 0.8, glm::vec3(1, 1, 1));
     glfwSwapBuffers(_window);
     glfwSwapBuffers(_window);
 }
 
 void MenuScene::init() {
     initRenderText(SCR_WIDTH, SCR_HEIGHT);
-    ShaderCache::getInstance().registerShader(EShader::fullScreenImage, new Shader("minimap_shader.vs", "minimap_shader.fs"));
-    TextureCache::getInstance().registerTexture(ETexture::menuImage, "resources/textures/menu_image.jpg");
+    if (!ShaderCache::getInstance().has(EShader::fullScreenImage))
+        ShaderCache::getInstance().registerShader(EShader::fullScreenImage, new Shader("minimap_shader.vs", "minimap_shader.fs"));
+    if (!TextureCache::getInstance().has(ETexture::menuImage))
+        TextureCache::getInstance().registerTexture(ETexture::menuImage, "resources/textures/menu_image.jpg");
     _menuImage = new FullsceenImage(ETexture::menuImage);
 }
 
@@ -55,9 +57,7 @@ void MenuScene::process(const float& deltaTime) {
     }
 
     if (_transitionStarted && glfwGetTime() - _transitionStartedTime > 0.3) {
-        _loadingScene = new LoadingScene(_sceneManager, _window);
-        _loadingScene->init();
-        _sceneManager->changeScene(_loadingScene);
+        _sceneManager->changeScene(EScene::loading);
     }
 }
 

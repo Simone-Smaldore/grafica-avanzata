@@ -37,6 +37,8 @@ public:
     Model* findModel(EModel key);
 
     void clear();
+
+    inline bool has(EModel key) const { return _modelCache.find(key) != _modelCache.end(); } 
 };
 
 ModelCache& ModelCache::getInstance() {
@@ -45,6 +47,9 @@ ModelCache& ModelCache::getInstance() {
 }
 
 void ModelCache::registerModel(EModel key, Model* value) {
+    if (_modelCache.find(key) != _modelCache.end())
+        return;
+
     _modelCache[key] = value;
 }
 

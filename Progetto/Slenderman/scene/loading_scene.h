@@ -49,6 +49,9 @@ public:
 };
 
 void LoadingScene::_loadShaders() {
+    if (ShaderCache::getInstance().has(EShader::slenderMan))
+        return;
+
     ShaderCache::getInstance().registerShader(EShader::slenderMan, new Shader("multiple_lights.vs", "multiple_lights.fs"));
     ShaderCache::getInstance().registerShader(EShader::floor, new Shader("multiple_lights.vs", "multiple_lights.fs"));
     ShaderCache::getInstance().registerShader(EShader::streetLight, new Shader("multiple_lights.vs", "streetlight_shader.fs"));
@@ -66,6 +69,9 @@ void LoadingScene::_loadShaders() {
 }
 
 void LoadingScene::_loadTextures() {
+    if (TextureCache::getInstance().has(ETexture::slenderMan))
+        return;
+
     TextureCache::getInstance().registerTexture(ETexture::slenderMan, "resources/models/Slenderman/diffuse.png");
     TextureCache::getInstance().registerTexture(ETexture::floor, "resources/textures/floor/floor.jpg");
     TextureCache::getInstance().registerTexture(ETexture::streetLight, "resources/models/Streetlight/streetlight_default_color.tga.png");
@@ -90,6 +96,9 @@ void LoadingScene::_loadTextures() {
 }
 
 void LoadingScene::_loadModels() {
+    if (ModelCache::getInstance().has(EModel::slenderMan))
+        return;
+
     ModelCache::getInstance().registerModel(EModel::slenderMan, new Model("resources/models/Slenderman/Slenderman.obj"));
     ModelCache::getInstance().registerModel(EModel::streetLight, new Model("resources/models/Streetlight/streetlight.obj"));
     ModelCache::getInstance().registerModel(EModel::tree, new Model("resources/models/Tree/oaktrees.obj"));
@@ -147,12 +156,12 @@ void LoadingScene::process(const float& deltaTime) {
 
     if (!_transitionStarted) {
         _menuImage->render(_camera, _lightUtils);
-        RenderText("Loading done: press space to play", SCR_WIDTH/2 - 400, 80, 0.8, glm::vec3(1, 1, 1));
+        RenderText("Loading done: press space to play", SCR_WIDTH / 2 - 400, 80, 0.8, glm::vec3(1, 1, 1));
     }
 
     if (_transitionStarted && glfwGetTime() - _transitionStartedTime > 1) {
         AudioManager::getInstance().playSfx(ESfx::lightOn, 0.33);
-        _sceneManager->changeScene(_gameScene);
+        _sceneManager->changePreloadedScene(_gameScene);
     }
 }
 

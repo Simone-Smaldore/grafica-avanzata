@@ -27,7 +27,19 @@ private:
 
     GLFWwindow* _window;
     SceneManager* _sceneManager;
+    
+    static Scene* _buildMenuScene(SceneManager* manager, GLFWwindow* window) {
+        return new MenuScene(manager, window);
+    }
 
+    static Scene* _buildLoadingScene(SceneManager* manager, GLFWwindow* window) {
+        return new LoadingScene(manager, window);
+    }
+
+    static Scene* _buildGameScene(SceneManager* manager, GLFWwindow* window) {
+        return new GameScene(manager);
+    }
+    
     void _renderFPS();
 
 public:
@@ -41,8 +53,13 @@ public:
 };
 
 void GameLoop::init() {
-    _sceneManager = new SceneManager();
-    _sceneManager->changeScene(new MenuScene(_sceneManager, _window));
+    _sceneManager = new SceneManager(_window);
+
+    _sceneManager->addSceneBuilder(EScene::menu, GameLoop::_buildMenuScene);
+    _sceneManager->addSceneBuilder(EScene::loading, GameLoop::_buildLoadingScene);
+    _sceneManager->addSceneBuilder(EScene::game, GameLoop::_buildGameScene);
+
+    _sceneManager->changeScene(EScene::menu);
 
     InputManager::init(_window, _sceneManager->currentScene()->currentCamera());
     AudioManager::getInstance().initAudio();
@@ -71,7 +88,7 @@ void GameLoop::process() {
 
         glfwSwapBuffers(_window);
         glfwPollEvents();
-        
+
         AudioManager::getInstance().process();
     }
 }
