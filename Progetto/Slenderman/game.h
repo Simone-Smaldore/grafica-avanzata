@@ -13,7 +13,7 @@
 #include "raudio/raudio.h"
 #include "render_text.h"
 #include "scene/loading_scene.h"
-#include "scene/test_scene.h"
+#include "scene/game_scene.h"
 #include "menu_scene.h"
 #include "shader_m.h"
 #include "shader_cache.h"

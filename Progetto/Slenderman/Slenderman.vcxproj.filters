@@ -143,7 +143,7 @@
     <ClInclude Include="vertex_clusterer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scene\test_scene.h">
+    <ClInclude Include="scene\game_scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="shader_cache.h">

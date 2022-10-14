@@ -32,14 +32,9 @@
 #include "../slender_manager.h"
 #include "../model_cache.h"
 
-
-
-typedef void (*initInfoCallback)(std::string info);
-
-class TestScene : public Scene {
+class GameScene : public Scene {
 private:
     SceneManager* _sceneManager;
-    initInfoCallback _infoCallback = nullptr;
 
     vector<Renderable*> _renderables;
 
@@ -67,15 +62,13 @@ private:
     
     bool _menuOpen = false;
 
-    void _updateInitInfo(std::string info);
-
     void _processInput(const float& deltaTime, const CollisionResult& collisionResult);
     void _findFramedPage();
 
     void _renderInfo();
 
 public:
-    TestScene(SceneManager* sceneManager, initInfoCallback infoCallback = nullptr) : _sceneManager{ sceneManager }, _infoCallback{ infoCallback } {}
+    GameScene(SceneManager* sceneManager) : _sceneManager{ sceneManager } {}
 
     virtual void init() override;
 
@@ -86,13 +79,8 @@ public:
     inline virtual Camera* currentCamera() override;
 };
 
-void TestScene::_updateInitInfo(std::string info) {
-    if (_infoCallback != nullptr)
-        _infoCallback(info);
-}
 
-void TestScene::init() {
-    //_updateInitInfo("Generating POI...");
+void GameScene::init() {
     _poiInfo = MapInitializer::initPOI();
     _slendermanSpawnPoints = MapInitializer::initSlenderSpawnPoints(_poiInfo);
 
@@ -104,7 +92,6 @@ void TestScene::init() {
     _slenderManager = new SlenderManager();
     _renderables.push_back(_slenderMan);
 
-    //_updateInitInfo("Generating random map...");
     _renderables.push_back(new DynamicMapRenderable(DynamicEntity::grass));
 
     unordered_set<int> tabooIndices = unordered_set<int>();
@@ -114,7 +101,6 @@ void TestScene::init() {
     for (auto poi : _poiInfo)
         tabooIndices.insert(poi.first);
 
-    //_updateInitInfo("Generating random forest...");
     DynamicMapRenderable* forest = new DynamicMapRenderable(DynamicEntity::tree, tabooIndices);
     _renderables.push_back(forest);
     std::vector<aabb*> forestAABBs = forest->toAABBs();
@@ -143,7 +129,7 @@ void TestScene::init() {
     _renderables.push_back(new FearRenderable(_fearFactor));
 }
 
-void TestScene::_processInput(const float& deltaTime, const CollisionResult& collisionResult) {
+void GameScene::_processInput(const float& deltaTime, const CollisionResult& collisionResult) {
     if (_menuOpen && InputManager::isKeyPressed(GLFW_KEY_Q)) {
         //TODO Andare al menu
     }
@@ -193,7 +179,7 @@ void TestScene::_processInput(const float& deltaTime, const CollisionResult& col
     }
 }
 
-void TestScene::_findFramedPage() {
+void GameScene::_findFramedPage() {
     for (auto page : _pages) {
         page->setFramed(false);
 
@@ -221,7 +207,7 @@ void TestScene::_findFramedPage() {
     _pageFramed = nullptr;
 }
 
-void TestScene::process(const float& deltaTime) {
+void GameScene::process(const float& deltaTime) {
     CollisionResult collisionResult = _collisionSolver.checkCollisionWithRegisteredAABBs(_camera, fmaxf(5.0f, (deltaTime * _camera.MovementSpeed) + 0.5f));
     _processInput(deltaTime, collisionResult);
 
@@ -257,7 +243,7 @@ void TestScene::process(const float& deltaTime) {
     _renderInfo();
 }
 
-void TestScene::_renderInfo() {
+void GameScene::_renderInfo() {
     std::stringstream ssx;
     ssx << "x: " << _camera.Position.x;
     std::string x = ssx.str();
@@ -304,7 +290,7 @@ void TestScene::_renderInfo() {
     RenderText(collectPage_str, 50.0f, SCR_HEIGHT - 50.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));*/
 }
 
-void TestScene::destroy() {
+void GameScene::destroy() {
     for (auto renderable : _renderables)
         delete renderable;
     _renderables.clear();
@@ -315,6 +301,6 @@ void TestScene::destroy() {
     delete _slenderManager;
 }
 
-Camera* TestScene::currentCamera() {
+Camera* GameScene::currentCamera() {
     return &_camera;
 }

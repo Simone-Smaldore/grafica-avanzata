@@ -8,7 +8,7 @@
 #include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
 
-#include "test_scene.h"
+#include "game_scene.h"
 #include "../audio_manager.h"
 #include "../constants.h"
 #include "../game.h"
@@ -19,23 +19,13 @@
 #include "../texture_cache.h"
 #include "fullscreen_image.h"
 
-static void _forceRenderText(std::string text) {
-    glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    RenderText("SLENDERMAN", 0, SCR_HEIGHT - 32, 1, glm::vec3(1, 1, 1));
-    RenderText(text, 0, SCR_HEIGHT - 72, 0.8, glm::vec3(1, 1, 1));
-    glfwSwapBuffers(_window);
-}
-
 class LoadingScene : public Scene {
 private:
-    TestScene* _gameScene;
+    GameScene* _gameScene;
     GLFWwindow* _window;
     SceneManager* _sceneManager;
 
     FullsceenImage* _menuImage;
-    Camera _camera;
-    LightUtils _lightUtils;
 
     bool _transitionStarted = false;
     double _transitionStartedTime;
@@ -145,7 +135,7 @@ void LoadingScene::init() {
     _loadModels();
     _renderActualInfo("Generating map...");
 
-    _gameScene = new TestScene(_sceneManager, _forceRenderText);
+    _gameScene = new GameScene(_sceneManager);
     _gameScene->init();
 }
 

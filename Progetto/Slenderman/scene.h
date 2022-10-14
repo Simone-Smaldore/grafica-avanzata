@@ -4,6 +4,10 @@
 #include "input_manager.h"
 
 class Scene {
+protected:
+    Camera _camera;
+    LightUtils _lightUtils;
+
 public:
     virtual void init() = 0;
 
@@ -27,7 +31,6 @@ class NullScene : public Scene {
 class SceneManager {
 private:
     NullScene* _nullScene = new NullScene();
-
     Scene* _currentScene = _nullScene;
 
 public:
