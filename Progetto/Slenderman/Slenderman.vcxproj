@@ -208,6 +208,7 @@
     <ClInclude Include="glfw_utils.h" />
     <ClInclude Include="light_utils.h" />
     <ClInclude Include="map_initializer.h" />
+    <ClInclude Include="menu_scene.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="minimap.h" />
     <ClInclude Include="model.h" />

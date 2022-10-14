@@ -206,5 +206,8 @@
     <ClInclude Include="fear_renderable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="menu_scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -14,6 +14,7 @@
 #include "render_text.h"
 #include "scene/loading_scene.h"
 #include "scene/test_scene.h"
+#include "menu_scene.h"
 #include "shader_m.h"
 #include "shader_cache.h"
 #include "texture_cache.h"
@@ -41,7 +42,7 @@ public:
 
 void GameLoop::init() {
     _sceneManager = new SceneManager();
-    _sceneManager->changeScene(new LoadingScene(_sceneManager, _window));
+    _sceneManager->changeScene(new MenuScene(_sceneManager, _window));
 
     InputManager::init(_window, _sceneManager->currentScene()->currentCamera());
     AudioManager::getInstance().initAudio();
@@ -63,9 +64,6 @@ void GameLoop::process() {
 
         glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-        if (InputManager::isKeyPressed(GLFW_KEY_Q) || InputManager::isKeyPressed(GLFW_KEY_ESCAPE))
-            glfwSetWindowShouldClose(_window, true);
 
         _renderFPS();
 

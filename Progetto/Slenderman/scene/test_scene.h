@@ -32,6 +32,8 @@
 #include "../slender_manager.h"
 #include "../model_cache.h"
 
+
+
 typedef void (*initInfoCallback)(std::string info);
 
 class TestScene : public Scene {
@@ -45,6 +47,7 @@ private:
     LightUtils _lightUtils;
     CollisionSolver _collisionSolver;
     double _previousTime = 0.0;
+    double _previousEscMenuTime = 0.0;
 
     Page* _pageFramed = nullptr;
     int _collectedPages = 0;
@@ -61,6 +64,8 @@ private:
     float _fearFactor = 0.0f;
     float _loseThreshold = 1.0f;
     vector<Page*> _pages;
+    
+    bool _menuOpen = false;
 
     void _updateInitInfo(std::string info);
 
@@ -139,6 +144,23 @@ void TestScene::init() {
 }
 
 void TestScene::_processInput(const float& deltaTime, const CollisionResult& collisionResult) {
+    if (_menuOpen && InputManager::isKeyPressed(GLFW_KEY_Q)) {
+        //TODO Andare al menu
+    }
+
+    if (InputManager::isKeyPressed(GLFW_KEY_ESCAPE)) {
+        double currentTime = glfwGetTime();
+        if (currentTime - _previousEscMenuTime > 0.3f) {
+            _previousEscMenuTime = currentTime;
+            _menuOpen = !_menuOpen;
+            _camera.forceBlockCamera = _menuOpen;
+        }
+    }
+
+    if (_menuOpen) {
+        return;
+    }
+
     bool superSaiyan = InputManager::isKeyPressed(GLFW_KEY_LEFT_SHIFT);
     float speedIncrement = superSaiyan ? 150.0f : 0.0f;
 
@@ -150,6 +172,7 @@ void TestScene::_processInput(const float& deltaTime, const CollisionResult& col
         _camera.ProcessKeyboard(LEFT, deltaTime, speedIncrement);
     if (InputManager::isKeyPressed(GLFW_KEY_D) && (!collisionResult.e || superSaiyan))
         _camera.ProcessKeyboard(RIGHT, deltaTime, speedIncrement);
+
 
     if (InputManager::isKeyPressed(GLFW_KEY_F)) {
         double currentTime = glfwGetTime();
@@ -203,6 +226,13 @@ void TestScene::process(const float& deltaTime) {
     CollisionResult collisionResult = _collisionSolver.checkCollisionWithRegisteredAABBs(_camera, fmaxf(5.0f, (deltaTime * _camera.MovementSpeed) + 0.5f));
     _processInput(deltaTime, collisionResult);
 
+    if (_menuOpen) {
+        RenderText("SLENDERMAN", 0, SCR_HEIGHT - 32, 1, glm::vec3(1, 1, 1));
+        RenderText("[Esc] Return to Game", 0, SCR_HEIGHT - 72, 0.8, glm::vec3(1, 1, 1));
+        RenderText("[Q] Quit to Menu", 0, SCR_HEIGHT - 102, 0.8, glm::vec3(1, 1, 1));
+        return;
+    }
+
     _findFramedPage();
 
     _slenderManager->updateSlenderman(_camera, *_slenderMan, _slendermanSpawnPoints, _collectedPages);
@@ -221,7 +251,7 @@ void TestScene::process(const float& deltaTime) {
         _sceneManager->changeScene(new NullScene());
     }
 
-    if (_fearFactor > _loseThreshold) {
+    if (_fearFactor >= _loseThreshold) {
         // SCONFITTA TODO: Creare scena per la sconfitta; 
         _sceneManager->changeScene(new NullScene());
     }
