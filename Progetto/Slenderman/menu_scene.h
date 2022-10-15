@@ -46,10 +46,17 @@ void MenuScene::init() {
 }
 
 void MenuScene::process(const float& deltaTime) {
-    _renderMenu();
 
     if (InputManager::isKeyPressed(GLFW_KEY_Q) || InputManager::isKeyPressed(GLFW_KEY_ESCAPE))
         glfwSetWindowShouldClose(_window, true);
+
+    if (!glfwWindowShouldClose(_window)) {
+        _renderMenu();
+    }
+    else {
+        _menuImage->render(_camera, _lightUtils);
+        RenderText("Quitting to Windows...", SCR_WIDTH / 2, SCR_HEIGHT / 3, 0.8, glm::vec3(1, 1, 1));
+    }
 
     if (InputManager::isKeyPressed(GLFW_KEY_ENTER)) {
         _transitionStarted = true;
