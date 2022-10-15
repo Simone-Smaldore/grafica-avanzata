@@ -6,12 +6,17 @@
 #include "raudio/raudio.h"
 
 enum class ESfx {
-    lightOn
+    lightOn,
+    footstep1,
+    footstep2,
+    footstep3,
+    paper,
 };
 
 enum class EMusic {
     background,
-    whiteNoise
+    whiteNoise,
+    highFear,
 };
 
 class AudioManager {
@@ -39,9 +44,13 @@ public:
 
     void setMusicVolume(EMusic key, float volume) const;
 
-    void loadSfx(ESfx key, std::string filePath);
+    void loadSfx(ESfx key, std::string filePath, float volume = 1.0f);
 
-    void playSfx(ESfx key, float volume = 1.0f) const;
+    void playSfx(ESfx key, bool setVolume = false, float volume = 1.0f) const;
+
+    void playRandomFootstep() const;
+
+    bool isPlayingFootstep() const;
 
     void process() const;
 
@@ -88,25 +97,48 @@ void AudioManager::pauseMusic(EMusic key) const {
 }
 
 void AudioManager::setMusicVolume(EMusic key, float volume) const {
+    if (volume < 0)
+        volume = 0;
     auto music = _musicCache.find(key);
     if (music == _musicCache.end())
         return;
     SetMusicVolume(music->second, volume);
 }
 
-void AudioManager::loadSfx(ESfx key, std::string filePath) {
+void AudioManager::loadSfx(ESfx key, std::string filePath, float volume) {
     Sound sound = LoadSound(filePath.c_str());
+    SetSoundVolume(sound, volume);
     _sfxCache[key] = sound;
 }
 
-void AudioManager::playSfx(ESfx key, float volume) const {
+void AudioManager::playSfx(ESfx key, bool setVolume, float volume) const {
     auto sfx = _sfxCache.find(key);
     if (sfx == _sfxCache.end())
         return;
-    if (volume > 1.0)
-        volume = 1.0;
-    SetSoundVolume(sfx->second, volume);
+
+    if (setVolume) {
+        if (volume > 1.0)
+            volume = 1.0;
+        SetSoundVolume(sfx->second, volume);
+    }
+
     PlaySound(sfx->second);
+}
+
+void AudioManager::playRandomFootstep() const {
+    int footstepIndex = static_cast<int>(ESfx::footstep1) + (std::rand() % (static_cast<int>(ESfx::footstep3) - static_cast<int>(ESfx::footstep1) + 1));
+    PlaySound(_sfxCache.find(static_cast<ESfx>(footstepIndex))->second);
+}
+
+bool AudioManager::isPlayingFootstep() const {
+    for (int i = static_cast<int>(ESfx::footstep1); i <= static_cast<int>(ESfx::footstep3); i++) {
+        auto sfx = _sfxCache.find(static_cast<ESfx>(i));
+        if (sfx == _sfxCache.end())
+            continue;
+        if (IsSoundPlaying(sfx->second))
+            return true;
+    }
+    return false;
 }
 
 void AudioManager::process() const {
@@ -116,6 +148,7 @@ void AudioManager::process() const {
 
         if (GetMusicTimePlayed(music.second) > GetMusicTimeLength(music.second))
             SeekMusicStream(music.second, 0.0f);
+
         UpdateMusicStream(music.second);
     }
 }

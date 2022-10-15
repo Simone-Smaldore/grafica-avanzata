@@ -78,6 +78,7 @@ float SlenderManager::updateFearFactor(const Camera& camera, const float previou
         }
     }
     AudioManager::getInstance().setMusicVolume(EMusic::whiteNoise, _fearFactor);
+    AudioManager::getInstance().setMusicVolume(EMusic::highFear, _fearFactor);
     _fearUpdateTime = glfwGetTime();
     return _fearFactor;
 }

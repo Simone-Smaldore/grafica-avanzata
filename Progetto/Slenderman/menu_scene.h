@@ -36,9 +36,14 @@ void MenuScene::init() {
     initRenderText(SCR_WIDTH, SCR_HEIGHT);
     if (!ShaderCache::getInstance().has(EShader::fullScreenImage))
         ShaderCache::getInstance().registerShader(EShader::fullScreenImage, new Shader("minimap_shader.vs", "minimap_shader.fs"));
+
     if (!TextureCache::getInstance().has(ETexture::menuImage))
         TextureCache::getInstance().registerTexture(ETexture::menuImage, "resources/textures/menu_image.jpg");
+
     _menuImage = new FullsceenImage(ETexture::menuImage);
+
+    if (!AudioManager::getInstance().has(EMusic::background))
+        AudioManager::getInstance().loadMusic(EMusic::background, "resources/audio/bg-music.mp3", false);
 }
 
 void MenuScene::process(const float& deltaTime) {

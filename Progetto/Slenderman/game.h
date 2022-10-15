@@ -27,7 +27,7 @@ private:
 
     GLFWwindow* _window;
     SceneManager* _sceneManager;
-    
+
     static Scene* _buildMenuScene(SceneManager* manager, GLFWwindow* window) {
         return new MenuScene(manager, window);
     }
@@ -39,7 +39,7 @@ private:
     static Scene* _buildGameScene(SceneManager* manager, GLFWwindow* window) {
         return new GameScene(manager);
     }
-    
+
     void _renderFPS();
 
 public:
@@ -53,6 +53,8 @@ public:
 };
 
 void GameLoop::init() {
+    AudioManager::getInstance().initAudio();
+
     _sceneManager = new SceneManager(_window);
 
     _sceneManager->addSceneBuilder(EScene::menu, GameLoop::_buildMenuScene);
@@ -62,7 +64,6 @@ void GameLoop::init() {
     _sceneManager->changeScene(EScene::menu);
 
     InputManager::init(_window, _sceneManager->currentScene()->currentCamera());
-    AudioManager::getInstance().initAudio();
 
     glEnable(GL_DEPTH_TEST);
 

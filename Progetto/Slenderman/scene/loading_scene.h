@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <thread>
 
 #include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
@@ -119,14 +118,16 @@ void LoadingScene::_loadModels() {
 }
 
 void LoadingScene::_loadAudio() {
-    // TODO: load all audio
-    //AudioManager::getInstance().loadMusic(EMusic::background, "resources/audio/creepy-music.mp3", true);
     if (AudioManager::getInstance().has(EMusic::whiteNoise))
         return;
-    
-    AudioManager::getInstance().loadMusic(EMusic::whiteNoise, "resources/audio/white-noise.wav", true, 0.0f);
 
-    AudioManager::getInstance().loadSfx(ESfx::lightOn, "resources/audio/light-on.wav");
+    AudioManager::getInstance().loadMusic(EMusic::whiteNoise, "resources/audio/white-noise.wav", true, 0.0f);
+    AudioManager::getInstance().loadMusic(EMusic::highFear, "resources/audio/high-fear.wav", true, 0.0f);
+    AudioManager::getInstance().loadSfx(ESfx::lightOn, "resources/audio/light-on.wav", 0.05f);
+    AudioManager::getInstance().loadSfx(ESfx::footstep1, "resources/audio/footstep-1.wav", 0.3f);
+    AudioManager::getInstance().loadSfx(ESfx::footstep2, "resources/audio/footstep-2.wav", 0.8f);
+    AudioManager::getInstance().loadSfx(ESfx::footstep3, "resources/audio/footstep-3.wav", 0.05f);
+    AudioManager::getInstance().loadSfx(ESfx::paper, "resources/audio/paper.wav", 0.1f);
 }
 
 void LoadingScene::_renderActualInfo(std::string text) {
@@ -152,6 +153,8 @@ void LoadingScene::init() {
 
     _gameScene = new GameScene(_sceneManager);
     _gameScene->init();
+
+    AudioManager::getInstance().playMusicFromBeginning(EMusic::background, 0.15f);
 }
 
 void LoadingScene::process(const float& deltaTime) {
@@ -166,7 +169,7 @@ void LoadingScene::process(const float& deltaTime) {
     }
 
     if (_transitionStarted && glfwGetTime() - _transitionStartedTime > 1) {
-        AudioManager::getInstance().playSfx(ESfx::lightOn, 0.33);
+        AudioManager::getInstance().playSfx(ESfx::lightOn);
         _sceneManager->changePreloadedScene(_gameScene);
     }
 }

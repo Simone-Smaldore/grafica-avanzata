@@ -69,6 +69,8 @@ private:
     bool _menuOpen = false;
     bool _shouldQuit = false;
 
+    float _lastPlayedFootstep = 0.0f;
+
     void _processInput(const float& deltaTime, const CollisionResult& collisionResult);
     void _findFramedPage();
 
@@ -142,6 +144,7 @@ void GameScene::init() {
 
 void GameScene::_processInput(const float& deltaTime, const CollisionResult& collisionResult) {
     if (_menuOpen && InputManager::isKeyPressed(GLFW_KEY_M)) {
+        AudioManager::getInstance().pauseMusic(EMusic::background);
         _sceneManager->changeScene(EScene::menu);
         _shouldQuit = true;
         return;
@@ -154,8 +157,10 @@ void GameScene::_processInput(const float& deltaTime, const CollisionResult& col
             _menuOpen = !_menuOpen;
             _camera.forceBlockCamera = _menuOpen;
 
-            if (_menuOpen)
+            if (_menuOpen) {
                 AudioManager::getInstance().setMusicVolume(EMusic::whiteNoise, 0);
+                AudioManager::getInstance().setMusicVolume(EMusic::highFear, 0);
+            }
         }
     }
 
@@ -166,14 +171,29 @@ void GameScene::_processInput(const float& deltaTime, const CollisionResult& col
     bool superSaiyan = InputManager::isKeyPressed(GLFW_KEY_LEFT_SHIFT);
     float speedIncrement = superSaiyan ? 150.0f : 0.0f;
 
-    if (InputManager::isKeyPressed(GLFW_KEY_W) && (!collisionResult.n || superSaiyan))
+    bool shouldPlayFootstep = false;
+
+    if (InputManager::isKeyPressed(GLFW_KEY_W) && (!collisionResult.n || superSaiyan)) {
+        shouldPlayFootstep = true;
         _camera.ProcessKeyboard(FORWARD, deltaTime, speedIncrement);
-    if (InputManager::isKeyPressed(GLFW_KEY_S) && (!collisionResult.s || superSaiyan))
+    }
+    if (InputManager::isKeyPressed(GLFW_KEY_S) && (!collisionResult.s || superSaiyan)) {
+        shouldPlayFootstep = true;
         _camera.ProcessKeyboard(BACKWARD, deltaTime, speedIncrement);
-    if (InputManager::isKeyPressed(GLFW_KEY_A) && (!collisionResult.w || superSaiyan))
+    }
+    if (InputManager::isKeyPressed(GLFW_KEY_A) && (!collisionResult.w || superSaiyan)) {
+        shouldPlayFootstep = true;
         _camera.ProcessKeyboard(LEFT, deltaTime, speedIncrement);
-    if (InputManager::isKeyPressed(GLFW_KEY_D) && (!collisionResult.e || superSaiyan))
+    }
+    if (InputManager::isKeyPressed(GLFW_KEY_D) && (!collisionResult.e || superSaiyan)) {
+        shouldPlayFootstep = true;
         _camera.ProcessKeyboard(RIGHT, deltaTime, speedIncrement);
+    }
+
+    if (glfwGetTime() - _lastPlayedFootstep > 0.8f && !AudioManager::getInstance().isPlayingFootstep() && shouldPlayFootstep) {
+        AudioManager::getInstance().playRandomFootstep();
+        _lastPlayedFootstep = glfwGetTime();
+    }
 
     if (InputManager::isKeyPressed(GLFW_KEY_F)) {
         double currentTime = glfwGetTime();
@@ -188,6 +208,7 @@ void GameScene::_processInput(const float& deltaTime, const CollisionResult& col
         _collectedPages++;
         _loseThreshold = 1.0f - _collectedPages * THRESHOLD_OFFSET;
         _pageCollectedTime = glfwGetTime();
+        AudioManager::getInstance().playSfx(ESfx::paper);
 
         std::stringstream ssPageInfo;
         ssPageInfo << "Collected Page: " << _collectedPages << "/" << NUM_PAGES;
@@ -225,11 +246,15 @@ void GameScene::_findFramedPage() {
 
 void GameScene::process(const float& deltaTime) {
     if (_collectedPages == NUM_PAGES) {
+        AudioManager::getInstance().setMusicVolume(EMusic::whiteNoise, 0);
+        AudioManager::getInstance().setMusicVolume(EMusic::highFear, 0);
+
         if (_timerTransition == 0) {
             _timerTransition = glfwGetTime();
         }
         _winImage->render(_camera, _lightUtils);
         if (glfwGetTime() - _timerTransition > 3) {
+            AudioManager::getInstance().pauseMusic(EMusic::background);
             _sceneManager->changeScene(EScene::menu);
         }
         return;
@@ -237,11 +262,14 @@ void GameScene::process(const float& deltaTime) {
 
     if (_fearFactor >= _loseThreshold) {
         AudioManager::getInstance().setMusicVolume(EMusic::whiteNoise, 0);
+        AudioManager::getInstance().setMusicVolume(EMusic::highFear, 0);
+
         if (_timerTransition == 0) {
             _timerTransition = glfwGetTime();
         }
         _loseImage->render(_camera, _lightUtils);
         if (glfwGetTime() - _timerTransition > 3) {
+            AudioManager::getInstance().pauseMusic(EMusic::background);
             _sceneManager->changeScene(EScene::menu);
         }
         return;
