@@ -79,6 +79,7 @@ void LoadingScene::_loadTextures() {
     TextureCache::getInstance().registerTexture(ETexture::fence, "resources/models/Fence/wood-fence/textura_cerca_de_madeira_COLOR.png");
     TextureCache::getInstance().registerTexture(ETexture::menuIngame, "resources/textures/menu_ingame.jpg");
     TextureCache::getInstance().registerTexture(ETexture::loseImage, "resources/textures/lose_image.jpg");
+    TextureCache::getInstance().registerTexture(ETexture::winImage, "resources/textures/win_image.jpg");
 
     int poi1TextureEnumIndex = static_cast<int>(ETexture::poi1);
     int poi8TextureEnumIndex = static_cast<int>(ETexture::poi8);

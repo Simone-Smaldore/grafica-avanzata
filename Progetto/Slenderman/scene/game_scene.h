@@ -65,6 +65,7 @@ private:
 
     FullsceenImage* _menuIngame;   
     FullsceenImage* _loseImage;
+    FullsceenImage* _winImage;
     float _timerTransition = 0.0f;
     bool _menuOpen = false;
 
@@ -136,6 +137,7 @@ void GameScene::init() {
 
     _menuIngame = new FullsceenImage(ETexture::menuIngame);
     _loseImage = new FullsceenImage(ETexture::loseImage);
+    _winImage = new FullsceenImage(ETexture::winImage);
 }
 
 void GameScene::_processInput(const float& deltaTime, const CollisionResult& collisionResult) {
@@ -219,13 +221,17 @@ void GameScene::_findFramedPage() {
 
 void GameScene::process(const float& deltaTime) {
     if (_collectedPages == NUM_PAGES) {
-        // VITTORIA TODO: Creare scena per la vittoria; Aspettare un secondo per mostrare il text
-        _sceneManager->changeScene(EScene::menu);
+        if (_timerTransition == 0) {
+            _timerTransition = glfwGetTime();
+        }
+        _winImage->render(_camera, _lightUtils);
+        if (glfwGetTime() - _timerTransition > 3) {
+            _sceneManager->changeScene(EScene::menu);
+        }
         return;
     }
 
     if (_fearFactor >= _loseThreshold) {
-        // SCONFITTA TODO: Creare scena per la sconfitta; 
         if (_timerTransition == 0) {
             _timerTransition = glfwGetTime();
         }
@@ -233,7 +239,6 @@ void GameScene::process(const float& deltaTime) {
         if (glfwGetTime() - _timerTransition > 3) {
             _sceneManager->changeScene(EScene::menu);
         }
-        
         return;
     }
 
