@@ -16,6 +16,7 @@
 #include "../fear_renderable.h"
 #include "../fence.h"
 #include "../floor.h"
+#include "../fullscreen_image.h"
 #include "../input_manager.h"
 #include "../light_utils.h"
 #include "../map_initializer.h"
@@ -31,6 +32,7 @@
 #include "../street_light.h"
 #include "../slender_manager.h"
 #include "../model_cache.h"
+
 
 class GameScene : public Scene {
 private:
@@ -59,7 +61,8 @@ private:
     float _fearFactor = 0.0f;
     float _loseThreshold = 1.0f;
     vector<Page*> _pages;
-    
+
+    FullsceenImage* _menuIngame;   
     bool _menuOpen = false;
 
     void _processInput(const float& deltaTime, const CollisionResult& collisionResult);
@@ -127,6 +130,8 @@ void GameScene::init() {
     _renderables.push_back(new Minimap(_poiInfo));
 
     _renderables.push_back(new FearRenderable(_fearFactor));
+
+    _menuIngame = new FullsceenImage(ETexture::menuIngame);
 }
 
 void GameScene::_processInput(const float& deltaTime, const CollisionResult& collisionResult) {
@@ -209,13 +214,26 @@ void GameScene::_findFramedPage() {
 }
 
 void GameScene::process(const float& deltaTime) {
+    if (_collectedPages == NUM_PAGES) {
+        // VITTORIA TODO: Creare scena per la vittoria; Aspettare un secondo per mostrare il text
+        _sceneManager->changeScene(EScene::menu);
+        return;
+    }
+
+    if (_fearFactor >= _loseThreshold) {
+        // SCONFITTA TODO: Creare scena per la sconfitta; 
+        _sceneManager->changeScene(EScene::menu);
+        return;
+    }
+
     CollisionResult collisionResult = _collisionSolver.checkCollisionWithRegisteredAABBs(_camera, fmaxf(5.0f, (deltaTime * _camera.MovementSpeed) + 0.5f));
     _processInput(deltaTime, collisionResult);
 
     if (_menuOpen) {
-        RenderText("SLENDERMAN", 0, SCR_HEIGHT - 32, 1, glm::vec3(1, 1, 1));
-        RenderText("[Esc] Return to Game", 0, SCR_HEIGHT - 72, 0.8, glm::vec3(1, 1, 1));
-        RenderText("[Q] Quit to Menu", 0, SCR_HEIGHT - 102, 0.8, glm::vec3(1, 1, 1));
+        _menuIngame->render(_camera, _lightUtils);
+        RenderText("[Esc] Return to Game", SCR_WIDTH/2 - 200,  150, 0.8, glm::vec3(1, 1, 1));
+        RenderText("[M] Quit to Menu", SCR_WIDTH / 2 - 150, 100, 0.8, glm::vec3(1, 1, 1));
+        _slenderManager->resetFearUpdateTime();
         return;
     }
 
@@ -230,19 +248,6 @@ void GameScene::process(const float& deltaTime) {
 
     if (!_collectedPageMessage.empty() && _pageCollectedTime + PAGE_COLLECTED_MESSAGE_SECONDS > glfwGetTime())
         RenderText(_collectedPageMessage, (SCR_WIDTH / 2) - 150.0f, SCR_HEIGHT - 200.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
-
-
-    if (_collectedPages == NUM_PAGES) {
-        // VITTORIA TODO: Creare scena per la vittoria; Aspettare un secondo per mostrare il text
-        _sceneManager->changeScene(EScene::menu);
-        return;
-    }
-
-    if (_fearFactor >= _loseThreshold) {
-        // SCONFITTA TODO: Creare scena per la sconfitta; 
-        _sceneManager->changeScene(EScene::menu);
-        return;
-    }
 
     _renderInfo();
 }

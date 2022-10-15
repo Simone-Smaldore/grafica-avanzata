@@ -23,6 +23,8 @@ public:
 
     float updateFearFactor(const Camera& camera, const float previousFearFactor);
 
+    void resetFearUpdateTime();
+
 private:
     glm::mat4 _getSlendemanShaderModel(const Camera& camera);
 
@@ -78,6 +80,10 @@ float SlenderManager::updateFearFactor(const Camera& camera, const float previou
     AudioManager::getInstance().setMusicVolume(EMusic::whiteNoise, _fearFactor);
     _fearUpdateTime = glfwGetTime();
     return _fearFactor;
+}
+
+void SlenderManager::resetFearUpdateTime() {
+    _fearUpdateTime = glfwGetTime();
 }
 
 glm::mat4 SlenderManager::_getSlendemanShaderModel(const Camera& camera) {
