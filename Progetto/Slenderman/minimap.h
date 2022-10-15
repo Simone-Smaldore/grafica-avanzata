@@ -29,6 +29,11 @@ private:
 public:
     Minimap(const std::map<int, glm::vec3>& poiInfo);
 
+    ~Minimap() {
+        _circleTransforms.clear();
+        _circleTransforms.shrink_to_fit();
+    }
+
     virtual void render(const Camera& camera, const LightUtils& lightUtils) override;
 };
 
@@ -175,8 +180,8 @@ void Minimap::_initMinimapMarkers() {
 
     float personMarkerVertices[] = {
         // positions 
-        -0.5f, -0.7f, 
-         0.0f,  0.6f,  
+        -0.5f, -0.7f,
+         0.0f,  0.6f,
          0.5f, -0.7f
     };
 

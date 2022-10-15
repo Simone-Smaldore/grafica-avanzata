@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <cmath>
@@ -63,7 +62,7 @@ private:
     float _loseThreshold = 1.0f;
     vector<Page*> _pages;
 
-    FullsceenImage* _menuIngame;   
+    FullsceenImage* _menuIngame;
     FullsceenImage* _loseImage;
     FullsceenImage* _winImage;
     float _timerTransition = 0.0f;
@@ -93,7 +92,7 @@ void GameScene::init() {
     _slendermanSpawnPoints = MapInitializer::initSlenderSpawnPoints(_poiInfo);
 
     _lightUtils.setLights(_poiInfo);
-    
+
     _renderables.push_back(new Floor());
 
     _slenderMan = new SlenderMan();
@@ -154,6 +153,9 @@ void GameScene::_processInput(const float& deltaTime, const CollisionResult& col
             _previousEscMenuTime = currentTime;
             _menuOpen = !_menuOpen;
             _camera.forceBlockCamera = _menuOpen;
+
+            if (_menuOpen)
+                AudioManager::getInstance().setMusicVolume(EMusic::whiteNoise, 0);
         }
     }
 
@@ -253,7 +255,7 @@ void GameScene::process(const float& deltaTime) {
 
     if (_menuOpen) {
         _menuIngame->render(_camera, _lightUtils);
-        RenderText("[Esc] Return to Game", SCR_WIDTH/2 - 200,  150, 0.8, glm::vec3(1, 1, 1));
+        RenderText("[Esc] Return to Game", SCR_WIDTH / 2 - 200, 150, 0.8, glm::vec3(1, 1, 1));
         RenderText("[M] Quit to Menu", SCR_WIDTH / 2 - 150, 100, 0.8, glm::vec3(1, 1, 1));
         _slenderManager->resetFearUpdateTime();
         return;
@@ -328,9 +330,12 @@ void GameScene::destroy() {
     _renderables.shrink_to_fit();
 
     _collisionSolver.clearRegisteredAABBs();
-    
+
     delete _tabooIndices;
     delete _slenderManager;
+    delete _menuIngame;
+    delete _winImage;
+    delete _loseImage;
 }
 
 Camera* GameScene::currentCamera() {

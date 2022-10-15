@@ -16,6 +16,8 @@ protected:
     unsigned int _texture;
 
 public:
+    virtual ~Renderable() {}
+
     virtual void render(const Camera& camera, const LightUtils& lightUtils) = 0;
 };
 
@@ -25,6 +27,9 @@ protected:
     glm::mat4 _transform;
 
     static unsigned int _initRectVAO(const float dimension);
+
+public:
+    virtual ~VAORenderable() {}
 };
 
 class ModelRenderable : public Renderable {
@@ -44,6 +49,12 @@ protected:
     std::vector<glm::mat4> _transforms;
 
     void _initUsingDynamicMapAlgorithm(const int quadSide, const int vaoObjectSide, const float offset, const glm::vec3& scaleMatrix, const bool useRandomOffset, const std::unordered_set<int>& tabooIndices = { });
+
+public:
+    virtual ~InstancedModelRenderable() {
+        _transforms.clear();
+        _transforms.shrink_to_fit();
+    }
 };
 
 unsigned int VAORenderable::_initRectVAO(const float dimension) {
@@ -164,6 +175,8 @@ void InstancedModelRenderable::_initUsingDynamicMapAlgorithm(const int quadSide,
         _model->meshes[i].setupVAOs();
     }
 
-    for (int k = 0; k < numVAO; k++)
-        delete[] transformMatrix[k];
+    for (auto&& matrix : transformMatrix)
+        delete[] matrix;
+    transformMatrix.clear();
+    transformMatrix.shrink_to_fit();
 }
