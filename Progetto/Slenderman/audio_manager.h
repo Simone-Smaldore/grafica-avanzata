@@ -46,6 +46,9 @@ public:
     void process() const;
 
     void destroy();
+
+    inline bool has(EMusic key) const { return _musicCache.find(key) != _musicCache.end(); }
+
 };
 
 AudioManager& AudioManager::getInstance() {

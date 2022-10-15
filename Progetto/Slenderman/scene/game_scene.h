@@ -232,6 +232,7 @@ void GameScene::process(const float& deltaTime) {
     }
 
     if (_fearFactor >= _loseThreshold) {
+        AudioManager::getInstance().setMusicVolume(EMusic::whiteNoise, 0);
         if (_timerTransition == 0) {
             _timerTransition = glfwGetTime();
         }

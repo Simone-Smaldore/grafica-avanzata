@@ -121,6 +121,9 @@ void LoadingScene::_loadModels() {
 void LoadingScene::_loadAudio() {
     // TODO: load all audio
     //AudioManager::getInstance().loadMusic(EMusic::background, "resources/audio/creepy-music.mp3", true);
+    if (AudioManager::getInstance().has(EMusic::background))
+        return;
+    
     AudioManager::getInstance().loadMusic(EMusic::whiteNoise, "resources/audio/white-noise.wav", true, 0.0f);
 
     AudioManager::getInstance().loadSfx(ESfx::lightOn, "resources/audio/light-on.wav");
