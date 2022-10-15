@@ -54,6 +54,11 @@ public:
     virtual ~InstancedModelRenderable() {
         _transforms.clear();
         _transforms.shrink_to_fit();
+
+        for (unsigned int i = 0; i < _model->meshes.size(); i++) {
+            _model->meshes[i].VAOs.clear();
+            _model->meshes[i].VAOs.shrink_to_fit();
+        }
     }
 };
 
@@ -144,7 +149,7 @@ void InstancedModelRenderable::_initUsingDynamicMapAlgorithm(const int quadSide,
         glGenBuffers(1, &buffer);
         glBindBuffer(GL_ARRAY_BUFFER, buffer);
 
-        glBufferData(GL_ARRAY_BUFFER, (amount / numVAO) * sizeof(glm::mat4), &transform[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, (amount / numVAO) * sizeof(glm::mat4), transform, GL_STATIC_DRAW);
 
         for (unsigned int i = 0; i < _model->meshes.size(); i++) {
             unsigned int VAO;
@@ -165,9 +170,10 @@ void InstancedModelRenderable::_initUsingDynamicMapAlgorithm(const int quadSide,
             glVertexAttribDivisor(5, 1);
             glVertexAttribDivisor(6, 1);
 
+            glEnableVertexAttribArray(0);
+
             _model->meshes[i].VAOs.push_back(VAO);
             glBindVertexArray(0);
-
         }
     }
 
@@ -177,6 +183,7 @@ void InstancedModelRenderable::_initUsingDynamicMapAlgorithm(const int quadSide,
 
     for (auto&& matrix : transformMatrix)
         delete[] matrix;
+
     transformMatrix.clear();
     transformMatrix.shrink_to_fit();
 }

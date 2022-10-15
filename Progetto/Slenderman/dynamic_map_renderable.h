@@ -23,7 +23,6 @@ private:
     const DynamicEntity _entity;
     const unordered_set<int> _tabooIndices;
 
-private:
     vector<int> getVaoIndexesFromCamera(const Camera& camera, const float offset, const int quadSide, const int vaoObjectSide) const;
     void renderDynamicMap(const vector<int>& VAOIndexes, const int quadSide, const int vaoObjectSide) const;
 

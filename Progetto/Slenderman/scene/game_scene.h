@@ -40,8 +40,6 @@ private:
 
     vector<Renderable*> _renderables;
 
-    Camera _camera;
-    LightUtils _lightUtils;
     CollisionSolver _collisionSolver;
     double _previousTime = 0.0;
     double _previousEscMenuTime = 0.0;
@@ -248,13 +246,13 @@ void GameScene::process(const float& deltaTime) {
     if (_collectedPages == NUM_PAGES) {
         AudioManager::getInstance().setMusicVolume(EMusic::whiteNoise, 0);
         AudioManager::getInstance().setMusicVolume(EMusic::highFear, 0);
+        AudioManager::getInstance().pauseMusic(EMusic::background);
 
         if (_timerTransition == 0) {
             _timerTransition = glfwGetTime();
         }
         _winImage->render(_camera, _lightUtils);
         if (glfwGetTime() - _timerTransition > 3) {
-            AudioManager::getInstance().pauseMusic(EMusic::background);
             _sceneManager->changeScene(EScene::menu);
         }
         return;
@@ -263,13 +261,13 @@ void GameScene::process(const float& deltaTime) {
     if (_fearFactor >= _loseThreshold) {
         AudioManager::getInstance().setMusicVolume(EMusic::whiteNoise, 0);
         AudioManager::getInstance().setMusicVolume(EMusic::highFear, 0);
+        AudioManager::getInstance().pauseMusic(EMusic::background);
 
         if (_timerTransition == 0) {
             _timerTransition = glfwGetTime();
         }
         _loseImage->render(_camera, _lightUtils);
         if (glfwGetTime() - _timerTransition > 3) {
-            AudioManager::getInstance().pauseMusic(EMusic::background);
             _sceneManager->changeScene(EScene::menu);
         }
         return;
