@@ -33,6 +33,7 @@ enum class ETexture {
     loading,
     menuImage,
     menuIngame,
+    loseImage
 };
 
 class TextureCache {

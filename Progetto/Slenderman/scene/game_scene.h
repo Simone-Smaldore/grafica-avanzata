@@ -6,6 +6,7 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
+#include <windows.h>
 
 #include <glm/glm.hpp>
 
@@ -63,6 +64,8 @@ private:
     vector<Page*> _pages;
 
     FullsceenImage* _menuIngame;   
+    FullsceenImage* _loseImage;
+    float _timerTransition = 0.0f;
     bool _menuOpen = false;
 
     void _processInput(const float& deltaTime, const CollisionResult& collisionResult);
@@ -132,6 +135,7 @@ void GameScene::init() {
     _renderables.push_back(new FearRenderable(_fearFactor));
 
     _menuIngame = new FullsceenImage(ETexture::menuIngame);
+    _loseImage = new FullsceenImage(ETexture::loseImage);
 }
 
 void GameScene::_processInput(const float& deltaTime, const CollisionResult& collisionResult) {
@@ -222,7 +226,14 @@ void GameScene::process(const float& deltaTime) {
 
     if (_fearFactor >= _loseThreshold) {
         // SCONFITTA TODO: Creare scena per la sconfitta; 
-        _sceneManager->changeScene(EScene::menu);
+        if (_timerTransition == 0) {
+            _timerTransition = glfwGetTime();
+        }
+        _loseImage->render(_camera, _lightUtils);
+        if (glfwGetTime() - _timerTransition > 3) {
+            _sceneManager->changeScene(EScene::menu);
+        }
+        
         return;
     }
 

@@ -78,6 +78,7 @@ void LoadingScene::_loadTextures() {
     TextureCache::getInstance().registerTexture(ETexture::minimap, "resources/textures/minimappa/bosco_dark2.jpg");
     TextureCache::getInstance().registerTexture(ETexture::fence, "resources/models/Fence/wood-fence/textura_cerca_de_madeira_COLOR.png");
     TextureCache::getInstance().registerTexture(ETexture::menuIngame, "resources/textures/menu_ingame.jpg");
+    TextureCache::getInstance().registerTexture(ETexture::loseImage, "resources/textures/lose_image.jpg");
 
     int poi1TextureEnumIndex = static_cast<int>(ETexture::poi1);
     int poi8TextureEnumIndex = static_cast<int>(ETexture::poi8);
@@ -157,7 +158,7 @@ void LoadingScene::process(const float& deltaTime) {
 
     if (!_transitionStarted) {
         _menuImage->render(_camera, _lightUtils);
-        RenderText("Loading done: press space to play", SCR_WIDTH / 2 - 400, 80, 0.8, glm::vec3(1, 1, 1));
+        RenderText("Loading done: press [space] to play", SCR_WIDTH / 2 - 400, 80, 0.8, glm::vec3(1, 1, 1));
     }
 
     if (_transitionStarted && glfwGetTime() - _transitionStartedTime > 1) {
