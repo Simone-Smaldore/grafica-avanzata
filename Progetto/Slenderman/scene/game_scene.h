@@ -68,6 +68,7 @@ private:
     FullsceenImage* _winImage;
     float _timerTransition = 0.0f;
     bool _menuOpen = false;
+    bool _shouldQuit = false;
 
     void _processInput(const float& deltaTime, const CollisionResult& collisionResult);
     void _findFramedPage();
@@ -143,6 +144,7 @@ void GameScene::init() {
 void GameScene::_processInput(const float& deltaTime, const CollisionResult& collisionResult) {
     if (_menuOpen && InputManager::isKeyPressed(GLFW_KEY_M)) {
         _sceneManager->changeScene(EScene::menu);
+        _shouldQuit = true;
         return;
     }
 
@@ -245,6 +247,9 @@ void GameScene::process(const float& deltaTime) {
 
     CollisionResult collisionResult = _collisionSolver.checkCollisionWithRegisteredAABBs(_camera, fmaxf(5.0f, (deltaTime * _camera.MovementSpeed) + 0.5f));
     _processInput(deltaTime, collisionResult);
+
+    if (_shouldQuit)
+        return;
 
     if (_menuOpen) {
         _menuIngame->render(_camera, _lightUtils);

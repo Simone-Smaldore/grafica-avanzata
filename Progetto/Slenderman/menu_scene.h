@@ -2,10 +2,8 @@
 #include "scene/loading_scene.h"
 #include "fullscreen_image.h"
 
-
 class MenuScene : public Scene {
 private:
-    LoadingScene* _loadingScene;
     GLFWwindow* _window;
     SceneManager* _sceneManager;
     FullsceenImage* _menuImage;
@@ -32,8 +30,6 @@ void MenuScene::_renderMenu() {
     _menuImage->render(_camera, _lightUtils);
     RenderText("[Enter] to Start Game", SCR_WIDTH / 2, SCR_HEIGHT / 3, 0.8, glm::vec3(1, 1, 1));
     RenderText("[Q] or [Esc] to Quit", SCR_WIDTH / 2, SCR_HEIGHT / 3 - 40, 0.8, glm::vec3(1, 1, 1));
-    glfwSwapBuffers(_window);
-    glfwSwapBuffers(_window);
 }
 
 void MenuScene::init() {
