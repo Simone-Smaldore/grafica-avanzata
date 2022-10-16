@@ -113,20 +113,25 @@ void GameScene::init() {
     std::vector<aabb*> forestAABBs = forest->toAABBs();
     _collisionSolver.registerAABBs(forestAABBs);
     for (auto forestAABB : forestAABBs)
-        _renderables.push_back(new RenderableAABB(forestAABB));
+        if(DEBUG) 
+            _renderables.push_back(new RenderableAABB(forestAABB));
 
     aabb* fenceFront = new aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT, -4.0f, MAX_PLAYER_DISTANCE_FRONT + 0.25f), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT, 0.0f, MAX_PLAYER_DISTANCE_FRONT - 0.25f));
-    _collisionSolver.registerAABB(fenceFront);
-    _renderables.push_back(new RenderableAABB(fenceFront));
+    _collisionSolver.registerAABB(fenceFront);    
     aabb* fenceBack = new aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT, -4.0f, MAX_PLAYER_DISTANCE_BACK + 0.25f), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT, 0.0f, MAX_PLAYER_DISTANCE_BACK - 0.25f));
-    _collisionSolver.registerAABB(fenceBack);
-    _renderables.push_back(new RenderableAABB(fenceBack));
+    _collisionSolver.registerAABB(fenceBack);    
     aabb* fenceRight = new aabb(glm::vec3(MAX_PLAYER_DISTANCE_RIGHT + 0.25, -4.0f, MAX_PLAYER_DISTANCE_BACK), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT - 0.25f, 0.0f, MAX_PLAYER_DISTANCE_FRONT));
-    _collisionSolver.registerAABB(fenceRight);
-    _renderables.push_back(new RenderableAABB(fenceRight));
+    _collisionSolver.registerAABB(fenceRight); 
     aabb* fenceLeft = new aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT - 0.25f, -4.0f, MAX_PLAYER_DISTANCE_BACK), glm::vec3(MAX_PLAYER_DISTANCE_LEFT + 0.25f, 0.0f, MAX_PLAYER_DISTANCE_FRONT));
     _collisionSolver.registerAABB(fenceLeft);
-    _renderables.push_back(new RenderableAABB(fenceLeft));
+
+    if (DEBUG) {
+        _renderables.push_back(new RenderableAABB(fenceFront));
+        _renderables.push_back(new RenderableAABB(fenceBack));
+        _renderables.push_back(new RenderableAABB(fenceRight));
+        _renderables.push_back(new RenderableAABB(fenceLeft));
+    }
+
 
     _renderables.push_back(new Fence());
 
@@ -166,7 +171,7 @@ void GameScene::_processInput(const float& deltaTime, const CollisionResult& col
         return;
     }
 
-    bool superSaiyan = InputManager::isKeyPressed(GLFW_KEY_LEFT_SHIFT);
+    bool superSaiyan = InputManager::isKeyPressed(GLFW_KEY_LEFT_SHIFT) && DEBUG;
     float speedIncrement = superSaiyan ? 150.0f : 0.0f;
 
     bool shouldPlayFootstep = false;
@@ -299,7 +304,8 @@ void GameScene::process(const float& deltaTime) {
     if (!_collectedPageMessage.empty() && _pageCollectedTime + PAGE_COLLECTED_MESSAGE_SECONDS > glfwGetTime())
         RenderText(_collectedPageMessage, (SCR_WIDTH / 2) - 150.0f, SCR_HEIGHT - 200.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
-    _renderInfo();
+    if(DEBUG)
+        _renderInfo();
 }
 
 void GameScene::_renderInfo() {

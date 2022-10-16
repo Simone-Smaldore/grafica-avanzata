@@ -9,8 +9,8 @@
 const unsigned int SCR_WIDTH = 1440;
 const unsigned int SCR_HEIGHT = 900;
 const char* APP_TITLE = "Slenderman";
-const bool DEBUG = true;
-const bool ILLUMINATE_SCENE = true;
+const bool DEBUG = false;
+const bool ILLUMINATE_SCENE = false;
 
 // COSTANTI PER LA GENERAZIONE DELLA MAPPA
 // -------------------------------------------------------------------------------------------
@@ -89,7 +89,7 @@ const float MAX_INTERNAL_SPAWN_DISTANCE = 20.0f + SPAWN_OFFSET_PER_PAGE * (NUM_P
 
 // SLENDER STRENGTH
 // -------------------------------------------------------------------------------------------
-const float HALF_SLENDER_CONE_OPENING = 30.0f;
-const float DISTANCE_RESET_FEAR = 60.0f;
-const float MEDIUM_TIME_DEATH = 1.2f;
-const float THRESHOLD_OFFSET = 0.1f;
+const float HALF_SLENDER_CONE_OPENING = 32.0f;
+const float DISTANCE_RESET_FEAR = 80.0f;
+const float MEDIUM_TIME_DEATH = 1.1f;
+const float THRESHOLD_OFFSET = 0.12f;
