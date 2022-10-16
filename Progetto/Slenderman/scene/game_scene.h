@@ -69,6 +69,8 @@ private:
 
     float _lastPlayedFootstep = 0.0f;
 
+    float _startTime = 0.0f;
+
     void _processInput(const float& deltaTime, const CollisionResult& collisionResult);
     void _findFramedPage();
 
@@ -143,6 +145,8 @@ void GameScene::init() {
     _menuIngame = new FullsceenImage(ETexture::menuIngame);
     _loseImage = new FullsceenImage(ETexture::loseImage);
     _winImage = new FullsceenImage(ETexture::winImage);
+
+    _startTime = glfwGetTime();
 }
 
 void GameScene::_processInput(const float& deltaTime, const CollisionResult& collisionResult) {
@@ -284,6 +288,7 @@ void GameScene::process(const float& deltaTime) {
     if (_shouldQuit)
         return;
 
+
     if (_menuOpen) {
         _menuIngame->render(_camera, _lightUtils);
         RenderText("[Esc] Return to Game", SCR_WIDTH / 2 - 200, 150, 0.8, glm::vec3(1, 1, 1));
@@ -306,6 +311,14 @@ void GameScene::process(const float& deltaTime) {
 
     if(DEBUG)
         _renderInfo();
+
+    if (glfwGetTime() - _startTime < 7) {
+        RenderText("Find all the pages to win", SCR_WIDTH / 2 - 200.0f, SCR_HEIGHT - 100.0f, 0.65f, glm::vec3(1.0f, 1.0f, 1.0f));
+    }
+
+    if (glfwGetTime() - _startTime > 7 && glfwGetTime() - _startTime < 11) {
+        RenderText("[Esc] to open menu [F] to turn on/off flashlight", SCR_WIDTH / 2 - 450.0f, SCR_HEIGHT - 100.0f, 0.65f, glm::vec3(1.0f, 1.0f, 1.0f));
+    }
 }
 
 void GameScene::_renderInfo() {
