@@ -55,7 +55,6 @@ void SlenderManager::updateSlenderman(const Camera& camera, SlenderMan& slenderm
 float SlenderManager::updateFearFactor(const Camera& camera, const float previousFearFactor) {
     float slenderDistance = sqrt(pow(_slendermanTranslationVector.x - camera.Position.x, 2) + pow(_slendermanTranslationVector.z - camera.Position.z, 2));
     if (slenderDistance > DISTANCE_RESET_FEAR) {
-        // nTODO: Numeri magici...
         if (previousFearFactor > 0.05)
             _fearFactor = previousFearFactor - 0.005;
         else

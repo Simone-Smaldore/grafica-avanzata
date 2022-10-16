@@ -69,7 +69,7 @@ private:
 
     float _lastPlayedFootstep = 0.0f;
 
-    float _startTime = 0.0f;
+    float _startTime = -1.0f;
 
     void _processInput(const float& deltaTime, const CollisionResult& collisionResult);
     void _findFramedPage();
@@ -115,15 +115,15 @@ void GameScene::init() {
     std::vector<aabb*> forestAABBs = forest->toAABBs();
     _collisionSolver.registerAABBs(forestAABBs);
     for (auto forestAABB : forestAABBs)
-        if(DEBUG) 
+        if (DEBUG)
             _renderables.push_back(new RenderableAABB(forestAABB));
 
     aabb* fenceFront = new aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT, -4.0f, MAX_PLAYER_DISTANCE_FRONT + 0.25f), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT, 0.0f, MAX_PLAYER_DISTANCE_FRONT - 0.25f));
-    _collisionSolver.registerAABB(fenceFront);    
+    _collisionSolver.registerAABB(fenceFront);
     aabb* fenceBack = new aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT, -4.0f, MAX_PLAYER_DISTANCE_BACK + 0.25f), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT, 0.0f, MAX_PLAYER_DISTANCE_BACK - 0.25f));
-    _collisionSolver.registerAABB(fenceBack);    
+    _collisionSolver.registerAABB(fenceBack);
     aabb* fenceRight = new aabb(glm::vec3(MAX_PLAYER_DISTANCE_RIGHT + 0.25, -4.0f, MAX_PLAYER_DISTANCE_BACK), glm::vec3(MAX_PLAYER_DISTANCE_RIGHT - 0.25f, 0.0f, MAX_PLAYER_DISTANCE_FRONT));
-    _collisionSolver.registerAABB(fenceRight); 
+    _collisionSolver.registerAABB(fenceRight);
     aabb* fenceLeft = new aabb(glm::vec3(MAX_PLAYER_DISTANCE_LEFT - 0.25f, -4.0f, MAX_PLAYER_DISTANCE_BACK), glm::vec3(MAX_PLAYER_DISTANCE_LEFT + 0.25f, 0.0f, MAX_PLAYER_DISTANCE_FRONT));
     _collisionSolver.registerAABB(fenceLeft);
 
@@ -145,8 +145,6 @@ void GameScene::init() {
     _menuIngame = new FullsceenImage(ETexture::menuIngame);
     _loseImage = new FullsceenImage(ETexture::loseImage);
     _winImage = new FullsceenImage(ETexture::winImage);
-
-    _startTime = glfwGetTime();
 }
 
 void GameScene::_processInput(const float& deltaTime, const CollisionResult& collisionResult) {
@@ -252,6 +250,11 @@ void GameScene::_findFramedPage() {
 }
 
 void GameScene::process(const float& deltaTime) {
+    if (_startTime < 0) {
+        _startTime = glfwGetTime();
+        return;
+    }
+
     if (_collectedPages == NUM_PAGES) {
         AudioManager::getInstance().setMusicVolume(EMusic::whiteNoise, 0);
         AudioManager::getInstance().setMusicVolume(EMusic::highFear, 0);
@@ -288,7 +291,6 @@ void GameScene::process(const float& deltaTime) {
     if (_shouldQuit)
         return;
 
-
     if (_menuOpen) {
         _menuIngame->render(_camera, _lightUtils);
         RenderText("[Esc] Return to Game", SCR_WIDTH / 2 - 200, 150, 0.8, glm::vec3(1, 1, 1));
@@ -309,7 +311,7 @@ void GameScene::process(const float& deltaTime) {
     if (!_collectedPageMessage.empty() && _pageCollectedTime + PAGE_COLLECTED_MESSAGE_SECONDS > glfwGetTime())
         RenderText(_collectedPageMessage, (SCR_WIDTH / 2) - 150.0f, SCR_HEIGHT - 200.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
-    if(DEBUG)
+    if (DEBUG)
         _renderInfo();
 
     if (glfwGetTime() - _startTime < 7) {
