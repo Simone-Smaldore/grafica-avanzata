@@ -11,10 +11,10 @@ private:
 public:
     SimpleVertexClusterer(const vector<glm::vec3>& _centroids) : centroids(_centroids) {}
 
-    vector<vector<Vertex>> generateVertexClusters(const Model& model, const float yMax = FLT_MAX) const;
+    vector<vector<Vertex>> generateVertexClusters(const Model& model, const float yMin = -FLT_MAX, const float yMax = FLT_MAX) const;
 };
 
-vector<vector<Vertex>> SimpleVertexClusterer::generateVertexClusters(const Model& model, const float yMax) const {
+vector<vector<Vertex>> SimpleVertexClusterer::generateVertexClusters(const Model& model, const float yMin, const float yMax) const {
     vector<vector<Vertex>> result;
 
     for (int i = 0; i < centroids.size(); i++)
@@ -22,7 +22,7 @@ vector<vector<Vertex>> SimpleVertexClusterer::generateVertexClusters(const Model
 
     for (const auto& mesh : model.meshes) {
         for (const auto& vertex : mesh.vertices) {
-            if (vertex.Position.y > yMax)
+            if (vertex.Position.y < yMin || vertex.Position.y > yMax)
                 continue;
 
             int minIndex = 0;

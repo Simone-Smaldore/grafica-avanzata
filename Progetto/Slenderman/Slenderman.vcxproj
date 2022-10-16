@@ -22,7 +22,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{0ab26ef0-59ef-4ba2-abf5-1d80c7fcc6a1}</ProjectGuid>
-    <RootNamespace>AssimpHelloWorld</RootNamespace>
+    <RootNamespace>Slenderman</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>Slenderman</ProjectName>
   </PropertyGroup>
@@ -127,7 +127,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;RAUDIO_STANDALONE;SUPPORT_FILEFORMAT_MP3;SUPPORT_FILEFORMAT_WAV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -147,7 +147,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;RAUDIO_STANDALONE;SUPPORT_FILEFORMAT_MP3;SUPPORT_FILEFORMAT_WAV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -168,6 +168,8 @@
     <None Include="aabb.vs" />
     <None Include="circle_minimap.fs" />
     <None Include="circle_minimap.vs" />
+    <None Include="fear.fs" />
+    <None Include="fear.vs" />
     <None Include="light_shader.fs" />
     <None Include="light_shader.vs" />
     <None Include="minimap_shader.fs" />
@@ -187,25 +189,46 @@
   <ItemGroup>
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="raudio.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aabb.h" />
+    <ClInclude Include="audio_manager.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="collision_solver.h" />
     <ClInclude Include="constants.h" />
+    <ClInclude Include="dynamic_map_renderable.h" />
+    <ClInclude Include="fear_renderable.h" />
+    <ClInclude Include="fence.h" />
+    <ClInclude Include="floor.h" />
     <ClInclude Include="fps_manager.h" />
-    <ClInclude Include="input_utils.h" />
+    <ClInclude Include="fullscreen_image.h" />
+    <ClInclude Include="game.h" />
+    <ClInclude Include="input_manager.h" />
     <ClInclude Include="glfw_utils.h" />
     <ClInclude Include="light_utils.h" />
+    <ClInclude Include="map_initializer.h" />
+    <ClInclude Include="menu_scene.h" />
     <ClInclude Include="mesh.h" />
+    <ClInclude Include="minimap.h" />
     <ClInclude Include="model.h" />
+    <ClInclude Include="model_cache.h" />
+    <ClInclude Include="page.h" />
     <ClInclude Include="ray.h" />
-    <ClInclude Include="renderer.h" />
+    <ClInclude Include="renderable.h" />
+    <ClInclude Include="renderable_aabb.h" />
+    <ClInclude Include="renderable_poi.h" />
     <ClInclude Include="render_text.h" />
     <ClInclude Include="scene.h" />
+    <ClInclude Include="scene\loading_scene.h" />
+    <ClInclude Include="scene\game_scene.h" />
+    <ClInclude Include="shader_cache.h" />
     <ClInclude Include="shader_m.h" />
+    <ClInclude Include="slenderman.h" />
     <ClInclude Include="slender_manager.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="street_light.h" />
+    <ClInclude Include="texture_cache.h" />
     <ClInclude Include="texture_utils.h" />
     <ClInclude Include="vertex_clusterer.h" />
   </ItemGroup>

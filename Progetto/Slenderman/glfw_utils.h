@@ -1,6 +1,10 @@
 #pragma once
-#include "constants.h"
+
+#include <iostream>
+
 #include <GLFW/glfw3.h>
+
+#include "constants.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -8,7 +12,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 float lastX = (float)SCR_WIDTH / 2.0;
 float lastY = (float)SCR_HEIGHT / 2.0;
 bool firstMouse = true;
-Camera camera(glm::vec3(0.0f, 0.0f, 0.0f));
 
 GLFWwindow* initGlfw() {
     glfwInit();
@@ -20,9 +23,11 @@ GLFWwindow* initGlfw() {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
+    SCR_WIDTH = glfwGetVideoMode(glfwGetPrimaryMonitor())->width;
+    SCR_HEIGHT = glfwGetVideoMode(glfwGetPrimaryMonitor())->height;
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, APP_TITLE, NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, APP_TITLE, glfwGetPrimaryMonitor(), NULL);
     if (window == NULL){
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -60,5 +65,4 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     float yoffset = lastY - ypos;
     lastX = xpos;
     lastY = ypos;
-    camera.ProcessMouseMovement(xoffset, yoffset);
 }

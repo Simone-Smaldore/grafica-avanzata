@@ -1,15 +1,18 @@
 #pragma once
 
+#include <unordered_set>
+
 #include "glm/glm.hpp"
 
 // COSTANTI DI CONFIGURAZIONE DEL GIOCO
 // -------------------------------------------------------------------------------------------
-const unsigned int SCR_WIDTH = 1440;
-const unsigned int SCR_HEIGHT = 900;
+
+int SCR_WIDTH = 1440;
+int SCR_HEIGHT = 900;
+
 const char* APP_TITLE = "Slenderman";
-const bool DEBUG = true;
-const bool ILLUMINATE_SCENE = true;
-const bool DISABLE_COLLISIONS = false;
+const bool DEBUG = false;
+const bool ILLUMINATE_SCENE = false;
 
 // COSTANTI PER LA GENERAZIONE DELLA MAPPA
 // -------------------------------------------------------------------------------------------
@@ -31,9 +34,15 @@ const int NUM_PAGES = 6;
 const int INT_OFFSET_VAO_INDEXES = 1;
 // ATTENZIONE DA CAMBIARE NEL CASO SI CAMBINO LE DIMENSIONI DELLA MAPPA
 // PER ADESSO NON DISEGNA SOLO IL VAO CORRISPONDENTE A (0, 0)
-const vector<int> K_MAP_TO_EXCLUDE{ 300 };
+const std::unordered_set<int> K_SET_TO_EXCLUDE = { 300 };
 // Indica l'offset che ha il lampione lungo x e lungo z dal centro del VAO
 const float STREETLIGHT_POI_OFFSET = 10.0f;
+const float SLENDERMAN_OUT_OF_TREE_OFFSET = 5.0f;
+
+const float MAX_PLAYER_DISTANCE_FRONT = -1343.0f;
+const float MAX_PLAYER_DISTANCE_BACK = 1343.5f;
+const float MAX_PLAYER_DISTANCE_RIGHT = 1333.5f;
+const float MAX_PLAYER_DISTANCE_LEFT = -1353.5f;
 
 // COSTANTI PER LA COLLEZIONE DELLE PAGINE
 // -------------------------------------------------------------------------------------------
@@ -57,10 +66,6 @@ const float MAP_DIMENSION = 300.0f;
 const float MAP_W_OFFSET = 50.0f;
 const float MAP_H_OFFSET = 30.0f;
 
-const float MAP_W_PROP_DIMENSION = MAP_DIMENSION * 2 / (float)SCR_WIDTH;
-const float MAP_H_PROP_DIMENSION = MAP_DIMENSION * 2 / (float)SCR_HEIGHT;
-const float MAP_W_PROP_OFFSET = MAP_W_OFFSET * 2 / (float)SCR_WIDTH;
-const float MAP_H_PROP_OFFSET = MAP_H_OFFSET * 2 / (float)SCR_HEIGHT;
 
 // Deve essere multiplo di 3 e pari aumentandolo aumenta la risoluzione del cerchio
 const int NUM_VERTICES_CIRCLE = 60;
@@ -71,3 +76,18 @@ const float MAX_W_QUAD_MAP = 1450.0f;
 // -------------------------------------------------------------------------------------------
 const glm::vec4 RED = glm::vec4(1.0, 0.0, 0.0, 1.0);
 const glm::vec4 AABB_COLOR = glm::vec4(0.2, 0.2, 0.2, 1.0);
+
+// SLENDER SPAWN
+// -------------------------------------------------------------------------------------------
+const float HALF_CONE_OPENING = 20.0f;
+const int TIME_SPAWN_SLENDER_FACTOR = 3;
+const float SPAWN_OFFSET_PER_PAGE = 10.0f;
+const float MAX_EXTERNAL_SPAWN_DISTANCE = 100.0f + SPAWN_OFFSET_PER_PAGE * (NUM_PAGES - 1);
+const float MAX_INTERNAL_SPAWN_DISTANCE = 20.0f + SPAWN_OFFSET_PER_PAGE * (NUM_PAGES - 1);
+
+// SLENDER STRENGTH
+// -------------------------------------------------------------------------------------------
+const float HALF_SLENDER_CONE_OPENING = 32.0f;
+const float DISTANCE_RESET_FEAR = 80.0f;
+const float MEDIUM_TIME_DEATH = 1.1f;
+const float THRESHOLD_OFFSET = 0.12f;
