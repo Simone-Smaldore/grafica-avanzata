@@ -107,7 +107,6 @@ void Fence::render(const Camera& camera, const LightUtils& lightUtils) {
     _shader->setFloat("alphaValue", 0.7f);
 
     int num_VAO = NUM_FENCES_FOR_SIDE * 4;
-    //TODO: Renderizzare solo un sottoinsieme delle fence come per la foresta
     for (int k = 0; k < num_VAO; k++) {
         for (int i = 0; i < _model->meshes.size(); i++) {
             glActiveTexture(GL_TEXTURE0);

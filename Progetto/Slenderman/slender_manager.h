@@ -38,14 +38,12 @@ private:
 };
 
 void SlenderManager::updateSlenderman(const Camera& camera, SlenderMan& slenderman, const std::vector<glm::vec3>& slendermanSpawnPoints, const int collectedPages) {
-    //TODO Eliminare magic numbers (Secondi e distanza)
     if (glfwGetTime() - _previousTime > TIME_SPAWN_SLENDER_FACTOR * (NUM_PAGES - collectedPages) && _fearFactor == 0) {
         vector<glm::vec3> nearSpawnPoints = _getNearSpawnPoints(camera, slendermanSpawnPoints, collectedPages);
         if (nearSpawnPoints.empty()) {
             return;
         }
         int spawnPointIndex = rand() % nearSpawnPoints.size();
-        //Scegliere randomicamente e con la direzione dello sguardo
         _slendermanTranslationVector = nearSpawnPoints[spawnPointIndex];
         _previousTime = glfwGetTime();
     }
@@ -116,14 +114,12 @@ vector<glm::vec3> SlenderManager::_getNearSpawnPoints(Camera camera, std::vector
     vector<glm::vec3> nearSpawnPoints;
     for (int i = 0; i < slendermanSpawnPoints.size(); i++) {
         float pointCameraDistance = sqrt(pow(slendermanSpawnPoints[i].x - camera.Position.x, 2) + pow(slendermanSpawnPoints[i].z - camera.Position.z, 2));
-        // Check sulla distanza TODO: Aggiornare in base al numero delle pagine ed aggiungere distanza minima
         if (pointCameraDistance > (MAX_EXTERNAL_SPAWN_DISTANCE - SPAWN_OFFSET_PER_PAGE * collectedPages)) {
             continue;
         }
         if (pointCameraDistance < (MAX_INTERNAL_SPAWN_DISTANCE - SPAWN_OFFSET_PER_PAGE * collectedPages)) {
             continue;
         }
-        // Check sull'angolo TODO: Verificare che il cono di 40 gradi vada bene
         float angle = atan2((slendermanSpawnPoints[i].x - camera.Position.x), (slendermanSpawnPoints[i].z - camera.Position.z)) - atan2(camera.Front.x, camera.Front.z);
         angle = angle * 180 / M_PI;
         if (angle < 0) {
@@ -132,7 +128,6 @@ vector<glm::vec3> SlenderManager::_getNearSpawnPoints(Camera camera, std::vector
         if (angle >= HALF_CONE_OPENING && angle <= 360.0f - HALF_CONE_OPENING) {
             continue;
         }
-        //cout << "x: " << slendermanSpawnPoints[i].x << " z: " << slendermanSpawnPoints[i].z << " angle: " << angle << endl;
         nearSpawnPoints.push_back(slendermanSpawnPoints[i]);
     }
     return nearSpawnPoints;

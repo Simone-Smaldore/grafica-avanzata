@@ -205,7 +205,6 @@
     <ClInclude Include="fullscreen_image.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="input_manager.h" />
-    <ClInclude Include="input_utils.h" />
     <ClInclude Include="glfw_utils.h" />
     <ClInclude Include="light_utils.h" />
     <ClInclude Include="map_initializer.h" />
@@ -219,7 +218,6 @@
     <ClInclude Include="renderable.h" />
     <ClInclude Include="renderable_aabb.h" />
     <ClInclude Include="renderable_poi.h" />
-    <ClInclude Include="renderer.h" />
     <ClInclude Include="render_text.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="scene\loading_scene.h" />

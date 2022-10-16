@@ -336,36 +336,10 @@ void GameScene::_renderInfo() {
     std::string ff = ssff.str();
     RenderText(ff, SCR_WIDTH - 200.0f, 120.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
-    //int numVAOForSide = TREE_QUAD_SIDE / VAO_OBJECTS_SIDE_TREE;
-    //vector<int> indexes = getVaoIndexesFromCamera(camera, TREE_OFFSET, TREE_QUAD_SIDE, VAO_OBJECTS_SIDE_TREE);
-    //int k_index = indexes[(indexes.size() - 1) / 2];
-    //int x_index = k_index / numVAOForSide;
-    //int z_index = k_index % numVAOForSide;
-
-    //std::stringstream ssk;
-    //ssk << "k_index: " << k_index;
-    //std::string k = ssk.str();
-    //RenderText(k, SCR_WIDTH - 200.0f, 120.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
-
-    //std::stringstream ssxindex;
-    //ssxindex << "x_index: " << x_index;
-    //std::string x_ind = ssxindex.str();
-    //RenderText(x_ind, SCR_WIDTH - 200.0f, 140.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
-
-    //std::stringstream sszindex;
-    //sszindex << "z_index: " << z_index;
-    //std::string z_ind = sszindex.str();
-    //RenderText(z_ind, SCR_WIDTH - 200.0f, 160.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
-
     std::stringstream ssfrontinfo;
     ssfrontinfo << "x_v: " << _camera.Front.x << " y_v: " << _camera.Front.y << " z_v: " << _camera.Front.z;
     std::string front_info = ssfrontinfo.str();
     RenderText(front_info, 100.0f, 50.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
-
-    /*std::stringstream ssCollectPage;
-    ssCollectPage << "Viewed Page: " << posViewedPage;
-    std::string collectPage_str = ssCollectPage.str();
-    RenderText(collectPage_str, 50.0f, SCR_HEIGHT - 50.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));*/
 }
 
 void GameScene::destroy() {

@@ -152,14 +152,9 @@ void CollisionSolver::_processCollision(CollisionResult& collisionResult, const 
     frontRay.direction.y = 0;
     collisionResult.n = collisionResult.n || staticAABB->intersectRay2D(frontRay, maxDistance);
 
-    //TODO: Rendere il vettore UP costante
     ray backRay = frontRay.rotate(M_PI, glm::vec3(0, 1, 0));
     backRay.direction.y = 0;
     collisionResult.s = collisionResult.s || staticAABB->intersectRay2D(backRay, maxDistance);
-
-    //TODO: Utilizzare rotazioni per ottenere tutti gli otto vettori
-    //TODO: Verificare stato front all'inizializzazione della camera
-    //cout << frontRay.rotate(2 * M_PI, glm::vec3(0, 1, 0)).direction.x << " " << frontRay.direction.x << endl;
 
     ray rightRay(cameraPosition, camera.Right);
     collisionResult.e = collisionResult.e || staticAABB->intersectRay2D(rightRay, maxDistance);

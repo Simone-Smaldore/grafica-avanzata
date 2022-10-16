@@ -29,7 +29,6 @@ aabb* StreetLight::toAABB() const {
 }
 
 void StreetLight::render(const Camera& camera, const LightUtils& lightUtils) {
-    //nTODO: _lightUtils.initLightShader(_shader, lightOn, camera);
     lightUtils.initLightShader(_shader, camera);
 
     _shader->use();

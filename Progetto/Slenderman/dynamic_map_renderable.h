@@ -111,7 +111,6 @@ std::vector<aabb*> DynamicMapRenderable::toAABBs() const {
 
     std::vector<aabb*> result;
     for (auto transform : _transforms) {
-        // nTODO: Eliminare centroidi magici?
         auto aabbs = aabb::fromCompoundModel(*(_model), { glm::vec3(18.0f, 0.0f, -31.0f), glm::vec3(-246.0f, 0.0f, 280.0f), glm::vec3(59.0f, 0.0f, 311.0f) }, transform);
         result.insert(result.end(), aabbs.begin(), aabbs.end());
     }

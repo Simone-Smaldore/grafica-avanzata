@@ -69,7 +69,6 @@ void LightUtils::initSpotLight(Shader* shader, const Camera& camera) const {
     shader->setFloat("spotLight.linear", 0.09f);
     shader->setFloat("spotLight.quadratic", 0.0032f);
 
-    // TODO eliminare la possibilita di illuminare la scena in produzione
     if (ILLUMINATE_SCENE && !lightOn) {
         shader->setVec3("spotLight.ambient", 1.0f, 1.0f, 1.0f);
         shader->setFloat("spotLight.linear", 0.0f);

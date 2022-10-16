@@ -180,7 +180,6 @@ glm::mat4 MapInitializer::_computePOITransformForModel(EModel model, const glm::
 
 void MapInitializer::addPOIRenderablesAndStreetLights(const std::map<int, glm::vec3>& poiInfo, std::vector<Page*>& pages, vector<Renderable*>& renderables, CollisionSolver& collisionSolver) {   
     vector<int> excludePageIndices;
-    // TODO: utilizzare unordered_set
     for (int i = 0; i < NUMBER_POINTS_OF_INTEREST - NUM_PAGES; i++) {
         int pageIndex = rand() % NUMBER_POINTS_OF_INTEREST;
         while (std::count(excludePageIndices.begin(), excludePageIndices.end(), pageIndex)) {

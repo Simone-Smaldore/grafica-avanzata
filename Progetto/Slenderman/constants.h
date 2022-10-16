@@ -9,8 +9,7 @@
 
 int SCR_WIDTH = 1440;
 int SCR_HEIGHT = 900;
-//const unsigned int SCR_WIDTH = 1440;
-//const unsigned int SCR_HEIGHT = 900;
+
 const char* APP_TITLE = "Slenderman";
 const bool DEBUG = false;
 const bool ILLUMINATE_SCENE = false;

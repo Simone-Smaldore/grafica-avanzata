@@ -30,7 +30,6 @@ void Floor::render(const Camera& camera, const LightUtils& lightUtils) {
     glBindTexture(GL_TEXTURE_2D, _texture);
 
     _shader->setMat4("model", _transform);
-    // nTODO: view e projection possono essere calcolati una sola volta all'inizio del frame
     _shader->setMat4("view", camera.GetViewMatrix());
     _shader->setMat4("projection", camera.GetProjection());
 
