@@ -56,6 +56,11 @@ Minimap::Minimap(const std::map<int, glm::vec3>& poiInfo) {
 }
 
 void Minimap::_initMinimap() {
+    const float MAP_W_PROP_DIMENSION = MAP_DIMENSION * 2 / (float)SCR_WIDTH;
+    const float MAP_H_PROP_DIMENSION = MAP_DIMENSION * 2 / (float)SCR_HEIGHT;
+    const float MAP_W_PROP_OFFSET = MAP_W_OFFSET * 2 / (float)SCR_WIDTH;
+    const float MAP_H_PROP_OFFSET = MAP_H_OFFSET * 2 / (float)SCR_HEIGHT;
+
     float minimapVertices[] = {
         // positions                                                                                           // texCoords
            1.0f - MAP_W_PROP_DIMENSION - MAP_W_PROP_OFFSET, -(1.0f - MAP_H_PROP_DIMENSION - MAP_H_PROP_OFFSET),  1.0f, 0.0f,
